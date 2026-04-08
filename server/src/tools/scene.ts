@@ -6,7 +6,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_scene_hierarchy",
-    "씬 계층구조를 조회합니다. 이름/컴포넌트로 검색 가능.",
+    "Get scene hierarchy tree. Filter by name or path. Use this first to understand the scene structure before making changes.",
     {
       path: z.string().optional().describe("특정 경로 하위만 조회 (예: 'Environment/Trees')"),
       depth: z.number().optional().describe("조회 깊이 (-1=전체, 기본: -1)"),
@@ -21,7 +21,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_scene_create",
-    "새 GameObject를 생성합니다. 빈 오브젝트, 프리미티브, 프리팹 인스턴스를 만들 수 있습니다.",
+    "Create a new GameObject — empty, primitive (Cube/Sphere/Capsule/Cylinder/Plane/Quad), or prefab instance. Set position, rotation, scale, and parent.",
     {
       name: z.string().describe("오브젝트 이름"),
       type: z.enum(["empty", "primitive", "prefab"]).optional().describe("생성 타입 (기본: empty)"),

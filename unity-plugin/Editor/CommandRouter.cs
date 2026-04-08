@@ -91,6 +91,11 @@ namespace KarnelLabs.MCP
             AddressablesHandler.Register();
 #endif
             UIToolkitHandler.Register();
+            Animation2DHandler.Register();
+            VersionControlHandler.Register();
+#if UNITY_LOCALIZATION
+            LocalizationHandler.Register();
+#endif
         }
 
         /// <summary>

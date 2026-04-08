@@ -21,7 +21,9 @@
     "Unity.ResourceManager",
     "Unity.XR.Management",
     "Unity.XR.Management.Editor",
-    "Unity.XR.CoreUtils"
+    "Unity.XR.CoreUtils",
+    "Unity.Localization",
+    "Unity.Localization.Editor"
   ],
   "includePlatforms": ["Editor"],
   "excludePlatforms": [],
@@ -85,6 +87,11 @@
       "name": "com.unity.xr.management",
       "expression": "4.0.0",
       "define": "XR_MANAGEMENT"
+    },
+    {
+      "name": "com.unity.localization",
+      "expression": "1.0.0",
+      "define": "UNITY_LOCALIZATION"
     }
   ],
   "noEngineReferences": false

@@ -67,7 +67,7 @@ export class UnityBridge {
     if (!this._connected || !this.ws) {
       throw new McpError(
         -32001,
-        "Unity Editor에 연결되지 않았습니다. Unity에서 Tools > KarnelLabs MCP > Server Window를 확인하세요."
+        "Unity Editor not connected. Checklist: (1) Open Unity project, (2) Tools > KarnelLabs MCP > Server Window — ensure it shows 'Listening', (3) Check port " + this.config.port + " matches."
       );
     }
 
@@ -80,7 +80,7 @@ export class UnityBridge {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(new McpError(-32002, `타임아웃: ${method} (${timeout / 1000}초)`));
+        reject(new McpError(-32002, `Timeout: ${method} after ${timeout / 1000}s. Unity may be busy (compiling, importing, or in a modal dialog). Try again after Unity is idle.`));
       }, timeout);
 
       this.pending.set(id, { resolve, reject, timer });

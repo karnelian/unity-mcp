@@ -1,7 +1,7 @@
 {
   "name": "karnellabs-unity-mcp",
-  "version": "0.2.0",
-  "description": "MCP server for Unity Editor — 546 tools for AI-powered game development with Claude Code",
+  "version": "0.3.0",
+  "description": "MCP server for Unity Editor — 574 tools for AI-powered game development with Claude Code",
   "type": "module",
   "bin": {
     "karnellabs-unity-mcp": "server/dist/cli.js"

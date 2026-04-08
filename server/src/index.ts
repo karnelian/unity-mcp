@@ -46,11 +46,14 @@ import { registerInputSystemTools } from "./tools/inputsystem.js";
 import { registerAddressablesTools } from "./tools/addressables.js";
 import { registerUIToolkitTools } from "./tools/uitoolkit.js";
 import { registerSpriteTools } from "./tools/sprite.js";
+import { registerAnimation2DTools } from "./tools/animation2d.js";
+import { registerLocalizationTools } from "./tools/localization.js";
+import { registerVersionControlTools } from "./tools/versioncontrol.js";
 import { registerResources } from "./resources/index.js";
 
 const server = new McpServer({
   name: "karnellabs-unity-mcp",
-  version: "0.2.0",
+  version: "0.3.0",
 });
 
 const bridge = new UnityBridge({
@@ -112,6 +115,9 @@ registerInputSystemTools(server, bridge);
 registerAddressablesTools(server, bridge);
 registerUIToolkitTools(server, bridge);
 registerSpriteTools(server, bridge);
+registerAnimation2DTools(server, bridge);
+registerLocalizationTools(server, bridge);
+registerVersionControlTools(server, bridge);
 
 // 리소스 등록
 registerResources(server, bridge);

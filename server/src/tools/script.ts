@@ -6,7 +6,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_script_create",
-    "C# 스크립트를 생성합니다. 7개 템플릿 또는 직접 코드 작성.",
+    "Create a C# script file. Use templates (MonoBehaviour, ScriptableObject, Editor, Interface, Struct, Enum, Static) or provide custom code directly.",
     {
       path: z.string().describe("저장 경로 (예: 'Assets/Scripts/PlayerController.cs')"),
       template: z.enum(["MonoBehaviour", "ScriptableObject", "Editor", "Interface", "Struct", "Enum", "Static"]).optional().describe("템플릿 타입"),
@@ -20,7 +20,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_script_read",
-    "스크립트 파일의 내용을 읽습니다.",
+    "Read the contents of a C# script file. Use this to understand existing code before editing.",
     {
       path: z.string().describe("스크립트 경로 (예: 'Assets/Scripts/Player.cs')"),
     },

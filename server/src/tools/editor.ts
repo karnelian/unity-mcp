@@ -6,7 +6,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_playMode",
-    "Play 모드를 제어합니다 (Play/Stop/Pause/Step/Status).",
+    "Control Unity Play mode — start, stop, pause, step frame, or check status. Essential for testing gameplay.",
     {
       action: z.enum(["play", "stop", "pause", "step", "status"]).describe("수행할 작업"),
     },
@@ -18,7 +18,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_build",
-    "플레이어를 빌드합니다. Windows/Android/iOS/WebGL/macOS/Linux 지원.",
+    "Build the player for target platform (Windows/Android/iOS/WebGL/macOS/Linux). Supports development builds and custom options.",
     {
       target: z.enum(["Windows", "Android", "iOS", "WebGL", "macOS", "Linux"]).describe("빌드 타겟"),
       scenes: z.array(z.string()).optional().describe("포함할 씬 경로 목록 (기본: 빌드 설정의 활성 씬)"),
@@ -93,17 +93,25 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_connectionStatus",
-    "MCP와 Unity Editor 간 연결 상태를 확인합니다.",
+    "Check MCP-Unity connection status. When connected, also returns Unity version, project path, render pipeline, and scripting backend for full health check.",
     {},
     async () => {
       const status = bridge.getStatus();
+      if (status.connected) {
+        try {
+          const info = await bridge.request("editor.projectInfo", {});
+          return { content: [{ type: "text", text: JSON.stringify({ ...status, ...info }, null, 2) }] };
+        } catch {
+          return { content: [{ type: "text", text: JSON.stringify(status, null, 2) }] };
+        }
+      }
       return { content: [{ type: "text", text: JSON.stringify(status, null, 2) }] };
     }
   );
 
   server.tool(
     "unity_editor_console",
-    "Unity 콘솔 로그를 조회합니다.",
+    "Read Unity console logs — filter by error/warning/log type. Use this to debug issues and check for compilation errors.",
     {
       type: z.enum(["error", "warning", "log", "all"]).optional().describe("로그 타입 필터 (기본: all)"),
       count: z.number().optional().describe("조회 개수 (기본: 50)"),
@@ -117,7 +125,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_projectInfo",
-    "에디터 프로젝트 상세 정보를 조회합니다 (렌더 파이프라인, 스크립팅 백엔드, 컬러 스페이스 등).",
+    "Get detailed project info — Unity version, render pipeline, scripting backend, color space, target platform, and installed packages.",
     {},
     async (params) => {
       const result = await bridge.request("editor.projectInfo", params);
