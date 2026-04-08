@@ -1,0 +1,11 @@
+{
+  "name": "com.karnellabs.mcp",
+  "version": "0.1.0",
+  "displayName": "KarnelLabs MCP",
+  "description": "MCP Server Bridge for Unity Editor — Claude Code AI 개발 도구",
+  "unity": "6000.0",
+  "author": {
+    "name": "KarnelLabs"
+  },
+  "type": "library"
+}

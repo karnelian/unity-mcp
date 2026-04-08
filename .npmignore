@@ -1,0 +1,11 @@
+test-project/
+server/src/
+server/node_modules/
+server/scripts/
+server/tsconfig.json
+server/package.json
+server/package-lock.json
+.mcp.json
+.claude/
+.git/
+*.md

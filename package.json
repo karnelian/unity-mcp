@@ -1,0 +1,33 @@
+{
+  "name": "karnellabs-unity-mcp",
+  "version": "0.2.0",
+  "description": "MCP server for Unity Editor — 546 tools for AI-powered game development with Claude Code",
+  "type": "module",
+  "bin": {
+    "karnellabs-unity-mcp": "server/dist/cli.js"
+  },
+  "scripts": {
+    "prepare": "cd server && npm install && npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "unity",
+    "game-development",
+    "claude",
+    "ai",
+    "model-context-protocol"
+  ],
+  "author": "KarnelLabs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/karnelian/unity-mcp.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "ws": "^8.18.0"
+  }
+}

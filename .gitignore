@@ -1,0 +1,9 @@
+node_modules/
+server/dist/
+server/unity-plugin/
+test-project/
+.mcp.json
+.bkit/
+.claude/
+docs/
+*.meta
