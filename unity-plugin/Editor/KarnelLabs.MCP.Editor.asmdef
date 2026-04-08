@@ -23,7 +23,12 @@
     "Unity.XR.Management.Editor",
     "Unity.XR.CoreUtils",
     "Unity.Localization",
-    "Unity.Localization.Editor"
+    "Unity.Localization.Editor",
+    "Unity.RenderPipelines.Universal.Runtime",
+    "Unity.2D.SpriteShape.Runtime",
+    "Unity.2D.Animation.Runtime",
+    "Unity.2D.IK.Runtime",
+    "Unity.2D.Tilemap.Extras"
   ],
   "includePlatforms": ["Editor"],
   "excludePlatforms": [],
@@ -92,7 +97,37 @@
       "name": "com.unity.localization",
       "expression": "1.0.0",
       "define": "UNITY_LOCALIZATION"
-    }
+    },
+    {
+      "name": "com.unity.textmeshpro",
+      "expression": "3.0.0",
+      "define": "UNITY_TEXTMESHPRO"
+    },
+    {
+      "name": "com.unity.ugui",
+      "expression": "2.0.0",
+      "define": "UNITY_TEXTMESHPRO"
+    },
+    {
+      "name": "com.unity.render-pipelines.universal",
+      "expression": "12.0.0",
+      "define": "UNITY_RENDER_PIPELINES_UNIVERSAL"
+    },
+    {
+      "name": "com.unity.2d.spriteshape",
+      "expression": "7.0.0",
+      "define": "UNITY_2D_SPRITESHAPE"
+    },
+    {
+      "name": "com.unity.2d.animation",
+      "expression": "9.0.0",
+      "define": "UNITY_2D_ANIMATION"
+    },
+    {
+      "name": "com.unity.2d.tilemap.extras",
+      "expression": "3.0.0",
+      "define": "UNITY_2D_TILEMAP_EXTRAS"
+    },
   ],
   "noEngineReferences": false
 }

@@ -210,6 +210,12 @@ namespace KarnelLabs.MCP
             return string.Join("/", parts);
         }
 
+        /// <summary>FindOrThrow 단축 래퍼 (JToken 파라미터)</summary>
+        public static GameObject Find(Newtonsoft.Json.Linq.JToken p) => FindOrThrow(p);
+
+        /// <summary>이름으로 검색하는 단축 래퍼</summary>
+        public static GameObject FindByName(string name) => FindOrThrow(name: name);
+
         /// <summary>GameObject 정보를 풍부한 응답 객체로 직렬화</summary>
         public static object ToRichInfo(GameObject go)
         {

@@ -96,6 +96,44 @@ namespace KarnelLabs.MCP
 #if UNITY_LOCALIZATION
             LocalizationHandler.Register();
 #endif
+
+            // Phase 2: New categories
+            JointHandler.Register();
+            Physics2DHandler.Register();
+            LODHandler.Register();
+            CharacterControllerHandler.Register();
+#if UNITY_TEXTMESHPRO
+            TextMeshProHandler.Register();
+#endif
+            LightmappingHandler.Register();
+            VideoHandler.Register();
+            LineRendererHandler.Register();
+            ConstraintHandler.Register();
+            ScrollRectHandler.Register();
+            CanvasGroupHandler.Register();
+            UIMaskHandler.Register();
+            ClothHandler.Register();
+            SortingLayerHandler.Register();
+            OcclusionCullingHandler.Register();
+            RenderTextureHandler.Register();
+            SceneViewHandler.Register();
+            AsmdefHandler.Register();
+#if UNITY_2D_SPRITESHAPE
+            SpriteShapeHandler.Register();
+#endif
+#if UNITY_2D_ANIMATION
+            Skeletal2DHandler.Register();
+#endif
+#if UNITY_2D_TILEMAP_EXTRAS
+            RuleTileHandler.Register();
+#endif
+            ComputeShaderHandler.Register();
+#if UNITY_RENDER_PIPELINES_UNIVERSAL
+            RenderFeatureHandler.Register();
+#endif
+            PresetHandler.Register();
+            UnitySearchHandler.Register();
+            GridLayoutHandler.Register();
         }
 
         /// <summary>
