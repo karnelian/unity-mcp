@@ -33,6 +33,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     "Capture EditorWindow (inspector/hierarchy/project/console/etc)",
     {
       window: z.string().optional(),
+      savePath: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.captureEditorWindow", params);

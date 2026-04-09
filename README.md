@@ -37,6 +37,22 @@ Then:
 2. Wait for compilation → **Tools > KarnelLabs MCP > Server Window**
 3. Open Claude Code in the same folder and start building!
 
+### KarnelLabs MCP Server Window
+
+Once installed, open the server window via **Tools > KarnelLabs MCP > Server Window**. You should see:
+
+<p align="center">
+  <img src=".github/assets/mcp-server-window.png" alt="KarnelLabs MCP Server Window" width="400"/>
+</p>
+
+The window shows:
+- **Connection Status** — `Connected` (green) when Claude Code is attached
+- **Handlers** — number of registered C# command handlers (686+)
+- **Server Settings** — WebSocket port (default 8099), Start/Stop/Restart
+- **Claude Code Configuration** — copy-paste JSON for `.mcp.json` / `claude_desktop_config.json`
+- **Recent Requests** — last 20 MCP calls for debugging
+- **Info** — Unity version, project name, WebSocket URL
+
 ## Commands
 
 ```bash

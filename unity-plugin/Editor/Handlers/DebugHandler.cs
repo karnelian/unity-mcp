@@ -97,6 +97,7 @@ namespace KarnelLabs.MCP
         private static object CaptureEditorWindow(JToken p)
         {
             string windowName = (string)p?["window"] ?? "InspectorWindow";
+            string savePath = (string)p?["savePath"];
 
             // Common shortcut aliases
             switch (windowName.ToLower())
@@ -165,7 +166,27 @@ namespace KarnelLabs.MCP
                 tex.Apply();
                 RenderTexture.active = prev;
 
+                // Flip vertically (RenderTexture uses bottom-left origin, PNG uses top-left)
+                var pixels = tex.GetPixels();
+                var flipped = new Color[pixels.Length];
+                for (int y = 0; y < h; y++)
+                {
+                    for (int x = 0; x < w; x++)
+                    {
+                        flipped[(h - 1 - y) * w + x] = pixels[y * w + x];
+                    }
+                }
+                tex.SetPixels(flipped);
+                tex.Apply();
+
                 byte[] png = tex.EncodeToPNG();
+                if (!string.IsNullOrEmpty(savePath))
+                {
+                    var dir = System.IO.Path.GetDirectoryName(savePath);
+                    if (!string.IsNullOrEmpty(dir) && !System.IO.Directory.Exists(dir))
+                        System.IO.Directory.CreateDirectory(dir);
+                    System.IO.File.WriteAllBytes(savePath, png);
+                }
                 return new
                 {
                     success = true,
@@ -174,6 +195,7 @@ namespace KarnelLabs.MCP
                     height = h,
                     format = "png",
                     size = png.Length,
+                    savedTo = savePath,
                     data = Convert.ToBase64String(png),
                 };
             }
