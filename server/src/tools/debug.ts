@@ -37,12 +37,18 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.captureEditorWindow", params);
+      const label = `${result?.window} (${result?.width}x${result?.height})`;
       if (result?.data) {
         return {
           content: [
             { type: "image", data: result.data, mimeType: "image/png" },
-            { type: "text", text: `Captured ${result.window} (${result.width}x${result.height})` },
+            { type: "text", text: `Captured ${label}` },
           ],
+        };
+      }
+      if (result?.savedTo) {
+        return {
+          content: [{ type: "text", text: `Captured ${label} → ${result.savedTo}` }],
         };
       }
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };

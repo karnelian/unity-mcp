@@ -154,33 +154,35 @@ namespace KarnelLabs.MCP
             int h = Mathf.Max(1, (int)rect.height);
 
             var rt = RenderTexture.GetTemporary(w, h, 24, RenderTextureFormat.ARGB32);
+            var prevActive = RenderTexture.active;
             Texture2D tex = null;
             try
             {
                 grabMethod.Invoke(parent, new object[] { rt, new Rect(0, 0, w, h) });
 
-                var prev = RenderTexture.active;
                 RenderTexture.active = rt;
                 tex = new Texture2D(w, h, TextureFormat.RGB24, false);
                 tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
-                tex.Apply();
-                RenderTexture.active = prev;
 
-                // Flip vertically (RenderTexture uses bottom-left origin, PNG uses top-left)
+                // Flip vertically in place (RenderTexture bottom-left origin vs PNG top-left)
                 var pixels = tex.GetPixels();
-                var flipped = new Color[pixels.Length];
-                for (int y = 0; y < h; y++)
+                for (int y = 0; y < h / 2; y++)
                 {
+                    int topRow = y * w;
+                    int bottomRow = (h - 1 - y) * w;
                     for (int x = 0; x < w; x++)
                     {
-                        flipped[(h - 1 - y) * w + x] = pixels[y * w + x];
+                        var tmp = pixels[topRow + x];
+                        pixels[topRow + x] = pixels[bottomRow + x];
+                        pixels[bottomRow + x] = tmp;
                     }
                 }
-                tex.SetPixels(flipped);
+                tex.SetPixels(pixels);
                 tex.Apply();
 
                 byte[] png = tex.EncodeToPNG();
-                if (!string.IsNullOrEmpty(savePath))
+                bool saved = !string.IsNullOrEmpty(savePath);
+                if (saved)
                 {
                     var dir = System.IO.Path.GetDirectoryName(savePath);
                     if (!string.IsNullOrEmpty(dir) && !System.IO.Directory.Exists(dir))
@@ -195,12 +197,14 @@ namespace KarnelLabs.MCP
                     height = h,
                     format = "png",
                     size = png.Length,
-                    savedTo = savePath,
-                    data = Convert.ToBase64String(png),
+                    savedTo = saved ? savePath : null,
+                    // Omit base64 when saved to disk to avoid ~1.33x token overhead
+                    data = saved ? null : Convert.ToBase64String(png),
                 };
             }
             finally
             {
+                RenderTexture.active = prevActive;
                 if (tex != null) UnityEngine.Object.DestroyImmediate(tex);
                 RenderTexture.ReleaseTemporary(rt);
             }
