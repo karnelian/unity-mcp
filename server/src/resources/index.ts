@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { registerGuideResources } from "./guides.js";
 
 function makeResourceHandler(bridge: UnityBridge, method: string) {
   return async (uri: URL) => {
@@ -59,4 +60,7 @@ export function registerResources(server: McpServer, bridge: UnityBridge) {
     "unity://packages/installed",
     makeResourceHandler(bridge, "resource.installedPackages")
   );
+
+  // Unity workflow guides (static, no bridge needed)
+  registerGuideResources(server);
 }
