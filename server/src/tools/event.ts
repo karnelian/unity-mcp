@@ -22,7 +22,7 @@ export function registerEventTools(server: McpServer, bridge: UnityBridge) {
     "Get event listeners",
     {
       path: z.string(),
-      eventName: z.string().describe("이벤트 필드명 (예: onClick, onValueChanged)"),
+      eventName: z.string(),
       componentType: z.string().optional(),
     },
     async (params) => {
@@ -36,11 +36,11 @@ export function registerEventTools(server: McpServer, bridge: UnityBridge) {
     "Add event listener",
     {
       path: z.string(),
-      eventName: z.string().describe("이벤트 필드명 (예: onClick)"),
+      eventName: z.string(),
       componentType: z.string().optional(),
-      targetPath: z.string().describe("대상 GameObject 경로 (또는 'self')"),
+      targetPath: z.string(),
       methodName: z.string(),
-      argumentType: z.enum(["void", "int", "float", "string", "bool", "object"]).optional().describe("인자 타입 (기본: void)"),
+      argumentType: z.enum(["void", "int", "float", "string", "bool", "object"]).optional(),
       argumentValue: z.any().optional(),
     },
     async (params) => {
@@ -72,7 +72,7 @@ export function registerEventTools(server: McpServer, bridge: UnityBridge) {
       eventName: z.string(),
       componentType: z.string().optional(),
       index: z.number(),
-      state: z.enum(["Off", "RuntimeOnly", "EditorAndRuntime"]).describe("호출 상태"),
+      state: z.enum(["Off", "RuntimeOnly", "EditorAndRuntime"]),
     },
     async (params) => {
       const result = await bridge.request("event.setListenerState", params);

@@ -27,10 +27,10 @@ export function registerUIToolkitTools(server: McpServer, bridge: UnityBridge) {
   });
 
   server.tool("unity_uitoolkit_createUXML", "Create UXML", {
-    name: z.string().optional().describe("파일 이름 (기본: NewUI)"),
-    folder: z.string().optional().describe("저장 폴더 (기본: Assets)"),
+    name: z.string().optional(),
+    folder: z.string().optional(),
     elements: z.array(z.object({
-      tag: z.string().describe("UI 요소 태그 (예: Label, Button, VisualElement, TextField, Toggle)"),
+      tag: z.string(),
       name: z.string().optional(),
       text: z.string().optional(),
       classes: z.string().optional(),
@@ -41,11 +41,11 @@ export function registerUIToolkitTools(server: McpServer, bridge: UnityBridge) {
   });
 
   server.tool("unity_uitoolkit_createUSS", "Create USS", {
-    name: z.string().optional().describe("파일 이름 (기본: NewStyle)"),
-    folder: z.string().optional().describe("저장 폴더 (기본: Assets)"),
+    name: z.string().optional(),
+    folder: z.string().optional(),
     rules: z.array(z.object({
-      selector: z.string().describe("CSS 선택자 (예: #root, .my-class, Button)"),
-      properties: z.record(z.string(), z.string()).describe("속성 (예: {background-color: '#333', font-size: '14px'})"),
+      selector: z.string(),
+      properties: z.record(z.string(), z.string()),
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("uitoolkit.createUSS", p);

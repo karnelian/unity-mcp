@@ -31,7 +31,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_component_enable", "Enable/disable component", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
     componentType: z.string(),
-    enabled: z.boolean().optional().describe("활성화 (기본: true)"),
+    enabled: z.boolean().optional(),
     index: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("component.enable", p);
@@ -48,7 +48,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_component_paste", "Paste component", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
-    asNew: z.boolean().optional().describe("새 컴포넌트로 추가 (기본: false=값만 덮어쓰기)"),
+    asNew: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("component.paste", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

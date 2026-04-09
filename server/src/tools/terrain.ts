@@ -26,7 +26,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_terrain_set_height", "Set terrain height", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
     x: z.number(), y: z.number(),
-    height: z.number().describe("높이값 (0~1 정규화)"), radius: z.number().optional(),
+    height: z.number(), radius: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.setHeight", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -42,7 +42,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_terrain_flatten", "Flatten terrain", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
-    height: z.number().optional().describe("높이값 (기본: 0)"),
+    height: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.flatten", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -50,8 +50,8 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_terrain_perlin_noise", "Apply perlin noise", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
-    scale: z.number().optional().describe("노이즈 스케일 (기본: 20)"),
-    amplitude: z.number().optional().describe("진폭 (기본: 0.1)"),
+    scale: z.number().optional(),
+    amplitude: z.number().optional(),
     offsetX: z.number().optional(), offsetY: z.number().optional(),
     additive: z.boolean().optional(),
   }, async (p) => {
@@ -61,7 +61,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_terrain_smooth", "Smooth terrain", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
-    iterations: z.number().optional().describe("반복 횟수 (기본: 1)"),
+    iterations: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.smooth", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -96,9 +96,9 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_terrain_addTree", "Add tree", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     prefabPath: z.string(),
-    x: z.number().optional().describe("정규화 X (0~1)"),
-    y: z.number().optional().describe("높이 (0~1)"),
-    z: z.number().optional().describe("정규화 Z (0~1)"),
+    x: z.number().optional(),
+    y: z.number().optional(),
+    z: z.number().optional(),
     widthScale: z.number().optional(), heightScale: z.number().optional(),
     positions: z.array(z.object({
       x: z.number(), y: z.number().optional(), z: z.number(),
@@ -111,7 +111,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_terrain_removeTree", "Remove trees", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
-    prototypeIndex: z.number().optional().describe("특정 프로토타입 인덱스만 제거 (미지정 시 전체 제거)"),
+    prototypeIndex: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.removeTree", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -136,10 +136,10 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_terrain_setDetailLayer", "Set detail layer", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
-    layerIndex: z.number().optional().describe("디테일 레이어 인덱스 (기본: 0)"),
+    layerIndex: z.number().optional(),
     x: z.number(), y: z.number(),
-    radius: z.number().optional().describe("반경 (기본: 5)"),
-    density: z.number().optional().describe("밀도 (기본: 1)"),
+    radius: z.number().optional(),
+    density: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.setDetailLayer", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -155,8 +155,8 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_terrain_setHoles", "Set terrain holes", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     x: z.number(), y: z.number(),
-    radius: z.number().optional().describe("반경 (기본: 1)"),
-    isHole: z.boolean().optional().describe("구멍 여부 (기본: true)"),
+    radius: z.number().optional(),
+    isHole: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.setHoles", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -164,8 +164,8 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_terrain_getSteepness", "Get terrain steepness", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
-    x: z.number().describe("정규화 X (0~1)"),
-    y: z.number().describe("정규화 Y (0~1)"),
+    x: z.number(),
+    y: z.number(),
   }, async (p) => {
     const r = await bridge.request("terrain.getSteepness", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

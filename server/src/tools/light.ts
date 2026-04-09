@@ -8,8 +8,8 @@ const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 export function registerLightTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_light_create", "Create Light", {
-    name: z.string().optional().describe("이름 (기본: New Light)"),
-    type: z.enum(["Directional", "Point", "Spot", "Area"]).optional().describe("라이트 타입"),
+    name: z.string().optional(),
+    type: z.enum(["Directional", "Point", "Spot", "Area"]).optional(),
     color: color.optional(), intensity: z.number().optional(), range: z.number().optional(),
     spotAngle: z.number().optional(), position: vec3.optional(), rotation: vec3.optional(),
     parent: z.string().optional(),
@@ -36,7 +36,7 @@ export function registerLightTools(server: McpServer, bridge: UnityBridge) {
   });
 
   server.tool("unity_light_find", "Find Lights", {
-    type: z.enum(["Directional", "Point", "Spot", "Area"]).optional().describe("타입 필터"),
+    type: z.enum(["Directional", "Point", "Spot", "Area"]).optional(),
   }, async (params) => {
     const result = await bridge.request("light.find", params);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -59,7 +59,7 @@ export function registerLightTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_light_set_bake_type", "Set Light bake type", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
-    bakeType: z.enum(["Realtime", "Mixed", "Baked"]).describe("베이크 타입"),
+    bakeType: z.enum(["Realtime", "Mixed", "Baked"]),
   }, async (params) => {
     const result = await bridge.request("light.setLightmapBakeType", params);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -67,7 +67,7 @@ export function registerLightTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_light_set_shadows", "Set Light shadows", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
-    shadowType: z.enum(["None", "Hard", "Soft"]).describe("그림자 타입"),
+    shadowType: z.enum(["None", "Hard", "Soft"]),
     strength: z.number().optional(), bias: z.number().optional(), normalBias: z.number().optional(),
     resolution: z.enum(["FromQualitySettings", "Low", "Medium", "High", "VeryHigh"]).optional(),
   }, async (params) => {
@@ -91,7 +91,7 @@ export function registerLightTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_light_set_color_temperature", "Set color temperature", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
-    temperature: z.number().optional().describe("색온도 (Kelvin, 1000~20000)"),
+    temperature: z.number().optional(),
     useColorTemperature: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("light.setColorTemperature", p);
@@ -101,7 +101,7 @@ export function registerLightTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_light_set_cookie", "Set Light cookie", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     texturePath: z.string(),
-    cookieSize: z.number().optional().describe("쿠키 크기 (Directional Light용)"),
+    cookieSize: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("light.setCookie", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -109,7 +109,7 @@ export function registerLightTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_light_set_culling_mask", "Set Light culling mask", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
-    cullingMask: z.number().optional().describe("비트마스크"),
+    cullingMask: z.number().optional(),
     layers: z.array(z.string()).optional(),
   }, async (p) => {
     const r = await bridge.request("light.setCullingMask", p);

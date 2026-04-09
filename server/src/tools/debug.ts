@@ -10,7 +10,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     "unity_debug_screenshot",
     "Take screenshot",
     {
-      view: z.enum(["game", "scene", "both"]).optional().describe("캡처 대상 (기본: game)"),
+      view: z.enum(["game", "scene", "both"]).optional(),
       width: z.number().optional(),
       height: z.number().optional(),
     },
@@ -33,7 +33,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     "Log to console",
     {
       message: z.string(),
-      level: z.enum(["info", "warning", "error"]).optional().describe("로그 레벨 (기본: info)"),
+      level: z.enum(["info", "warning", "error"]).optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.log", params);
@@ -56,7 +56,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     "Get PlayerPrefs",
     {
       key: z.string(),
-      type: z.enum(["string", "int", "float"]).optional().describe("값 타입 (기본: string)"),
+      type: z.enum(["string", "int", "float"]).optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.getPrefs", params);
@@ -70,7 +70,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     {
       key: z.string(),
       value: z.union([z.string(), z.number()]),
-      type: z.enum(["string", "int", "float"]).optional().describe("값 타입 (기본: string)"),
+      type: z.enum(["string", "int", "float"]).optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.setPrefs", params);
@@ -95,7 +95,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     "Get EditorPrefs",
     {
       key: z.string(),
-      type: z.enum(["string", "int", "float", "bool"]).optional().describe("값 타입 (기본: string)"),
+      type: z.enum(["string", "int", "float", "bool"]).optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.getEditorPrefs", params);
@@ -109,7 +109,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     {
       key: z.string(),
       value: z.union([z.string(), z.number(), z.boolean()]),
-      type: z.enum(["string", "int", "float", "bool"]).optional().describe("값 타입 (기본: string)"),
+      type: z.enum(["string", "int", "float", "bool"]).optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.setEditorPrefs", params);
@@ -121,10 +121,10 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     "unity_debug_drawGizmo",
     "Draw debug gizmo",
     {
-      type: z.enum(["line", "ray"]).describe("기즈모 타입"),
+      type: z.enum(["line", "ray"]),
       from: vec3,
-      to: vec3.optional().describe("끝점 (ray인 경우 방향)"),
-      duration: z.number().optional().describe("표시 시간 초 (기본: 5)"),
+      to: vec3.optional(),
+      duration: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.drawGizmo", params);
@@ -166,8 +166,8 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     "unity_debug_getCapturedLogs",
     "Get captured logs",
     {
-      type: z.string().optional().describe("로그 타입 필터 (Log, Warning, Error)"),
-      count: z.number().optional().describe("최대 조회 수 (기본: 200)"),
+      type: z.string().optional(),
+      count: z.number().optional(),
       clear: z.boolean().optional(),
       includeStackTrace: z.boolean().optional(),
     },
@@ -191,7 +191,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     "unity_debug_setDefines",
     "Set define symbols",
     {
-      action: z.enum(["add", "remove"]).describe("추가 또는 제거"),
+      action: z.enum(["add", "remove"]),
       symbol: z.string(),
     },
     async (params) => {

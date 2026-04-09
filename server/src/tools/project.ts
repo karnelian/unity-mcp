@@ -85,7 +85,7 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
   });
 
   server.tool("unity_project_setBuildTarget", "Set build target", {
-    target: z.string().describe("빌드 타겟 (예: StandaloneWindows64, Android, iOS, WebGL)"),
+    target: z.string(),
   }, async (p) => {
     const r = await bridge.request("project.setBuildTarget", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -100,8 +100,8 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     packageName: z.string().optional(),
     minSdkVersion: z.string().optional(),
     targetSdkVersion: z.string().optional(),
-    targetArchitectures: z.string().optional().describe("ARM64, ARMv7, X86 등"),
-    scriptingBackend: z.string().optional().describe("IL2CPP, Mono2x"),
+    targetArchitectures: z.string().optional(),
+    scriptingBackend: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("project.setAndroidSettings", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -116,7 +116,7 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     bundleIdentifier: z.string().optional(),
     targetOSVersionString: z.string().optional(),
     sdkVersion: z.string().optional(),
-    targetDevice: z.string().optional().describe("iPhoneOnly, iPadOnly, iPhoneAndiPad"),
+    targetDevice: z.string().optional(),
     scriptingBackend: z.string().optional(),
     automaticallySign: z.boolean().optional(),
     teamId: z.string().optional(),

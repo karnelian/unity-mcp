@@ -16,7 +16,7 @@ export function registerTextMeshProTools(server: McpServer, bridge: UnityBridge)
     text: z.string().optional(),
     fontSize: z.number().optional(),
     color: z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() }).optional(),
-    alignment: z.string().optional().describe("Text alignment (e.g., Center, Left, Right)"),
+    alignment: z.string().optional(),
     fontStyle: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("tmp.createUI", p);

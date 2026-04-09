@@ -11,9 +11,9 @@ const goRef = {
 export function registerOcclusionCullingTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_occlusionCulling_bake", "Bake occlusion", {
-    smallestOccluder: z.number().optional().describe("Smallest occluder size (default: 5)"),
-    smallestHole: z.number().optional().describe("Smallest hole size (default: 0.25)"),
-    backfaceThreshold: z.number().optional().describe("Backface threshold (default: 100)"),
+    smallestOccluder: z.number().optional(),
+    smallestHole: z.number().optional(),
+    backfaceThreshold: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("occlusionCulling.bake", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

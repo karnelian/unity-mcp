@@ -8,10 +8,10 @@ export function registerTimelineTools(server: McpServer, bridge: UnityBridge) {
     "unity_timeline_createClip",
     "Create AnimationClip",
     {
-      savePath: z.string().describe("저장 경로 (예: Assets/Animations/Walk.anim)"),
+      savePath: z.string(),
       name: z.string().optional(),
-      frameRate: z.number().optional().describe("프레임 레이트 (기본: 60)"),
-      wrapMode: z.string().optional().describe("래핑 모드 (Once, Loop, PingPong, ClampForever)"),
+      frameRate: z.number().optional(),
+      wrapMode: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("timeline.createClip", params);
@@ -36,10 +36,10 @@ export function registerTimelineTools(server: McpServer, bridge: UnityBridge) {
     "Set animation curve",
     {
       clipPath: z.string(),
-      propertyName: z.string().describe("프로퍼티 이름 (예: localPosition.x)"),
-      componentType: z.string().describe("컴포넌트 타입 (예: Transform)"),
-      objectPath: z.string().optional().describe("오브젝트 상대 경로 (기본: 루트)"),
-      keys: z.array(z.array(z.number())).describe("키프레임 [[time, value], ...]"),
+      propertyName: z.string(),
+      componentType: z.string(),
+      objectPath: z.string().optional(),
+      keys: z.array(z.array(z.number())),
     },
     async (params) => {
       const result = await bridge.request("timeline.setCurve", params);
@@ -122,7 +122,7 @@ export function registerTimelineTools(server: McpServer, bridge: UnityBridge) {
     "unity_timeline_findClips",
     "Find AnimationClips",
     {
-      folder: z.string().optional().describe("검색 폴더 (기본: Assets)"),
+      folder: z.string().optional(),
       nameFilter: z.string().optional(),
     },
     async (params) => {

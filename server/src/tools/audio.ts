@@ -72,7 +72,7 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
   });
 
   server.tool("unity_audio_set_global_volume", "Set global volume", {
-    volume: z.number().describe("볼륨 (0.0 ~ 1.0)"),
+    volume: z.number(),
   }, async (p) => {
     const r = await bridge.request("audio.setGlobalVolume", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -95,7 +95,7 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_audio_play_one_shot", "Play one shot", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     clipPath: z.string(),
-    volume: z.number().optional().describe("볼륨 (기본: 1.0)"),
+    volume: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.playOneShot", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -104,7 +104,7 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_audio_set_mixer_group", "Set mixer group", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     mixerPath: z.string(),
-    groupName: z.string().optional().describe("그룹 이름 (기본: Master)"),
+    groupName: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.setMixerGroup", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

@@ -8,8 +8,8 @@ export function registerSmartTools(server: McpServer, bridge: UnityBridge) {
     "unity_smart_sceneQuery",
     "Query scene objects",
     {
-      query: z.string().describe("쿼리 문자열 (예: 'Light.intensity > 1', 'AudioSource', 'MeshRenderer.enabled == false')"),
-      limit: z.number().optional().describe("최대 결과 수 (기본: 100)"),
+      query: z.string(),
+      limit: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("smart.sceneQuery", params);
@@ -24,7 +24,7 @@ export function registerSmartTools(server: McpServer, bridge: UnityBridge) {
       path: z.string(),
       componentType: z.string(),
       fieldName: z.string(),
-      matchBy: z.enum(["tag", "name", "component"]).optional().describe("매칭 기준 (기본: tag)"),
+      matchBy: z.enum(["tag", "name", "component"]).optional(),
       pattern: z.string(),
     },
     async (params) => {

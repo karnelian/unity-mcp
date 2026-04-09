@@ -8,7 +8,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     "unity_editor_playMode",
     "Control play mode",
     {
-      action: z.enum(["play", "stop", "pause", "step", "status"]).describe("수행할 작업"),
+      action: z.enum(["play", "stop", "pause", "step", "status"]),
     },
     async (params) => {
       const result = await bridge.request("editor.playMode", params);
@@ -21,9 +21,9 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     "Build project",
     {
       target: z.enum(["Windows", "Android", "iOS", "WebGL", "macOS", "Linux"]),
-      scenes: z.array(z.string()).optional().describe("포함할 씬 경로 목록 (기본: 빌드 설정의 활성 씬)"),
+      scenes: z.array(z.string()).optional(),
       outputPath: z.string().optional(),
-      options: z.array(z.string()).optional().describe("빌드 옵션 (예: ['Development', 'AllowDebugging'])"),
+      options: z.array(z.string()).optional(),
     },
     async (params) => {
       const result = await bridge.request("editor.build", params);
@@ -35,7 +35,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     "unity_editor_buildSettings",
     "Get/set build settings",
     {
-      action: z.enum(["get", "set"]).describe("조회 또는 수정"),
+      action: z.enum(["get", "set"]),
       settings: z.record(z.string(), z.any()).optional(),
     },
     async (params) => {
@@ -48,7 +48,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     "unity_editor_executeMenu",
     "Execute menu item",
     {
-      menuPath: z.string().describe("메뉴 경로 (예: 'GameObject/3D Object/Cube')"),
+      menuPath: z.string(),
     },
     async (params) => {
       const result = await bridge.request("editor.executeMenu", params);
@@ -60,7 +60,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     "unity_editor_runTests",
     "Run tests",
     {
-      mode: z.enum(["EditMode", "PlayMode"]).optional().describe("테스트 모드 (기본: EditMode)"),
+      mode: z.enum(["EditMode", "PlayMode"]).optional(),
       filter: z.string().optional(),
     },
     async (params) => {
@@ -73,7 +73,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     "unity_editor_testList",
     "List tests",
     {
-      mode: z.enum(["EditMode", "PlayMode"]).optional().describe("테스트 모드 (기본: EditMode)"),
+      mode: z.enum(["EditMode", "PlayMode"]).optional(),
     },
     async (params) => {
       const result = await bridge.request("editor.testList", params);
@@ -113,8 +113,8 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     "unity_editor_console",
     "Get console logs",
     {
-      type: z.enum(["error", "warning", "log", "all"]).optional().describe("로그 타입 필터 (기본: all)"),
-      count: z.number().optional().describe("조회 개수 (기본: 50)"),
+      type: z.enum(["error", "warning", "log", "all"]).optional(),
+      count: z.number().optional(),
       clear: z.boolean().optional(),
     },
     async (params) => {

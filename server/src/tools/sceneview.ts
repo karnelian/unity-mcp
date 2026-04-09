@@ -42,7 +42,7 @@ export function registerSceneViewTools(server: McpServer, bridge: UnityBridge) {
   });
 
   server.tool("unity_sceneView_align", "Align to selection", {
-    alignTo: z.enum(["Selection", "Front", "Back", "Left", "Right", "Top", "Bottom"]).describe("What to align to"),
+    alignTo: z.enum(["Selection", "Front", "Back", "Left", "Right", "Top", "Bottom"]),
   }, async (p) => {
     const r = await bridge.request("sceneView.align", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

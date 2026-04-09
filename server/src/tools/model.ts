@@ -22,9 +22,9 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     {
       modelPath: z.string(),
       globalScale: z.number().optional(),
-      meshCompression: z.string().optional().describe("메시 압축 (Off, Low, Medium, High)"),
+      meshCompression: z.string().optional(),
       isReadable: z.boolean().optional(),
-      importNormals: z.string().optional().describe("노멀 임포트 (Import, Calculate, None)"),
+      importNormals: z.string().optional(),
       importAnimation: z.boolean().optional(),
       generateColliders: z.boolean().optional(),
       optimizeMesh: z.boolean().optional(),
@@ -51,7 +51,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     "unity_model_find",
     "Find 3D models",
     {
-      folder: z.string().optional().describe("검색 폴더 (기본: Assets)"),
+      folder: z.string().optional(),
       nameFilter: z.string().optional(),
     },
     async (params) => {
@@ -77,7 +77,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     "Set rig type",
     {
       modelPath: z.string(),
-      rigType: z.string().describe("리그 타입 (None, Legacy, Generic, Humanoid)"),
+      rigType: z.string(),
     },
     async (params) => {
       const result = await bridge.request("model.setRigType", params);
@@ -130,7 +130,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     "Set material import settings",
     {
       modelPath: z.string(),
-      mode: z.string().describe("임포트 모드 (None, ImportStandard, ImportViaMaterialDescription)"),
+      mode: z.string(),
     },
     async (params) => {
       const result = await bridge.request("model.setMaterialImport", params);

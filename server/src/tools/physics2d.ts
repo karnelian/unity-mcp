@@ -39,7 +39,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_physics2d_addCollider", "Add Collider2D", {
     ...goRef,
-    type: z.enum(["Box", "Circle", "Capsule", "Polygon", "Edge", "Composite"]).describe("Collider type"),
+    type: z.enum(["Box", "Circle", "Capsule", "Polygon", "Edge", "Composite"]),
     isTrigger: z.boolean().optional(),
     offset: z.object({ x: z.number(), y: z.number() }).optional(),
     size: z.object({ x: z.number(), y: z.number() }).optional(),
@@ -66,7 +66,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_physics2d_addJoint", "Add Joint2D", {
     ...goRef,
-    type: z.enum(["Hinge", "Spring", "Distance", "Fixed", "Slider", "Relative", "Friction", "Target", "Wheel"]).describe("Joint type"),
+    type: z.enum(["Hinge", "Spring", "Distance", "Fixed", "Slider", "Relative", "Friction", "Target", "Wheel"]),
     connectedBody: z.string().optional(),
     anchor: z.object({ x: z.number(), y: z.number() }).optional(),
     autoConfigureConnectedAnchor: z.boolean().optional(),
@@ -128,7 +128,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_physics2d_addEffector", "Add Effector2D", {
     ...goRef,
-    type: z.enum(["Area", "Buoyancy", "Point", "Platform", "Surface"]).describe("Effector type"),
+    type: z.enum(["Area", "Buoyancy", "Point", "Platform", "Surface"]),
     useColliderMask: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.addEffector", p);

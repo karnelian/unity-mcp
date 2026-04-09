@@ -6,7 +6,7 @@ export function registerUnitySearchTools(server: McpServer, bridge: UnityBridge)
 
   server.tool("unity_search_assets", "Search assets (Unity Search)", {
     query: z.string(),
-    maxResults: z.number().optional().describe("Max results (default: 100)"),
+    maxResults: z.number().optional(),
     provider: z.enum(["asset", "scene", "project", "all"]).optional(),
   }, async (p) => {
     const r = await bridge.request("unitySearch.assets", p);

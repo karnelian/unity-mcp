@@ -18,7 +18,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     "unity_localization_addLocale",
     "Add locale",
     {
-      code: z.string().describe("Locale code (e.g. 'en', 'ko', 'ja')"),
+      code: z.string(),
     },
     async (p) => {
       const r = await bridge.request("localization.addLocale", p);
@@ -31,7 +31,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     "Create StringTable",
     {
       tableName: z.string(),
-      savePath: z.string().optional().describe("Folder to save tables (default: 'Assets/Localization/Tables')"),
+      savePath: z.string().optional(),
     },
     async (p) => {
       const r = await bridge.request("localization.createStringTable", p);
@@ -44,7 +44,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     "Get StringTable entries",
     {
       tableName: z.string(),
-      locale: z.string().optional().describe("Locale code to filter (e.g. 'en'). Omit for all locales."),
+      locale: z.string().optional(),
     },
     async (p) => {
       const r = await bridge.request("localization.getStringTable", p);
@@ -58,7 +58,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     {
       tableName: z.string(),
       key: z.string(),
-      locale: z.string().describe("Locale code (e.g. 'en')"),
+      locale: z.string(),
       value: z.string(),
     },
     async (p) => {
@@ -106,7 +106,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     "unity_localization_setProjectLocale",
     "Set project locale",
     {
-      code: z.string().describe("Locale code to activate (e.g. 'ko')"),
+      code: z.string(),
     },
     async (p) => {
       const r = await bridge.request("localization.setProjectLocale", p);

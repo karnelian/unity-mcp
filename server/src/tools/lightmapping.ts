@@ -5,7 +5,7 @@ import { UnityBridge } from "../bridge/unity-bridge.js";
 export function registerLightmappingTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_lightmapping_bake", "Start lightmap bake", {
-    async: z.boolean().optional().describe("Use async baking (default: true)"),
+    async: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("lightmapping.bake", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

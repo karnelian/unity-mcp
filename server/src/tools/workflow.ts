@@ -8,7 +8,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
     "unity_workflow_begin",
     "Begin workflow",
     {
-      name: z.string().optional().describe("세션 이름 (예: 'Level Design Session')"),
+      name: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("workflow.beginSession", params);

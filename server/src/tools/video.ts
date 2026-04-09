@@ -13,7 +13,7 @@ export function registerVideoTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_video_addPlayer", "Add VideoPlayer", {
     ...goRef,
     source: z.enum(["VideoClip", "Url"]).optional(),
-    url: z.string().optional().describe("Video URL (if source=Url)"),
+    url: z.string().optional(),
     clipPath: z.string().optional(),
     playOnAwake: z.boolean().optional(),
     isLooping: z.boolean().optional(),

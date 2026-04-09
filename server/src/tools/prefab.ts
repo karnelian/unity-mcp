@@ -8,7 +8,7 @@ export function registerPrefabTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_prefab_create", "Create Prefab", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
-    savePath: z.string().optional().describe("저장 경로 (기본: Assets/Prefabs/{name}.prefab)"),
+    savePath: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("prefab.create", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -63,7 +63,7 @@ export function registerPrefabTools(server: McpServer, bridge: UnityBridge) {
   });
 
   server.tool("unity_prefab_create_variant", "Create Prefab Variant", {
-    basePrefabPath: z.string().describe("기본 프리팹 경로"),
+    basePrefabPath: z.string(),
     name: z.string().optional(), savePath: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("prefab.createVariant", p);
@@ -71,7 +71,7 @@ export function registerPrefabTools(server: McpServer, bridge: UnityBridge) {
   });
 
   server.tool("unity_prefab_find", "Find Prefabs", {
-    folder: z.string().optional().describe("검색 폴더 (기본: Assets)"),
+    folder: z.string().optional(),
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("prefab.find", p);

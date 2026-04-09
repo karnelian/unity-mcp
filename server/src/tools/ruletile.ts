@@ -6,7 +6,7 @@ export function registerRuleTileTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_ruleTile_create", "Create RuleTile", {
     path: z.string(),
-    defaultSprite: z.string().optional().describe("Default sprite asset path"),
+    defaultSprite: z.string().optional(),
     defaultColliderType: z.enum(["None", "Sprite", "Grid"]).optional(),
   }, async (p) => {
     const r = await bridge.request("ruleTile.create", p);
@@ -16,7 +16,7 @@ export function registerRuleTileTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_ruleTile_addRule", "Add RuleTile rule", {
     path: z.string(),
     sprite: z.string(),
-    neighbors: z.array(z.number()).optional().describe("Neighbor rule array (0=DontCare, 1=This, 2=NotThis)"),
+    neighbors: z.array(z.number()).optional(),
     output: z.enum(["Single", "Random", "Animation"]).optional(),
     colliderType: z.enum(["None", "Sprite", "Grid"]).optional(),
   }, async (p) => {

@@ -89,7 +89,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_animator_add_layer", "Add Animator layer", {
     controllerPath: z.string(),
     layerName: z.string(),
-    defaultWeight: z.number().optional().describe("기본 가중치 (기본: 0)"),
+    defaultWeight: z.number().optional(),
     blendingMode: z.enum(["Override", "Additive"]).optional(),
   }, async (p) => {
     const r = await bridge.request("animator.addLayer", p);
@@ -98,7 +98,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_animator_remove_layer", "Remove Animator layer", {
     controllerPath: z.string(),
-    layerIndex: z.number().describe("레이어 인덱스 (0=Base 제거 불가)"),
+    layerIndex: z.number(),
   }, async (p) => {
     const r = await bridge.request("animator.removeLayer", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -107,7 +107,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_animator_set_layer_weight", "Set layer weight", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     layerIndex: z.number(),
-    weight: z.number().describe("가중치 (0~1)"),
+    weight: z.number(),
   }, async (p) => {
     const r = await bridge.request("animator.setLayerWeight", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -124,7 +124,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     controllerPath: z.string(),
     treeName: z.string().optional(),
     parameterName: z.string(),
-    layerIndex: z.number().optional().describe("레이어 인덱스 (기본: 0)"),
+    layerIndex: z.number().optional(),
     blendType: z.enum(["Simple1D", "SimpleDirectional2D", "FreeformDirectional2D", "FreeformCartesian2D"]).optional(),
     motions: z.array(z.object({
       clipPath: z.string().optional(), threshold: z.number().optional(),
@@ -137,7 +137,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_animator_remove_state", "Remove Animator state", {
     controllerPath: z.string(),
     stateName: z.string(),
-    layerIndex: z.number().optional().describe("레이어 인덱스 (기본: 0)"),
+    layerIndex: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("animator.removeState", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -146,7 +146,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_animator_remove_transition", "Remove Animator transition", {
     controllerPath: z.string(),
     fromState: z.string(), toState: z.string(),
-    layerIndex: z.number().optional().describe("레이어 인덱스 (기본: 0)"),
+    layerIndex: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("animator.removeTransition", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

@@ -10,7 +10,7 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_spline_create", "Create Spline", {
     name: z.string().optional(),
     position: vec3.optional(),
-    closed: z.boolean().optional().describe("닫힌 스플라인 (기본: false)"),
+    closed: z.boolean().optional(),
     knots: z.array(vec3).optional(),
   }, async (p) => {
     const r = await bridge.request("spline.create", p);
@@ -62,7 +62,7 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_spline_setTangentMode", "Set tangent mode", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     index: z.number(),
-    mode: z.enum(["AutoSmooth", "Linear", "Broken"]).describe("탄젠트 모드"),
+    mode: z.enum(["AutoSmooth", "Linear", "Broken"]),
   }, async (p) => {
     const r = await bridge.request("spline.setTangentMode", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

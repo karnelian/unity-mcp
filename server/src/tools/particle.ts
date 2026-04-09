@@ -8,7 +8,7 @@ const color = z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.numbe
 export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_particle_create", "Create ParticleSystem", {
-    name: z.string().optional().describe("오브젝트 이름 (기본: ParticleSystem)"),
+    name: z.string().optional(),
     parent: z.string().optional(),
     position: vec3.optional(),
     startLifetime: z.number().optional(),
@@ -43,8 +43,8 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     gravityModifier: z.number().optional(),
     maxParticles: z.number().optional(),
     playOnAwake: z.boolean().optional(),
-    simulationSpace: z.enum(["Local", "World", "Custom"]).optional().describe("시뮬레이션 공간"),
-    scalingMode: z.enum(["Hierarchy", "Local", "Shape"]).optional().describe("스케일링 모드"),
+    simulationSpace: z.enum(["Local", "World", "Custom"]).optional(),
+    scalingMode: z.enum(["Hierarchy", "Local", "Shape"]).optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setMain", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -72,7 +72,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     shapeType: z.enum(["Sphere", "Hemisphere", "Cone", "Box", "Circle", "Rectangle", "Donut", "Mesh", "MeshRenderer", "SkinnedMeshRenderer"]).optional(),
     radius: z.number().optional(), angle: z.number().optional(), arc: z.number().optional(),
     position: vec3.optional(), rotation: vec3.optional(), scale: vec3.optional(),
-    radiusThickness: z.number().optional().describe("방출 두께 (0=표면, 1=볼륨)"),
+    radiusThickness: z.number().optional(),
     length: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setShape", p);
@@ -96,12 +96,12 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     enabled: z.boolean().optional(),
     colorKeys: z.array(z.object({
-      time: z.number().describe("0~1 시간"),
+      time: z.number(),
       r: z.number(), g: z.number(), b: z.number(),
     })).optional(),
     alphaKeys: z.array(z.object({
-      time: z.number().describe("0~1 시간"),
-      alpha: z.number().describe("0~1 투명도"),
+      time: z.number(),
+      alpha: z.number(),
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setColorOverLifetime", p);
@@ -113,7 +113,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     enabled: z.boolean().optional(),
     sizeMultiplier: z.number().optional(),
     curve: z.array(z.object({
-      time: z.number().describe("0~1 시간"), value: z.number(),
+      time: z.number(), value: z.number(),
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setSizeOverLifetime", p);
@@ -158,7 +158,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_particle_setTrails", "Set particle trails", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     enabled: z.boolean().optional(),
-    ratio: z.number().optional().describe("트레일 비율 0~1"),
+    ratio: z.number().optional(),
     lifetime: z.number().optional(),
     minVertexDistance: z.number().optional(),
     worldSpace: z.boolean().optional(),
@@ -183,7 +183,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_particle_play", "Control particle playback", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
-    action: z.enum(["play", "stop", "pause", "clear", "restart"]).describe("수행할 작업"),
+    action: z.enum(["play", "stop", "pause", "clear", "restart"]),
   }, async (p) => {
     const r = await bridge.request("particle.play", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

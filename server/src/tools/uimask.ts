@@ -12,7 +12,7 @@ export function registerUIMaskTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_uiMask_addMask", "Add Mask", {
     ...goRef,
-    showMaskGraphic: z.boolean().optional().describe("Show the mask graphic (default: true)"),
+    showMaskGraphic: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("uiMask.addMask", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

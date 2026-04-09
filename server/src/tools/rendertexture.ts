@@ -6,11 +6,11 @@ export function registerRenderTextureTools(server: McpServer, bridge: UnityBridg
 
   server.tool("unity_renderTexture_create", "Create RenderTexture", {
     path: z.string(),
-    width: z.number().optional().describe("Width in pixels (default: 256)"),
-    height: z.number().optional().describe("Height in pixels (default: 256)"),
+    width: z.number().optional(),
+    height: z.number().optional(),
     depth: z.number().optional(),
-    colorFormat: z.string().optional().describe("RenderTextureFormat (e.g., ARGB32, ARGBHalf)"),
-    antiAliasing: z.number().optional().describe("Anti-aliasing (1, 2, 4, 8)"),
+    colorFormat: z.string().optional(),
+    antiAliasing: z.number().optional(),
     enableRandomWrite: z.boolean().optional(),
     useMipMap: z.boolean().optional(),
   }, async (p) => {
@@ -36,7 +36,7 @@ export function registerRenderTextureTools(server: McpServer, bridge: UnityBridg
     renderTexturePath: z.string(),
     targetCamera: z.string().optional(),
     targetMaterial: z.string().optional(),
-    materialProperty: z.string().optional().describe("Material property name (default: _MainTex)"),
+    materialProperty: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("renderTexture.assign", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

@@ -18,7 +18,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     "unity_validate_missingReferences",
     "Find missing references",
     {
-      maxResults: z.number().optional().describe("최대 결과 수 (기본: 100)"),
+      maxResults: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("validate.missingReferences", params);
@@ -90,7 +90,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     "unity_validate_largeMeshes",
     "Find large meshes",
     {
-      vertexThreshold: z.number().optional().describe("버텍스 수 임계값 (기본: 10000)"),
+      vertexThreshold: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("validate.largeMeshes", params);

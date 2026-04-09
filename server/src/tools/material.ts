@@ -12,8 +12,8 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Create Material",
     {
       name: z.string(),
-      savePath: z.string().optional().describe("저장 경로 (기본: Assets/Materials/{name}.mat)"),
-      shader: z.string().optional().describe("셰이더 이름 (기본: Standard)"),
+      savePath: z.string().optional(),
+      shader: z.string().optional(),
       color: color.optional(),
     },
     async (params) => {
@@ -30,7 +30,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
       path: z.string().optional(),
       name: z.string().optional(),
       instanceId: z.number().optional(),
-      materialIndex: z.number().optional().describe("머티리얼 슬롯 인덱스 (기본: 0)"),
+      materialIndex: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("material.assign", params);
@@ -92,7 +92,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Set Material color",
     {
       materialPath: z.string(),
-      property: z.string().optional().describe("프로퍼티 이름 (기본: _Color)"),
+      property: z.string().optional(),
       color: color,
     },
     async (params) => {
@@ -123,7 +123,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     {
       materialPath: z.string(),
       color: color,
-      intensity: z.number().optional().describe("강도 (기본: 1.0)"),
+      intensity: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("material.setEmission", params);
@@ -153,7 +153,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     {
       materialPath: z.string(),
       texturePath: z.string(),
-      property: z.string().optional().describe("프로퍼티 이름 (기본: _MainTex)"),
+      property: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("material.setTexture", params);
@@ -166,7 +166,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Set Material float",
     {
       materialPath: z.string(),
-      property: z.string().describe("프로퍼티 이름 (예: _Metallic, _Glossiness)"),
+      property: z.string(),
       value: z.number(),
     },
     async (params) => {
@@ -208,7 +208,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Set texture offset",
     {
       materialPath: z.string(),
-      property: z.string().optional().describe("프로퍼티 이름 (기본: _MainTex)"),
+      property: z.string().optional(),
       x: z.number(),
       y: z.number(),
     },
@@ -223,7 +223,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Set texture scale",
     {
       materialPath: z.string(),
-      property: z.string().optional().describe("프로퍼티 이름 (기본: _MainTex)"),
+      property: z.string().optional(),
       x: z.number(),
       y: z.number(),
     },
@@ -238,8 +238,8 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Set Material keyword",
     {
       materialPath: z.string(),
-      keyword: z.string().describe("키워드 이름 (예: _EMISSION, _NORMALMAP)"),
-      enabled: z.boolean().optional().describe("활성화 여부 (기본: true)"),
+      keyword: z.string(),
+      enabled: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("material.setKeyword", params);
@@ -252,7 +252,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Set render queue",
     {
       materialPath: z.string(),
-      renderQueue: z.number().describe("렌더 큐 값 (예: 2000=Geometry, 3000=Transparent)"),
+      renderQueue: z.number(),
     },
     async (params) => {
       const result = await bridge.request("material.setRenderQueue", params);
@@ -265,7 +265,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Set Material shader",
     {
       materialPath: z.string(),
-      shader: z.string().describe("셰이더 이름 (예: 'Standard', 'Universal Render Pipeline/Lit')"),
+      shader: z.string(),
     },
     async (params) => {
       const result = await bridge.request("material.setShader", params);
@@ -278,7 +278,7 @@ export function registerMaterialTools(server: McpServer, bridge: UnityBridge) {
     "Set GI flags",
     {
       materialPath: z.string(),
-      flags: z.enum(["None", "RealtimeEmissive", "BakedEmissive", "EmissiveIsBlack", "AnyEmissive"]).describe("GI 플래그"),
+      flags: z.enum(["None", "RealtimeEmissive", "BakedEmissive", "EmissiveIsBlack", "AnyEmissive"]),
     },
     async (params) => {
       const result = await bridge.request("material.setGIFlags", params);

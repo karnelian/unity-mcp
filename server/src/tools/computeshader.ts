@@ -30,8 +30,8 @@ export function registerComputeShaderTools(server: McpServer, bridge: UnityBridg
     path: z.string(),
     kernel: z.string(),
     threadGroupsX: z.number(),
-    threadGroupsY: z.number().optional().describe("Thread groups Y (default: 1)"),
-    threadGroupsZ: z.number().optional().describe("Thread groups Z (default: 1)"),
+    threadGroupsY: z.number().optional(),
+    threadGroupsZ: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("computeShader.dispatch", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

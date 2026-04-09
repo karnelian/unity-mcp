@@ -51,8 +51,8 @@ export function registerCameraTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_camera_screenshot", "Capture screenshot", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
-    width: z.number().optional().describe("너비 (기본: 1920)"),
-    height: z.number().optional().describe("높이 (기본: 1080)"),
+    width: z.number().optional(),
+    height: z.number().optional(),
     savePath: z.string().optional(),
     superSize: z.number().optional(),
   }, async (params) => {
@@ -63,7 +63,7 @@ export function registerCameraTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_camera_set_culling_mask", "Set culling mask", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
     layers: z.array(z.string()).optional(),
-    mask: z.number().optional().describe("비트마스크 직접 지정"),
+    mask: z.number().optional(),
   }, async (params) => {
     const result = await bridge.request("camera.setCullingMask", params);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };

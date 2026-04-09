@@ -21,13 +21,13 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
     "Set texture settings",
     {
       texturePath: z.string(),
-      textureType: z.string().optional().describe("텍스처 타입 (Default, NormalMap, Sprite 등)"),
+      textureType: z.string().optional(),
       maxTextureSize: z.number().optional(),
-      textureCompression: z.string().optional().describe("압축 방식 (Uncompressed, Compressed 등)"),
+      textureCompression: z.string().optional(),
       isReadable: z.boolean().optional(),
       mipmapEnabled: z.boolean().optional(),
-      filterMode: z.string().optional().describe("필터 모드 (Point, Bilinear, Trilinear)"),
-      wrapMode: z.string().optional().describe("래핑 모드 (Repeat, Clamp 등)"),
+      filterMode: z.string().optional(),
+      wrapMode: z.string().optional(),
       sRGBTexture: z.boolean().optional(),
       alphaIsTransparency: z.boolean().optional(),
     },
@@ -53,7 +53,7 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
     "unity_texture_find",
     "Find textures",
     {
-      folder: z.string().optional().describe("검색 폴더 (기본: Assets)"),
+      folder: z.string().optional(),
       nameFilter: z.string().optional(),
     },
     async (params) => {
@@ -67,10 +67,10 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
     "Set platform texture settings",
     {
       texturePath: z.string(),
-      platform: z.string().describe("플랫폼 (Standalone, Android, iOS, WebGL 등)"),
+      platform: z.string(),
       maxTextureSize: z.number().optional(),
-      format: z.string().optional().describe("텍스처 포맷 (ASTC_6x6, ETC2_RGBA8 등)"),
-      compressionQuality: z.number().optional().describe("압축 품질 (0-100)"),
+      format: z.string().optional(),
+      compressionQuality: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("texture.setPlatformSettings", params);
@@ -83,8 +83,8 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
     "Set sprite settings",
     {
       texturePath: z.string(),
-      spriteImportMode: z.string().optional().describe("스프라이트 모드 (Single, Multiple, Polygon)"),
-      pixelsPerUnit: z.number().optional().describe("픽셀 당 유닛"),
+      spriteImportMode: z.string().optional(),
+      pixelsPerUnit: z.number().optional(),
       pivot: z.object({ x: z.number(), y: z.number() }).optional(),
     },
     async (params) => {
@@ -98,7 +98,7 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
     "Set as normal map",
     {
       texturePath: z.string(),
-      bumpScale: z.number().optional().describe("범프 스케일 (기본: 1)"),
+      bumpScale: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("texture.setNormalMap", params);
@@ -136,7 +136,7 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
     "Set texture readable",
     {
       texturePath: z.string(),
-      readable: z.boolean().optional().describe("읽기 가능 여부 (기본: true)"),
+      readable: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("texture.setReadable", params);

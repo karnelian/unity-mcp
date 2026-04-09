@@ -8,7 +8,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     "unity_optimize_textureOverview",
     "Texture overview",
     {
-      folder: z.string().optional().describe("분석 폴더 (기본: Assets)"),
+      folder: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("optimize.textureOverview", params);
@@ -20,9 +20,9 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     "unity_optimize_compressTextures",
     "Batch compress textures",
     {
-      folder: z.string().optional().describe("대상 폴더 (기본: Assets)"),
-      maxTextureSize: z.number().optional().describe("최대 크기 (기본: 2048)"),
-      compression: z.string().optional().describe("압축 방식 (기본: CompressedHQ)"),
+      folder: z.string().optional(),
+      maxTextureSize: z.number().optional(),
+      compression: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("optimize.compressTextures", params);
@@ -44,7 +44,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     "unity_optimize_enableMeshCompression",
     "Enable mesh compression",
     {
-      folder: z.string().optional().describe("대상 폴더 (기본: Assets)"),
+      folder: z.string().optional(),
       level: z.string().optional(),
     },
     async (params) => {
@@ -67,9 +67,9 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     "unity_optimize_compressAudio",
     "Batch compress audio",
     {
-      folder: z.string().optional().describe("대상 폴더 (기본: Assets)"),
-      format: z.string().optional().describe("압축 포맷 (Vorbis, ADPCM, MP3; 기본: Vorbis)"),
-      quality: z.number().optional().describe("품질 (0-1, 기본: 0.5)"),
+      folder: z.string().optional(),
+      format: z.string().optional(),
+      quality: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("optimize.compressAudio", params);
@@ -81,8 +81,8 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     "unity_optimize_findLargeAssets",
     "Find large assets",
     {
-      thresholdMB: z.number().optional().describe("임계값 MB (기본: 10)"),
-      folder: z.string().optional().describe("검색 폴더 (기본: Assets)"),
+      thresholdMB: z.number().optional(),
+      folder: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("optimize.findLargeAssets", params);
@@ -97,8 +97,8 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
       path: z.string().optional(),
       name: z.string().optional(),
       instanceId: z.number().optional(),
-      recursive: z.boolean().optional().describe("자식에도 적용 (기본: false)"),
-      flags: z.string().optional().describe("Static 플래그 (생략 시 기본값 적용)"),
+      recursive: z.boolean().optional(),
+      flags: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("optimize.setStaticFlags", params);
@@ -110,8 +110,8 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     "unity_optimize_disableMipmaps",
     "Disable mipmaps",
     {
-      folder: z.string().optional().describe("대상 폴더 (기본: Assets)"),
-      onlyUI: z.boolean().optional().describe("스프라이트 타입만 대상 (기본: false)"),
+      folder: z.string().optional(),
+      onlyUI: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("optimize.disableMipmaps", params);
@@ -123,7 +123,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     "unity_optimize_enableGPUInstancing",
     "Enable GPU instancing",
     {
-      folder: z.string().optional().describe("대상 폴더 (기본: Assets)"),
+      folder: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("optimize.enableGPUInstancing", params);

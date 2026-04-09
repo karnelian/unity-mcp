@@ -8,9 +8,9 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     "unity_script_create",
     "Create C# script",
     {
-      path: z.string().describe("저장 경로 (예: 'Assets/Scripts/PlayerController.cs')"),
-      template: z.enum(["MonoBehaviour", "ScriptableObject", "Editor", "Interface", "Struct", "Enum", "Static"]).optional().describe("템플릿 타입"),
-      code: z.string().optional().describe("직접 작성할 코드 (template 대신 사용)"),
+      path: z.string(),
+      template: z.enum(["MonoBehaviour", "ScriptableObject", "Editor", "Interface", "Struct", "Enum", "Static"]).optional(),
+      code: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("script.create", params);
@@ -22,7 +22,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     "unity_script_read",
     "Read script",
     {
-      path: z.string().describe("스크립트 경로 (예: 'Assets/Scripts/Player.cs')"),
+      path: z.string(),
     },
     async (params) => {
       const result = await bridge.request("script.read", params);
@@ -62,9 +62,9 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     "unity_script_list",
     "List scripts",
     {
-      folder: z.string().optional().describe("검색 폴더 (기본: 'Assets')"),
-      pattern: z.string().optional().describe("파일명 패턴 (예: '*Controller*')"),
-      recursive: z.boolean().optional().describe("하위 폴더 포함 (기본: true)"),
+      folder: z.string().optional(),
+      pattern: z.string().optional(),
+      recursive: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("script.list", params);
@@ -102,9 +102,9 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     "Search in scripts",
     {
       pattern: z.string(),
-      folder: z.string().optional().describe("검색 폴더 (기본: 'Assets')"),
-      caseSensitive: z.boolean().optional().describe("대소문자 구분 (기본: false)"),
-      maxResults: z.number().optional().describe("최대 결과 수 (기본: 50)"),
+      folder: z.string().optional(),
+      caseSensitive: z.boolean().optional(),
+      maxResults: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("script.search", params);
@@ -116,7 +116,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     "unity_script_getInfo",
     "Get script type info",
     {
-      typeName: z.string().describe("타입 이름 (예: PlayerController)"),
+      typeName: z.string(),
     },
     async (params) => {
       const result = await bridge.request("script.getInfo", params);

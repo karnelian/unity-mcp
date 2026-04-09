@@ -42,7 +42,7 @@ export function registerPresetTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_preset_setAsDefault", "Set default Preset", {
     presetPath: z.string(),
-    enabled: z.boolean().optional().describe("Enable/disable as default (default: true)"),
+    enabled: z.boolean().optional(),
     filter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("preset.setAsDefault", p);

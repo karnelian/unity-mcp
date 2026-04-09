@@ -18,7 +18,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     "unity_vcs_getChanges",
     "Get changes",
     {
-      staged: z.boolean().optional().describe("Show staged changes only (default: false = unstaged)"),
+      staged: z.boolean().optional(),
     },
     async (p) => {
       const r = await bridge.request("vcs.getChanges", p);
@@ -30,7 +30,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     "unity_vcs_getHistory",
     "Get git history",
     {
-      count: z.number().optional().describe("Number of commits to return (default: 20)"),
+      count: z.number().optional(),
       filePath: z.string().optional(),
     },
     async (p) => {
@@ -43,7 +43,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     "unity_vcs_getBranches",
     "List branches",
     {
-      all: z.boolean().optional().describe("Include remote branches (default: false)"),
+      all: z.boolean().optional(),
     },
     async (p) => {
       const r = await bridge.request("vcs.getBranches", p);
@@ -76,8 +76,8 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     "Get git diff",
     {
       filePath: z.string().optional(),
-      staged: z.boolean().optional().describe("Show staged diff (default: false)"),
-      contextLines: z.number().optional().describe("Context lines around changes (default: 3)"),
+      staged: z.boolean().optional(),
+      contextLines: z.number().optional(),
     },
     async (p) => {
       const r = await bridge.request("vcs.getDiff", p);

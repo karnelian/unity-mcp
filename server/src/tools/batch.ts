@@ -19,7 +19,7 @@ export function registerBatchTools(server: McpServer, bridge: UnityBridge) {
         position: vec3.optional(),
         rotation: vec3.optional(),
         scale: vec3.optional(),
-      })).describe("생성할 오브젝트 배열 (최대 500개)"),
+      })),
     },
     async (params) => {
       const result = await bridge.request("scene.createBatch", params);

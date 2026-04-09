@@ -8,7 +8,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     "unity_package_list",
     "List packages",
     {
-      includeIndirect: z.boolean().optional().describe("간접 의존성 포함 여부 (기본: false)"),
+      includeIndirect: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("package.list", params);
@@ -20,7 +20,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     "unity_package_info",
     "Get package info",
     {
-      packageName: z.string().describe("패키지 이름 (예: com.unity.textmeshpro)"),
+      packageName: z.string(),
     },
     async (params) => {
       const result = await bridge.request("package.info", params);
@@ -32,7 +32,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     "unity_package_add",
     "Add package",
     {
-      identifier: z.string().describe("패키지 식별자 (이름, 이름@버전, git URL)"),
+      identifier: z.string(),
     },
     async (params) => {
       const result = await bridge.request("package.add", params);

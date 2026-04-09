@@ -13,7 +13,7 @@ export function registerLODTools(server: McpServer, bridge: UnityBridge) {
   server.tool("unity_lod_add", "Add LODGroup", {
     ...goRef,
     levels: z.array(z.object({
-      screenRelativeHeight: z.number().describe("Screen height ratio (0-1) for LOD transition"),
+      screenRelativeHeight: z.number(),
       renderers: z.array(z.string()).optional(),
     })).optional(),
     fadeMode: z.enum(["None", "CrossFade", "SpeedTree"]).optional(),

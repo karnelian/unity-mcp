@@ -39,7 +39,7 @@ export function registerShaderTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_shader_get_source", "Get shader source", {
     shaderPath: z.string(),
-    maxLines: z.number().optional().describe("최대 줄 수 (기본: 200)"),
+    maxLines: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("shader.getSource", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

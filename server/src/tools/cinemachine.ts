@@ -44,7 +44,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
       path: z.string().optional(),
       name: z.string().optional(),
       instanceId: z.number().optional(),
-      defaultBlend: z.number().optional().describe("기본 블렌드 시간"),
+      defaultBlend: z.number().optional(),
       updateMethod: z.string().optional(),
     },
     async (params) => {
@@ -100,7 +100,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
       path: z.string().optional(),
       name: z.string().optional(),
       instanceId: z.number().optional(),
-      bodyType: z.string().describe("Body 타입 (transposer, framingTransposer, hardLockToTarget)"),
+      bodyType: z.string(),
       followOffset: vec3.optional(),
       damping: z.number().optional(),
       cameraDistance: z.number().optional(),
@@ -120,7 +120,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
       path: z.string().optional(),
       name: z.string().optional(),
       instanceId: z.number().optional(),
-      aimType: z.string().describe("Aim 타입 (composer, hardLookAt, pov)"),
+      aimType: z.string(),
       trackedObjectOffset: vec3.optional(),
       lookaheadTime: z.number().optional(),
     },
@@ -314,8 +314,8 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
       name: z.string().optional(),
       instanceId: z.number().optional(),
       target: z.string(),
-      weight: z.number().optional().describe("가중치 (기본: 1)"),
-      radius: z.number().optional().describe("반경 (기본: 1)"),
+      weight: z.number().optional(),
+      radius: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("cinemachine.addGroupTarget", params);

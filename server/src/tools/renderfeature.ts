@@ -10,7 +10,7 @@ export function registerRenderFeatureTools(server: McpServer, bridge: UnityBridg
   });
 
   server.tool("unity_renderFeature_add", "Add RendererFeature", {
-    featureType: z.string().describe("Feature type name (e.g., ScreenSpaceAmbientOcclusion, DecalRendererFeature)"),
+    featureType: z.string(),
     name: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("renderFeature.add", p);

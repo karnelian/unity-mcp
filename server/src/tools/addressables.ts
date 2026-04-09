@@ -16,7 +16,7 @@ export function registerAddressablesTools(server: McpServer, bridge: UnityBridge
 
   server.tool("unity_addressables_createGroup", "Create Addressable group", {
     groupName: z.string(),
-    packed: z.boolean().optional().describe("Packed Assets 스키마 사용 (기본: true)"),
+    packed: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("addressables.createGroup", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -31,8 +31,8 @@ export function registerAddressablesTools(server: McpServer, bridge: UnityBridge
 
   server.tool("unity_addressables_markAddressable", "Mark asset Addressable", {
     assetPath: z.string(),
-    groupName: z.string().optional().describe("대상 그룹 (기본: Default)"),
-    address: z.string().optional().describe("커스텀 주소 (기본: 에셋 경로)"),
+    groupName: z.string().optional(),
+    address: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("addressables.markAddressable", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -56,7 +56,7 @@ export function registerAddressablesTools(server: McpServer, bridge: UnityBridge
   server.tool("unity_addressables_setLabel", "Set Addressable label", {
     assetPath: z.string(),
     label: z.string(),
-    enabled: z.boolean().optional().describe("활성화 여부 (기본: true)"),
+    enabled: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("addressables.setLabel", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

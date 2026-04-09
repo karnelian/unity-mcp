@@ -130,7 +130,7 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     layoutType: z.enum(["horizontal", "vertical", "grid"]),
     spacing: z.union([z.number(), vec2]).optional(),
     padding: z.object({ left: z.number().optional(), right: z.number().optional(), top: z.number().optional(), bottom: z.number().optional() }).optional(),
-    cellSize: vec2.optional().describe("grid 전용"),
+    cellSize: vec2.optional(),
   }, async (p) => {
     const r = await bridge.request("ui.addLayout", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

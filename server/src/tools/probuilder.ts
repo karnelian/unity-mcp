@@ -80,15 +80,15 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
   });
 
   server.tool("unity_probuilder_extrude", "Extrude faces", {
-    ...goId, distance: z.number().optional().describe("돌출 거리 (기본: 0.5)"),
-    faceIndices: z.array(z.number()).optional().describe("면 인덱스 (생략 시 전체)"),
+    ...goId, distance: z.number().optional(),
+    faceIndices: z.array(z.number()).optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.extrude", params);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
   });
 
   server.tool("unity_probuilder_bevel", "Bevel edges", {
-    ...goId, amount: z.number().optional().describe("베벨 크기 (기본: 0.1)"),
+    ...goId, amount: z.number().optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.bevel", params);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -113,7 +113,7 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
 
   server.tool("unity_probuilder_setMaterial", "Set face material", {
     ...goId, materialPath: z.string(),
-    faceIndices: z.array(z.number()).optional().describe("면 인덱스 (생략 시 전체)"),
+    faceIndices: z.array(z.number()).optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.setMaterial", params);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -140,7 +140,7 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
   });
 
   server.tool("unity_probuilder_export", "Export mesh", {
-    ...goId, format: z.string().optional().describe("포맷 (기본: obj)"),
+    ...goId, format: z.string().optional(),
     savePath: z.string().optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.export", params);

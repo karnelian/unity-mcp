@@ -8,9 +8,9 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     "unity_animation2d_createClip",
     "Create 2D AnimationClip",
     {
-      savePath: z.string().optional().describe("Save path (e.g. 'Assets/Animations/Walk.anim')"),
-      sampleRate: z.number().optional().describe("Frame rate (default: 12)"),
-      loop: z.boolean().optional().describe("Loop the animation (default: true)"),
+      savePath: z.string().optional(),
+      sampleRate: z.number().optional(),
+      loop: z.boolean().optional(),
     },
     async (p) => {
       const r = await bridge.request("animation2d.createClip", p);
@@ -75,10 +75,10 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     "unity_animation2d_createSpriteAtlas",
     "Create SpriteAtlas",
     {
-      savePath: z.string().optional().describe("Save path (e.g. 'Assets/Atlas/UI.spriteatlas')"),
-      includeInBuild: z.boolean().optional().describe("Include in build (default: true)"),
-      enableRotation: z.boolean().optional().describe("Allow rotation in packing (default: false)"),
-      enableTightPacking: z.boolean().optional().describe("Enable tight packing (default: false)"),
+      savePath: z.string().optional(),
+      includeInBuild: z.boolean().optional(),
+      enableRotation: z.boolean().optional(),
+      enableTightPacking: z.boolean().optional(),
     },
     async (p) => {
       const r = await bridge.request("animation2d.createSpriteAtlas", p);
@@ -129,10 +129,10 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     "Slice sprite sheet",
     {
       texturePath: z.string(),
-      mode: z.enum(["grid"]).optional().describe("Slice mode (currently: grid)"),
-      cellWidth: z.number().optional().describe("Cell width in pixels (default: 32)"),
-      cellHeight: z.number().optional().describe("Cell height in pixels (default: 32)"),
-      padding: z.number().optional().describe("Padding between cells (default: 0)"),
+      mode: z.enum(["grid"]).optional(),
+      cellWidth: z.number().optional(),
+      cellHeight: z.number().optional(),
+      padding: z.number().optional(),
       namePrefix: z.string().optional(),
     },
     async (p) => {

@@ -95,7 +95,7 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_joint_remove", "Remove joint", {
     ...goRef,
-    jointType: z.string().optional().describe("Specific joint type to remove (default: first found)"),
+    jointType: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("joint.remove", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

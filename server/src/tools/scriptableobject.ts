@@ -9,7 +9,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     "Create ScriptableObject",
     {
       typeName: z.string(),
-      savePath: z.string().describe("저장 경로 (예: Assets/Data/MyConfig.asset)"),
+      savePath: z.string(),
       name: z.string().optional(),
     },
     async (params) => {
@@ -23,7 +23,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     "Find ScriptableObjects",
     {
       typeName: z.string().optional(),
-      folder: z.string().optional().describe("검색 폴더 (기본: Assets)"),
+      folder: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("so.find", params);
@@ -62,7 +62,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     "Duplicate ScriptableObject",
     {
       assetPath: z.string(),
-      newName: z.string().optional().describe("새 이름 (생략 시 _Copy 접미사)"),
+      newName: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("so.duplicate", params);

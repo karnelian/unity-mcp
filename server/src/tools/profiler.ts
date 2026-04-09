@@ -18,7 +18,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     "unity_profiler_objectCount",
     "Count objects",
     {
-      includeInactive: z.boolean().optional().describe("비활성 오브젝트 포함 (기본: true)"),
+      includeInactive: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("profiler.objectCount", params);
@@ -40,7 +40,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     "unity_profiler_textureMemory",
     "Get texture memory",
     {
-      maxResults: z.number().optional().describe("상위 결과 수 (기본: 20)"),
+      maxResults: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("profiler.textureMemory", params);
@@ -52,7 +52,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     "unity_profiler_meshMemory",
     "Get mesh memory",
     {
-      maxResults: z.number().optional().describe("상위 결과 수 (기본: 20)"),
+      maxResults: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("profiler.meshMemory", params);

@@ -45,8 +45,8 @@ export function registerXRTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_xr_createGrabInteractable", "Create GrabInteractable", {
     ...goId,
-    throwOnDetach: z.boolean().optional().describe("놓을 때 던지기 (기본: true)"),
-    movementType: z.string().optional().describe("이동 타입 (VelocityTracking, Kinematic, Instantaneous)"),
+    throwOnDetach: z.boolean().optional(),
+    movementType: z.string().optional(),
   }, async (params) => {
     const result = await bridge.request("xr.createGrabInteractable", params);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };

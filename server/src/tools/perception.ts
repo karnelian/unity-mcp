@@ -18,8 +18,8 @@ export function registerPerceptionTools(server: McpServer, bridge: UnityBridge) 
     "unity_perception_hierarchyDescribe",
     "Describe hierarchy node",
     {
-      maxDepth: z.number().optional().describe("최대 깊이 (기본: 5)"),
-      includeComponents: z.boolean().optional().describe("컴포넌트 포함 여부 (기본: false)"),
+      maxDepth: z.number().optional(),
+      includeComponents: z.boolean().optional(),
       root: z.string().optional(),
     },
     async (params) => {
@@ -32,7 +32,7 @@ export function registerPerceptionTools(server: McpServer, bridge: UnityBridge) 
     "unity_perception_scriptAnalyze",
     "Analyze script",
     {
-      typeName: z.string().describe("분석할 타입 이름 (예: PlayerController)"),
+      typeName: z.string(),
     },
     async (params) => {
       const result = await bridge.request("perception.scriptAnalyze", params);

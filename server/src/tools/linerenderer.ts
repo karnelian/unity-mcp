@@ -90,7 +90,7 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
   });
 
   server.tool("unity_lineRenderer_find", "Find LineRenderers", {
-    type: z.enum(["Line", "Trail", "All"]).optional().describe("Filter type (default: All)"),
+    type: z.enum(["Line", "Trail", "All"]).optional(),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

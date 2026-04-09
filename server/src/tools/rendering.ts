@@ -9,7 +9,7 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_rendering_createVolume", "Create Volume", {
     name: z.string().optional(),
-    isGlobal: z.boolean().optional().describe("전역 볼륨 (기본: true)"),
+    isGlobal: z.boolean().optional(),
     priority: z.number().optional(),
     weight: z.number().optional(),
     profilePath: z.string().optional(),
@@ -34,7 +34,7 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_rendering_addOverride", "Add volume override", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
-    overrideType: z.string().describe("오버라이드 타입 (예: Bloom, ColorAdjustments, Vignette, Tonemapping 등)"),
+    overrideType: z.string(),
   }, async (p) => {
     const r = await bridge.request("rendering.addOverride", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
@@ -50,8 +50,8 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_rendering_setOverrideProperty", "Set override property", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
-    overrideType: z.string().describe("오버라이드 타입 (예: Bloom)"),
-    property: z.string().describe("속성 이름 (예: intensity, threshold, scatter)"),
+    overrideType: z.string(),
+    property: z.string(),
     value: z.any(),
   }, async (p) => {
     const r = await bridge.request("rendering.setOverrideProperty", p);
