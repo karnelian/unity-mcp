@@ -688,4 +688,196 @@ Addressables.Release(handle);
 - Analyze tool: Window > Asset Management > Addressables > Analyze to detect duplicates.
 - Initial build requires "Build Addressables" before "Build Player".`)
   );
+
+  server.resource(
+    "guide-csharp",
+    "unity://guides/csharp-conventions",
+    makeGuideResource("Unity C# Conventions", `## Naming Conventions
+
+### Classes & Files
+| Type | Pattern | Example |
+|------|---------|---------|
+| Manager | \`{System}Manager\` | \`AudioManager\`, \`UIManager\` |
+| Service Interface | \`I{System}Service\` | \`IAuthService\`, \`ISaveService\` |
+| Settings SO | \`{System}Settings\` | \`AudioSettings\`, \`GameSettings\` |
+| Handler | \`{Purpose}Handler\` | \`InputHandler\`, \`DamageHandler\` |
+| ViewModel | \`{Screen}ViewModel\` | \`MainMenuViewModel\` |
+| View | \`{Screen}View\` | \`MainMenuView\` |
+| Data | \`{Name}Data\` | \`PlayerData\`, \`ItemData\` |
+| Event Args | \`{Name}EventArgs\` | \`DamageEventArgs\` |
+
+### Members
+| Type | Pattern | Example |
+|------|---------|---------|
+| Private field | \`_camelCase\` | \`_health\`, \`_moveSpeed\` |
+| Public property | \`PascalCase\` | \`Health\`, \`MoveSpeed\` |
+| Constant | \`PascalCase\` | \`MaxHealth\`, \`DefaultSpeed\` |
+| Event callback | \`On{Event}\` | \`OnDeath\`, \`OnLevelUp\` |
+| Bool property | \`is/has/can\` prefix | \`IsAlive\`, \`HasKey\`, \`CanJump\` |
+
+## Using Statement Order
+\`\`\`csharp
+// 1. Unity namespaces first
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+// 2. Third-party packages
+using DG.Tweening;
+using R3;
+// 3. System namespaces last
+using System;
+using System.Collections.Generic;
+using System.Linq;
+\`\`\`
+
+## Coding Style Rules
+
+### Prefer Modern C# Syntax
+\`\`\`csharp
+// switch expression over switch statement
+string label = state switch
+{
+    GameState.Menu => "Main Menu",
+    GameState.Playing => "In Game",
+    GameState.Paused => "Paused",
+    _ => "Unknown",
+};
+
+// null-conditional + null-coalescing
+int count = _pool?.Count ?? 0;
+_service?.Initialize();
+string name = player?.Name ?? "Unknown";
+
+// guard clause (return early)
+public void TakeDamage(float amount)
+{
+    if (!IsAlive) return;
+    if (amount <= 0) return;
+    _health -= amount;
+}
+
+// pattern matching
+if (collision.gameObject.TryGetComponent<IDamageable>(out var target))
+{
+    target.TakeDamage(damage);
+}
+\`\`\`
+
+### SerializeField Pattern
+\`\`\`csharp
+[Header("=== Movement ===")]
+[Tooltip("Walk speed in units/sec")]
+[SerializeField] private float _walkSpeed = 5f;
+
+[Tooltip("Run speed multiplier")]
+[SerializeField] private float _runMultiplier = 1.5f;
+
+[Header("=== References ===")]
+[SerializeField] private Transform _groundCheck;
+[SerializeField] private LayerMask _groundLayer;
+
+// Expose via read-only property
+public float WalkSpeed => _walkSpeed;
+\`\`\`
+
+### Debug Logging Format
+\`\`\`csharp
+// Always include class name for easy filtering
+Debug.Log($"[{GetType().Name}] Initialized with {_itemCount} items");
+Debug.LogWarning($"[{GetType().Name}] Pool exhausted, creating new instance");
+Debug.LogError($"[{GetType().Name}] Failed to load: {assetPath}");
+\`\`\`
+
+## ScriptableObject Settings Pattern
+\`\`\`csharp
+[CreateAssetMenu(fileName = "GameSettings", menuName = "Game/Settings")]
+public class GameSettings : ScriptableObject
+{
+    [Header("=== Gameplay ===")]
+    [Tooltip("Player max HP")]
+    [SerializeField] private int _maxHealth = 100;
+
+    [Tooltip("Respawn delay in seconds")]
+    [SerializeField] private float _respawnDelay = 3f;
+
+    [Header("=== Debug ===")]
+    [SerializeField] private bool _enableDebugLog = false;
+
+    public int MaxHealth => _maxHealth;
+    public float RespawnDelay => _respawnDelay;
+    public bool EnableDebugLog => _enableDebugLog;
+}
+\`\`\`
+
+## MonoBehaviour Lifecycle Order
+\`\`\`csharp
+public class PlayerController : MonoBehaviour
+{
+    // 1. Serialized fields at top
+    [SerializeField] private float _speed = 5f;
+
+    // 2. Private fields
+    private Rigidbody _rb;
+    private bool _isGrounded;
+
+    // 3. Unity lifecycle in execution order
+    private void Awake()    { _rb = GetComponent<Rigidbody>(); }
+    private void OnEnable() { InputManager.OnJump += HandleJump; }
+    private void Start()    { Initialize(); }
+    private void Update()   { ReadInput(); }
+    private void FixedUpdate() { ApplyMovement(); }
+    private void OnDisable() { InputManager.OnJump -= HandleJump; }
+    private void OnDestroy() { Cleanup(); }
+
+    // 4. Public methods
+    public void TakeDamage(float amount) { /* ... */ }
+
+    // 5. Private methods
+    private void Initialize() { /* ... */ }
+    private void HandleJump() { /* ... */ }
+}
+\`\`\`
+
+## Common Anti-Patterns to Avoid
+\`\`\`csharp
+// BAD: GetComponent in Update
+void Update() { var rb = GetComponent<Rigidbody>(); } // Every frame!
+
+// GOOD: Cache in Awake
+Rigidbody _rb;
+void Awake() { _rb = GetComponent<Rigidbody>(); }
+
+// BAD: Find in runtime
+void Start() { var player = GameObject.Find("Player"); }
+
+// GOOD: SerializeField or cached reference
+[SerializeField] private GameObject _player;
+
+// BAD: String comparison for tags
+if (other.gameObject.tag == "Enemy") { }
+
+// GOOD: CompareTag (no GC allocation)
+if (other.gameObject.CompareTag("Enemy")) { }
+
+// BAD: Instantiate/Destroy frequently
+void Shoot() { var b = Instantiate(bulletPrefab); Destroy(b, 2f); }
+
+// GOOD: Object pooling
+void Shoot() { var b = _bulletPool.Get(); b.ReturnAfter(2f); }
+
+// BAD: new List in Update (GC pressure)
+void Update() { var nearby = new List<Enemy>(); }
+
+// GOOD: Reuse pre-allocated list
+private readonly List<Enemy> _nearby = new();
+void Update() { _nearby.Clear(); /* reuse */ }
+\`\`\`
+
+## URP Shader Rules
+- Use \`Universal Render Pipeline/Lit\` or URP-compatible shaders only.
+- Built-in shaders (\`Standard\`, \`Legacy\`) = pink material in URP.
+- After importing external assets, always verify material shaders.
+- ShaderGraph must target URP pipeline.
+- For transparent: prefer alpha cutout over true transparency when possible.`)
+  );
 }
