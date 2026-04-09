@@ -6,9 +6,9 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_getSettings",
-    "텍스처 임포트 설정을 조회합니다.",
+    "Get texture settings",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
+      texturePath: z.string(),
     },
     async (params) => {
       const result = await bridge.request("texture.getSettings", params);
@@ -18,18 +18,18 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_setSettings",
-    "텍스처 임포트 설정을 변경합니다.",
+    "Set texture settings",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
+      texturePath: z.string(),
       textureType: z.string().optional().describe("텍스처 타입 (Default, NormalMap, Sprite 등)"),
-      maxTextureSize: z.number().optional().describe("최대 텍스처 크기"),
+      maxTextureSize: z.number().optional(),
       textureCompression: z.string().optional().describe("압축 방식 (Uncompressed, Compressed 등)"),
-      isReadable: z.boolean().optional().describe("CPU 읽기 가능 여부"),
-      mipmapEnabled: z.boolean().optional().describe("밉맵 생성 여부"),
+      isReadable: z.boolean().optional(),
+      mipmapEnabled: z.boolean().optional(),
       filterMode: z.string().optional().describe("필터 모드 (Point, Bilinear, Trilinear)"),
       wrapMode: z.string().optional().describe("래핑 모드 (Repeat, Clamp 등)"),
-      sRGBTexture: z.boolean().optional().describe("sRGB 색 공간 여부"),
-      alphaIsTransparency: z.boolean().optional().describe("알파를 투명도로 사용"),
+      sRGBTexture: z.boolean().optional(),
+      alphaIsTransparency: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("texture.setSettings", params);
@@ -39,9 +39,9 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_getInfo",
-    "텍스처의 런타임 정보를 조회합니다 (크기, 포맷 등).",
+    "Get texture info",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
+      texturePath: z.string(),
     },
     async (params) => {
       const result = await bridge.request("texture.getInfo", params);
@@ -51,10 +51,10 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_find",
-    "프로젝트에서 텍스처를 검색합니다.",
+    "Find textures",
     {
       folder: z.string().optional().describe("검색 폴더 (기본: Assets)"),
-      nameFilter: z.string().optional().describe("이름 필터 (부분 매칭)"),
+      nameFilter: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("texture.find", params);
@@ -64,11 +64,11 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_setPlatformSettings",
-    "플랫폼별 텍스처 설정을 지정합니다.",
+    "Set platform texture settings",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
+      texturePath: z.string(),
       platform: z.string().describe("플랫폼 (Standalone, Android, iOS, WebGL 등)"),
-      maxTextureSize: z.number().optional().describe("최대 텍스처 크기"),
+      maxTextureSize: z.number().optional(),
       format: z.string().optional().describe("텍스처 포맷 (ASTC_6x6, ETC2_RGBA8 등)"),
       compressionQuality: z.number().optional().describe("압축 품질 (0-100)"),
     },
@@ -80,12 +80,12 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_setSpriteSettings",
-    "텍스처를 스프라이트로 설정합니다.",
+    "Set sprite settings",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
+      texturePath: z.string(),
       spriteImportMode: z.string().optional().describe("스프라이트 모드 (Single, Multiple, Polygon)"),
       pixelsPerUnit: z.number().optional().describe("픽셀 당 유닛"),
-      pivot: z.object({ x: z.number(), y: z.number() }).optional().describe("피봇 포인트 (0-1)"),
+      pivot: z.object({ x: z.number(), y: z.number() }).optional(),
     },
     async (params) => {
       const result = await bridge.request("texture.setSpriteSettings", params);
@@ -95,9 +95,9 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_setNormalMap",
-    "텍스처를 노멀맵으로 설정합니다.",
+    "Set as normal map",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
+      texturePath: z.string(),
       bumpScale: z.number().optional().describe("범프 스케일 (기본: 1)"),
     },
     async (params) => {
@@ -108,10 +108,10 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_resize",
-    "텍스처의 최대 크기를 변경합니다.",
+    "Resize texture",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
-      maxTextureSize: z.number().describe("새 최대 텍스처 크기 (32, 64, 128, 256, 512, 1024, 2048, 4096, 8192)"),
+      texturePath: z.string(),
+      maxTextureSize: z.number(),
     },
     async (params) => {
       const result = await bridge.request("texture.resize", params);
@@ -121,9 +121,9 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_getMemorySize",
-    "텍스처의 런타임 메모리 사용량을 조회합니다.",
+    "Get texture memory",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
+      texturePath: z.string(),
     },
     async (params) => {
       const result = await bridge.request("texture.getMemorySize", params);
@@ -133,9 +133,9 @@ export function registerTextureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_texture_setReadable",
-    "텍스처의 Read/Write 설정을 변경합니다.",
+    "Set texture readable",
     {
-      texturePath: z.string().describe("텍스처 에셋 경로"),
+      texturePath: z.string(),
       readable: z.boolean().optional().describe("읽기 가능 여부 (기본: true)"),
     },
     async (params) => {

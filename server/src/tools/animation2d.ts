@@ -6,7 +6,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_createClip",
-    "Create a new AnimationClip asset for 2D sprite animation. Returns the created clip path.",
+    "Create 2D AnimationClip",
     {
       savePath: z.string().optional().describe("Save path (e.g. 'Assets/Animations/Walk.anim')"),
       sampleRate: z.number().optional().describe("Frame rate (default: 12)"),
@@ -20,9 +20,9 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_getClipInfo",
-    "Get detailed information about an AnimationClip including bindings, length, and settings.",
+    "Get AnimationClip info",
     {
-      path: z.string().describe("Asset path of the AnimationClip"),
+      path: z.string(),
     },
     async (p) => {
       const r = await bridge.request("animation2d.getClipInfo", p);
@@ -32,9 +32,9 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_findClips",
-    "Search for AnimationClip assets in the project by name.",
+    "Find AnimationClips",
     {
-      nameFilter: z.string().optional().describe("Name filter for search"),
+      nameFilter: z.string().optional(),
     },
     async (p) => {
       const r = await bridge.request("animation2d.findClips", p);
@@ -44,11 +44,11 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_setSpriteKeyframes",
-    "Set sprite keyframes on an AnimationClip for frame-by-frame 2D animation. Provide an array of sprite asset paths.",
+    "Set sprite keyframes",
     {
-      clipPath: z.string().describe("Path to the AnimationClip asset"),
-      spritePaths: z.array(z.string()).describe("Array of sprite asset paths in frame order"),
-      gameObjectPath: z.string().optional().describe("Relative path of the target GameObject in hierarchy"),
+      clipPath: z.string(),
+      spritePaths: z.array(z.string()),
+      gameObjectPath: z.string().optional(),
     },
     async (p) => {
       const r = await bridge.request("animation2d.setSpriteKeyframes", p);
@@ -58,12 +58,12 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_setClipSettings",
-    "Modify AnimationClip settings like loop, sample rate, and speed.",
+    "Set AnimationClip settings",
     {
-      path: z.string().describe("Asset path of the AnimationClip"),
-      loop: z.boolean().optional().describe("Enable looping"),
-      sampleRate: z.number().optional().describe("Frame rate"),
-      speed: z.number().optional().describe("Playback speed"),
+      path: z.string(),
+      loop: z.boolean().optional(),
+      sampleRate: z.number().optional(),
+      speed: z.number().optional(),
     },
     async (p) => {
       const r = await bridge.request("animation2d.setClipSettings", p);
@@ -73,7 +73,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_createSpriteAtlas",
-    "Create a new SpriteAtlas asset for optimizing sprite draw calls.",
+    "Create SpriteAtlas",
     {
       savePath: z.string().optional().describe("Save path (e.g. 'Assets/Atlas/UI.spriteatlas')"),
       includeInBuild: z.boolean().optional().describe("Include in build (default: true)"),
@@ -88,9 +88,9 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_getSpriteAtlasInfo",
-    "Get information about a SpriteAtlas including packing and texture settings.",
+    "Get SpriteAtlas info",
     {
-      path: z.string().describe("Asset path of the SpriteAtlas"),
+      path: z.string(),
     },
     async (p) => {
       const r = await bridge.request("animation2d.getSpriteAtlasInfo", p);
@@ -100,10 +100,10 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_addToSpriteAtlas",
-    "Add textures, sprites, or folders to an existing SpriteAtlas.",
+    "Add to SpriteAtlas",
     {
-      atlasPath: z.string().describe("Path to the SpriteAtlas asset"),
-      assetPaths: z.array(z.string()).describe("Array of asset/folder paths to add"),
+      atlasPath: z.string(),
+      assetPaths: z.array(z.string()),
     },
     async (p) => {
       const r = await bridge.request("animation2d.addToSpriteAtlas", p);
@@ -113,10 +113,10 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_removeFromSpriteAtlas",
-    "Remove assets from a SpriteAtlas.",
+    "Remove from SpriteAtlas",
     {
-      atlasPath: z.string().describe("Path to the SpriteAtlas asset"),
-      assetPaths: z.array(z.string()).describe("Array of asset paths to remove"),
+      atlasPath: z.string(),
+      assetPaths: z.array(z.string()),
     },
     async (p) => {
       const r = await bridge.request("animation2d.removeFromSpriteAtlas", p);
@@ -126,14 +126,14 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
 
   server.tool(
     "unity_animation2d_sliceSprite",
-    "Slice a sprite sheet texture into individual sprites using grid-based slicing.",
+    "Slice sprite sheet",
     {
-      texturePath: z.string().describe("Path to the texture asset"),
+      texturePath: z.string(),
       mode: z.enum(["grid"]).optional().describe("Slice mode (currently: grid)"),
       cellWidth: z.number().optional().describe("Cell width in pixels (default: 32)"),
       cellHeight: z.number().optional().describe("Cell height in pixels (default: 32)"),
       padding: z.number().optional().describe("Padding between cells (default: 0)"),
-      namePrefix: z.string().optional().describe("Prefix for sprite names"),
+      namePrefix: z.string().optional(),
     },
     async (p) => {
       const r = await bridge.request("animation2d.sliceSprite", p);

@@ -6,7 +6,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_workflow_begin",
-    "워크플로 세션을 시작합니다. 이후 작업을 하나의 단위로 묶어 롤백할 수 있습니다.",
+    "Begin workflow",
     {
       name: z.string().optional().describe("세션 이름 (예: 'Level Design Session')"),
     },
@@ -18,7 +18,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_workflow_end",
-    "현재 워크플로 세션을 종료합니다.",
+    "End workflow",
     {},
     async () => {
       const result = await bridge.request("workflow.endSession", {});
@@ -28,7 +28,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_workflow_undo_session",
-    "현재 세션의 모든 작업을 되돌립니다.",
+    "Undo entire session",
     {},
     async () => {
       const result = await bridge.request("workflow.undoSession", {});
@@ -38,7 +38,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_workflow_undo_last",
-    "마지막 작업 하나를 되돌립니다.",
+    "Undo last action",
     {},
     async () => {
       const result = await bridge.request("workflow.undoLast", {});
@@ -48,7 +48,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_workflow_status",
-    "현재 워크플로 세션 상태를 조회합니다.",
+    "Get workflow status",
     {},
     async () => {
       const result = await bridge.request("workflow.status", {});

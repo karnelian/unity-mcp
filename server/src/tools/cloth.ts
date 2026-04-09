@@ -3,17 +3,17 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerClothTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_cloth_add", "Add a Cloth component to a GameObject with a SkinnedMeshRenderer.", {
+  server.tool("unity_cloth_add", "Add Cloth", {
     ...goRef,
-    stretchingStiffness: z.number().optional().describe("Stretching stiffness (0-1)"),
-    bendingStiffness: z.number().optional().describe("Bending stiffness (0-1)"),
+    stretchingStiffness: z.number().optional(),
+    bendingStiffness: z.number().optional(),
     damping: z.number().optional(),
     friction: z.number().optional(),
     worldVelocityScale: z.number().optional(),
@@ -24,7 +24,7 @@ export function registerClothTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_cloth_set", "Set Cloth properties.", {
+  server.tool("unity_cloth_set", "Set Cloth", {
     ...goRef,
     stretchingStiffness: z.number().optional(),
     bendingStiffness: z.number().optional(),
@@ -42,22 +42,22 @@ export function registerClothTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_cloth_getInfo", "Get Cloth component information.", {
+  server.tool("unity_cloth_getInfo", "Get Cloth info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("cloth.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_cloth_find", "Find all Cloth components in the scene.", {}, async (p) => {
+  server.tool("unity_cloth_find", "Find Cloth objects", {}, async (p) => {
     const r = await bridge.request("cloth.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_cloth_setColliders", "Set capsule and sphere colliders for Cloth interaction.", {
+  server.tool("unity_cloth_setColliders", "Set Cloth colliders", {
     ...goRef,
-    capsuleColliders: z.array(z.string()).optional().describe("Array of CapsuleCollider GameObject names"),
-    sphereColliders: z.array(z.string()).optional().describe("Array of SphereCollider GameObject names"),
+    capsuleColliders: z.array(z.string()).optional(),
+    sphereColliders: z.array(z.string()).optional(),
   }, async (p) => {
     const r = await bridge.request("cloth.setColliders", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

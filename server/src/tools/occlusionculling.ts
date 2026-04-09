@@ -3,14 +3,14 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerOcclusionCullingTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_occlusionCulling_bake", "Bake occlusion culling data.", {
+  server.tool("unity_occlusionCulling_bake", "Bake occlusion", {
     smallestOccluder: z.number().optional().describe("Smallest occluder size (default: 5)"),
     smallestHole: z.number().optional().describe("Smallest hole size (default: 0.25)"),
     backfaceThreshold: z.number().optional().describe("Backface threshold (default: 100)"),
@@ -19,17 +19,17 @@ export function registerOcclusionCullingTools(server: McpServer, bridge: UnityBr
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_occlusionCulling_clear", "Clear baked occlusion culling data.", {}, async (p) => {
+  server.tool("unity_occlusionCulling_clear", "Clear occlusion data", {}, async (p) => {
     const r = await bridge.request("occlusionCulling.clear", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_occlusionCulling_getSettings", "Get occlusion culling settings.", {}, async (p) => {
+  server.tool("unity_occlusionCulling_getSettings", "Get occlusion settings", {}, async (p) => {
     const r = await bridge.request("occlusionCulling.getSettings", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_occlusionCulling_setArea", "Set occlusion area for a GameObject.", {
+  server.tool("unity_occlusionCulling_setArea", "Set OcclusionArea", {
     ...goRef,
     center: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
     size: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),

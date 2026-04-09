@@ -6,7 +6,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_getLocales",
-    "Get all configured locales in the Unity Localization system. Requires com.unity.localization package.",
+    "Get locales",
     {},
     async (p) => {
       const r = await bridge.request("localization.getLocales", p);
@@ -16,7 +16,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_addLocale",
-    "Add a new locale to the project (e.g. 'en', 'ko', 'ja', 'zh', 'es').",
+    "Add locale",
     {
       code: z.string().describe("Locale code (e.g. 'en', 'ko', 'ja')"),
     },
@@ -28,9 +28,9 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_createStringTable",
-    "Create a new String Table Collection for managing localized text.",
+    "Create StringTable",
     {
-      tableName: z.string().describe("Name of the string table collection"),
+      tableName: z.string(),
       savePath: z.string().optional().describe("Folder to save tables (default: 'Assets/Localization/Tables')"),
     },
     async (p) => {
@@ -41,9 +41,9 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_getStringTable",
-    "Get entries from a String Table. Optionally filter by locale.",
+    "Get StringTable entries",
     {
-      tableName: z.string().describe("Name of the string table collection"),
+      tableName: z.string(),
       locale: z.string().optional().describe("Locale code to filter (e.g. 'en'). Omit for all locales."),
     },
     async (p) => {
@@ -54,12 +54,12 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_setEntry",
-    "Set a localized string entry in a String Table.",
+    "Set StringTable entry",
     {
-      tableName: z.string().describe("Name of the string table collection"),
-      key: z.string().describe("Entry key"),
+      tableName: z.string(),
+      key: z.string(),
       locale: z.string().describe("Locale code (e.g. 'en')"),
-      value: z.string().describe("Localized string value"),
+      value: z.string(),
     },
     async (p) => {
       const r = await bridge.request("localization.setEntry", p);
@@ -69,10 +69,10 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_removeEntry",
-    "Remove a key and all its translations from a String Table.",
+    "Remove StringTable entry",
     {
-      tableName: z.string().describe("Name of the string table collection"),
-      key: z.string().describe("Entry key to remove"),
+      tableName: z.string(),
+      key: z.string(),
     },
     async (p) => {
       const r = await bridge.request("localization.removeEntry", p);
@@ -82,9 +82,9 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_findTables",
-    "Search for String Table Collections in the project.",
+    "Find StringTables",
     {
-      filter: z.string().optional().describe("Name filter"),
+      filter: z.string().optional(),
     },
     async (p) => {
       const r = await bridge.request("localization.findTables", p);
@@ -94,7 +94,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_getProjectLocale",
-    "Get the current active locale and list of available locales.",
+    "Get project locale",
     {},
     async (p) => {
       const r = await bridge.request("localization.getProjectLocale", p);
@@ -104,7 +104,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_setProjectLocale",
-    "Set the active locale for the project.",
+    "Set project locale",
     {
       code: z.string().describe("Locale code to activate (e.g. 'ko')"),
     },
@@ -116,10 +116,10 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
 
   server.tool(
     "unity_localization_exportCsv",
-    "Export a String Table to CSV file for external translation tools.",
+    "Export StringTable CSV",
     {
-      tableName: z.string().describe("Name of the string table collection"),
-      outputPath: z.string().optional().describe("Output CSV file path"),
+      tableName: z.string(),
+      outputPath: z.string().optional(),
     },
     async (p) => {
       const r = await bridge.request("localization.exportCsv", p);

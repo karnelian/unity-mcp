@@ -6,7 +6,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
 
   server.tool(
     "unity_vcs_getStatus",
-    "Get git status of the Unity project — current branch, modified/untracked files.",
+    "Get git status",
     {},
     async (p) => {
       const r = await bridge.request("vcs.getStatus", p);
@@ -16,7 +16,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
 
   server.tool(
     "unity_vcs_getChanges",
-    "Get list of changed files (staged or unstaged) with their modification type.",
+    "Get changes",
     {
       staged: z.boolean().optional().describe("Show staged changes only (default: false = unstaged)"),
     },
@@ -28,10 +28,10 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
 
   server.tool(
     "unity_vcs_getHistory",
-    "Get git commit history. Optionally filter by file path.",
+    "Get git history",
     {
       count: z.number().optional().describe("Number of commits to return (default: 20)"),
-      filePath: z.string().optional().describe("Filter history to a specific file"),
+      filePath: z.string().optional(),
     },
     async (p) => {
       const r = await bridge.request("vcs.getHistory", p);
@@ -41,7 +41,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
 
   server.tool(
     "unity_vcs_getBranches",
-    "List git branches. Optionally include remote branches.",
+    "List branches",
     {
       all: z.boolean().optional().describe("Include remote branches (default: false)"),
     },
@@ -53,7 +53,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
 
   server.tool(
     "unity_vcs_getCurrentBranch",
-    "Get current branch name, HEAD hash, and last commit message.",
+    "Get current branch",
     {},
     async (p) => {
       const r = await bridge.request("vcs.getCurrentBranch", p);
@@ -63,7 +63,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
 
   server.tool(
     "unity_vcs_getRemotes",
-    "List configured git remotes and their URLs.",
+    "List remotes",
     {},
     async (p) => {
       const r = await bridge.request("vcs.getRemotes", p);
@@ -73,9 +73,9 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
 
   server.tool(
     "unity_vcs_getDiff",
-    "Get git diff output for reviewing code changes. Can filter by file.",
+    "Get git diff",
     {
-      filePath: z.string().optional().describe("Specific file to diff"),
+      filePath: z.string().optional(),
       staged: z.boolean().optional().describe("Show staged diff (default: false)"),
       contextLines: z.number().optional().describe("Context lines around changes (default: 3)"),
     },
@@ -87,7 +87,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
 
   server.tool(
     "unity_vcs_getStash",
-    "List git stash entries.",
+    "List stashes",
     {},
     async (p) => {
       const r = await bridge.request("vcs.getStash", p);

@@ -8,11 +8,11 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_screenshot",
-    "Game/Scene View의 스크린샷을 캡처합니다. base64 PNG로 반환.",
+    "Take screenshot",
     {
       view: z.enum(["game", "scene", "both"]).optional().describe("캡처 대상 (기본: game)"),
-      width: z.number().optional().describe("가로 해상도"),
-      height: z.number().optional().describe("세로 해상도"),
+      width: z.number().optional(),
+      height: z.number().optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.screenshot", params);
@@ -30,9 +30,9 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_log",
-    "Unity 콘솔에 로그를 출력합니다.",
+    "Log to console",
     {
-      message: z.string().describe("로그 메시지"),
+      message: z.string(),
       level: z.enum(["info", "warning", "error"]).optional().describe("로그 레벨 (기본: info)"),
     },
     async (params) => {
@@ -43,7 +43,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_clearConsole",
-    "Unity 콘솔을 클리어합니다.",
+    "Clear console",
     {},
     async (params) => {
       const result = await bridge.request("debug.clearConsole", params);
@@ -53,9 +53,9 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_getPrefs",
-    "PlayerPrefs 값을 조회합니다.",
+    "Get PlayerPrefs",
     {
-      key: z.string().describe("키 이름"),
+      key: z.string(),
       type: z.enum(["string", "int", "float"]).optional().describe("값 타입 (기본: string)"),
     },
     async (params) => {
@@ -66,10 +66,10 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_setPrefs",
-    "PlayerPrefs 값을 설정합니다.",
+    "Set PlayerPrefs",
     {
-      key: z.string().describe("키 이름"),
-      value: z.union([z.string(), z.number()]).describe("설정할 값"),
+      key: z.string(),
+      value: z.union([z.string(), z.number()]),
       type: z.enum(["string", "int", "float"]).optional().describe("값 타입 (기본: string)"),
     },
     async (params) => {
@@ -80,9 +80,9 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_deletePrefs",
-    "PlayerPrefs 키를 삭제합니다 (키 생략 시 전체 삭제).",
+    "Delete PlayerPrefs",
     {
-      key: z.string().optional().describe("키 이름 (생략 시 전체 삭제)"),
+      key: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.deletePrefs", params);
@@ -92,9 +92,9 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_getEditorPrefs",
-    "EditorPrefs 값을 조회합니다.",
+    "Get EditorPrefs",
     {
-      key: z.string().describe("키 이름"),
+      key: z.string(),
       type: z.enum(["string", "int", "float", "bool"]).optional().describe("값 타입 (기본: string)"),
     },
     async (params) => {
@@ -105,10 +105,10 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_setEditorPrefs",
-    "EditorPrefs 값을 설정합니다.",
+    "Set EditorPrefs",
     {
-      key: z.string().describe("키 이름"),
-      value: z.union([z.string(), z.number(), z.boolean()]).describe("설정할 값"),
+      key: z.string(),
+      value: z.union([z.string(), z.number(), z.boolean()]),
       type: z.enum(["string", "int", "float", "bool"]).optional().describe("값 타입 (기본: string)"),
     },
     async (params) => {
@@ -119,10 +119,10 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_drawGizmo",
-    "Scene View에 디버그 라인/레이를 그립니다.",
+    "Draw debug gizmo",
     {
       type: z.enum(["line", "ray"]).describe("기즈모 타입"),
-      from: vec3.describe("시작점"),
+      from: vec3,
       to: vec3.optional().describe("끝점 (ray인 경우 방향)"),
       duration: z.number().optional().describe("표시 시간 초 (기본: 5)"),
     },
@@ -134,7 +134,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_getSystemInfo",
-    "시스템 정보를 조회합니다 (CPU, GPU, OS, Unity 버전 등).",
+    "Get SystemInfo",
     {},
     async (params) => {
       const result = await bridge.request("debug.getSystemInfo", params);
@@ -144,7 +144,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_startCapture",
-    "로그 캡처를 시작합니다. 타임스탬프와 함께 모든 로그를 기록합니다.",
+    "Start log capture",
     {},
     async (params) => {
       const result = await bridge.request("debug.startCapture", params);
@@ -154,7 +154,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_stopCapture",
-    "로그 캡처를 중지합니다.",
+    "Stop log capture",
     {},
     async (params) => {
       const result = await bridge.request("debug.stopCapture", params);
@@ -164,12 +164,12 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_getCapturedLogs",
-    "캡처된 로그를 조회합니다.",
+    "Get captured logs",
     {
       type: z.string().optional().describe("로그 타입 필터 (Log, Warning, Error)"),
       count: z.number().optional().describe("최대 조회 수 (기본: 200)"),
-      clear: z.boolean().optional().describe("조회 후 캡처 버퍼 클리어"),
-      includeStackTrace: z.boolean().optional().describe("스택 트레이스 포함"),
+      clear: z.boolean().optional(),
+      includeStackTrace: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.getCapturedLogs", params);
@@ -179,7 +179,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_getDefines",
-    "현재 플랫폼의 스크립팅 디파인 심볼을 조회합니다.",
+    "Get define symbols",
     {},
     async (params) => {
       const result = await bridge.request("debug.getDefines", params);
@@ -189,10 +189,10 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_setDefines",
-    "스크립팅 디파인 심볼을 추가하거나 제거합니다.",
+    "Set define symbols",
     {
       action: z.enum(["add", "remove"]).describe("추가 또는 제거"),
-      symbol: z.string().describe("디파인 심볼 이름"),
+      symbol: z.string(),
     },
     async (params) => {
       const result = await bridge.request("debug.setDefines", params);
@@ -202,7 +202,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_debug_forceRecompile",
-    "스크립트 강제 재컴파일을 요청합니다.",
+    "Force recompile",
     {},
     async (params) => {
       const result = await bridge.request("debug.forceRecompile", params);

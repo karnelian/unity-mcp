@@ -6,7 +6,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_playMode",
-    "Control Unity Play mode — start, stop, pause, step frame, or check status. Essential for testing gameplay.",
+    "Control play mode",
     {
       action: z.enum(["play", "stop", "pause", "step", "status"]).describe("수행할 작업"),
     },
@@ -18,11 +18,11 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_build",
-    "Build the player for target platform (Windows/Android/iOS/WebGL/macOS/Linux). Supports development builds and custom options.",
+    "Build project",
     {
-      target: z.enum(["Windows", "Android", "iOS", "WebGL", "macOS", "Linux"]).describe("빌드 타겟"),
+      target: z.enum(["Windows", "Android", "iOS", "WebGL", "macOS", "Linux"]),
       scenes: z.array(z.string()).optional().describe("포함할 씬 경로 목록 (기본: 빌드 설정의 활성 씬)"),
-      outputPath: z.string().optional().describe("출력 경로"),
+      outputPath: z.string().optional(),
       options: z.array(z.string()).optional().describe("빌드 옵션 (예: ['Development', 'AllowDebugging'])"),
     },
     async (params) => {
@@ -33,10 +33,10 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_buildSettings",
-    "빌드 설정을 조회하거나 수정합니다.",
+    "Get/set build settings",
     {
       action: z.enum(["get", "set"]).describe("조회 또는 수정"),
-      settings: z.record(z.string(), z.any()).optional().describe("수정할 설정"),
+      settings: z.record(z.string(), z.any()).optional(),
     },
     async (params) => {
       const result = await bridge.request("editor.buildSettings", params);
@@ -46,7 +46,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_executeMenu",
-    "Unity 메뉴 아이템을 실행합니다.",
+    "Execute menu item",
     {
       menuPath: z.string().describe("메뉴 경로 (예: 'GameObject/3D Object/Cube')"),
     },
@@ -58,10 +58,10 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_runTests",
-    "EditMode 또는 PlayMode 테스트를 실행합니다.",
+    "Run tests",
     {
       mode: z.enum(["EditMode", "PlayMode"]).optional().describe("테스트 모드 (기본: EditMode)"),
-      filter: z.string().optional().describe("테스트 이름 필터"),
+      filter: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("editor.runTests", params);
@@ -71,7 +71,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_testList",
-    "프로젝트의 테스트 어셈블리 목록을 조회합니다.",
+    "List tests",
     {
       mode: z.enum(["EditMode", "PlayMode"]).optional().describe("테스트 모드 (기본: EditMode)"),
     },
@@ -83,7 +83,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_testResults",
-    "가장 최근 테스트 실행 결과를 조회합니다.",
+    "Get test results",
     {},
     async (params) => {
       const result = await bridge.request("editor.testResults", params);
@@ -93,7 +93,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_connectionStatus",
-    "Check MCP-Unity connection status. When connected, also returns Unity version, project path, render pipeline, and scripting backend for full health check.",
+    "Check connection status",
     {},
     async () => {
       const status = bridge.getStatus();
@@ -111,11 +111,11 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_console",
-    "Read Unity console logs — filter by error/warning/log type. Use this to debug issues and check for compilation errors.",
+    "Get console logs",
     {
       type: z.enum(["error", "warning", "log", "all"]).optional().describe("로그 타입 필터 (기본: all)"),
       count: z.number().optional().describe("조회 개수 (기본: 50)"),
-      clear: z.boolean().optional().describe("콘솔 클리어 후 조회"),
+      clear: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("editor.console", params);
@@ -125,7 +125,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_projectInfo",
-    "Get detailed project info — Unity version, render pipeline, scripting backend, color space, target platform, and installed packages.",
+    "Get project info",
     {},
     async (params) => {
       const result = await bridge.request("editor.projectInfo", params);
@@ -135,7 +135,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_editor_diagnostics",
-    "서버 진단 정보를 조회합니다 (큐, 통계, 연결 상태).",
+    "Get editor diagnostics",
     {},
     async () => {
       const result = await bridge.request("editor.diagnostics", {});

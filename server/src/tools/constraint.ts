@@ -3,21 +3,21 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 
 const sourceEntry = z.object({
-  sourceTransform: z.string().describe("Source GameObject name or path"),
-  weight: z.number().optional().describe("Source weight (0-1)"),
+  sourceTransform: z.string(),
+  weight: z.number().optional(),
 });
 
 export function registerConstraintTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_constraint_addAim", "Add an AimConstraint to a GameObject.", {
+  server.tool("unity_constraint_addAim", "Add AimConstraint", {
     ...goRef,
     aimAxis: z.enum(["X", "Y", "Z", "NegX", "NegY", "NegZ"]).optional(),
     upAxis: z.enum(["X", "Y", "Z", "NegX", "NegY", "NegZ"]).optional(),
@@ -30,7 +30,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_constraint_addParent", "Add a ParentConstraint to a GameObject.", {
+  server.tool("unity_constraint_addParent", "Add ParentConstraint", {
     ...goRef,
     sources: z.array(sourceEntry).optional(),
     constraintActive: z.boolean().optional(),
@@ -42,7 +42,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_constraint_addPosition", "Add a PositionConstraint to a GameObject.", {
+  server.tool("unity_constraint_addPosition", "Add PositionConstraint", {
     ...goRef,
     sources: z.array(sourceEntry).optional(),
     constraintActive: z.boolean().optional(),
@@ -54,7 +54,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_constraint_addRotation", "Add a RotationConstraint to a GameObject.", {
+  server.tool("unity_constraint_addRotation", "Add RotationConstraint", {
     ...goRef,
     sources: z.array(sourceEntry).optional(),
     constraintActive: z.boolean().optional(),
@@ -66,7 +66,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_constraint_addScale", "Add a ScaleConstraint to a GameObject.", {
+  server.tool("unity_constraint_addScale", "Add ScaleConstraint", {
     ...goRef,
     sources: z.array(sourceEntry).optional(),
     constraintActive: z.boolean().optional(),
@@ -78,7 +78,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_constraint_addLookAt", "Add a LookAtConstraint to a GameObject.", {
+  server.tool("unity_constraint_addLookAt", "Add LookAtConstraint", {
     ...goRef,
     sources: z.array(sourceEntry).optional(),
     constraintActive: z.boolean().optional(),
@@ -91,15 +91,15 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_constraint_getInfo", "Get constraint information from a GameObject.", {
+  server.tool("unity_constraint_getInfo", "Get constraint info", {
     ...goRef,
-    constraintType: z.enum(["Aim", "Parent", "Position", "Rotation", "Scale", "LookAt"]).optional().describe("Filter by type"),
+    constraintType: z.enum(["Aim", "Parent", "Position", "Rotation", "Scale", "LookAt"]).optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_constraint_find", "Find all GameObjects with constraints in the scene.", {
+  server.tool("unity_constraint_find", "Find constraints", {
     constraintType: z.enum(["Aim", "Parent", "Position", "Rotation", "Scale", "LookAt", "All"]).optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.find", p);

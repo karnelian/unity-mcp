@@ -6,11 +6,11 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_create",
-    "ScriptableObject 인스턴스를 생성합니다.",
+    "Create ScriptableObject",
     {
-      typeName: z.string().describe("ScriptableObject 타입 이름 (Name 또는 FullName)"),
+      typeName: z.string(),
       savePath: z.string().describe("저장 경로 (예: Assets/Data/MyConfig.asset)"),
-      name: z.string().optional().describe("에셋 이름 (생략 시 파일명 사용)"),
+      name: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("so.create", params);
@@ -20,9 +20,9 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_find",
-    "ScriptableObject 에셋을 검색합니다.",
+    "Find ScriptableObjects",
     {
-      typeName: z.string().optional().describe("타입 이름으로 필터링"),
+      typeName: z.string().optional(),
       folder: z.string().optional().describe("검색 폴더 (기본: Assets)"),
     },
     async (params) => {
@@ -33,9 +33,9 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_getProperties",
-    "ScriptableObject의 직렬화된 프로퍼티 목록을 가져옵니다.",
+    "Get SO properties",
     {
-      assetPath: z.string().describe("에셋 경로"),
+      assetPath: z.string(),
     },
     async (params) => {
       const result = await bridge.request("so.getProperties", params);
@@ -45,11 +45,11 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_setProperty",
-    "ScriptableObject의 프로퍼티 값을 설정합니다.",
+    "Set SO property",
     {
-      assetPath: z.string().describe("에셋 경로"),
-      propertyName: z.string().describe("프로퍼티 이름"),
-      value: z.union([z.string(), z.number(), z.boolean()]).describe("설정할 값"),
+      assetPath: z.string(),
+      propertyName: z.string(),
+      value: z.union([z.string(), z.number(), z.boolean()]),
     },
     async (params) => {
       const result = await bridge.request("so.setProperty", params);
@@ -59,9 +59,9 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_duplicate",
-    "ScriptableObject 에셋을 복제합니다.",
+    "Duplicate ScriptableObject",
     {
-      assetPath: z.string().describe("원본 에셋 경로"),
+      assetPath: z.string(),
       newName: z.string().optional().describe("새 이름 (생략 시 _Copy 접미사)"),
     },
     async (params) => {
@@ -72,9 +72,9 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_delete",
-    "ScriptableObject 에셋을 삭제합니다.",
+    "Delete ScriptableObject",
     {
-      assetPath: z.string().describe("삭제할 에셋 경로"),
+      assetPath: z.string(),
     },
     async (params) => {
       const result = await bridge.request("so.delete", params);
@@ -84,9 +84,9 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_toJson",
-    "ScriptableObject를 JSON으로 직렬화합니다.",
+    "Export SO to JSON",
     {
-      assetPath: z.string().describe("에셋 경로"),
+      assetPath: z.string(),
     },
     async (params) => {
       const result = await bridge.request("so.toJson", params);
@@ -96,10 +96,10 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_fromJson",
-    "JSON 데이터를 ScriptableObject에 덮어씁니다.",
+    "Import SO from JSON",
     {
-      assetPath: z.string().describe("대상 에셋 경로"),
-      json: z.string().describe("적용할 JSON 문자열"),
+      assetPath: z.string(),
+      json: z.string(),
     },
     async (params) => {
       const result = await bridge.request("so.fromJson", params);
@@ -109,7 +109,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_getTypes",
-    "프로젝트에서 사용 가능한 ScriptableObject 타입 목록을 조회합니다.",
+    "Get SO types",
     {},
     async (params) => {
       const result = await bridge.request("so.getTypes", params);
@@ -119,9 +119,9 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
 
   server.tool(
     "unity_so_getInfo",
-    "ScriptableObject 에셋의 기본 정보를 조회합니다.",
+    "Get SO info",
     {
-      assetPath: z.string().describe("에셋 경로"),
+      assetPath: z.string(),
     },
     async (params) => {
       const result = await bridge.request("so.getInfo", params);

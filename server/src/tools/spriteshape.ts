@@ -3,16 +3,16 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerSpriteShapeTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_spriteShape_create", "Create a SpriteShapeController on a GameObject.", {
+  server.tool("unity_spriteShape_create", "Create SpriteShape", {
     ...goRef,
-    profilePath: z.string().optional().describe("SpriteShapeProfile asset path"),
+    profilePath: z.string().optional(),
     fillPixelsPerUnit: z.number().optional(),
     stretchTiling: z.number().optional(),
     splineDetail: z.number().optional(),
@@ -22,10 +22,10 @@ export function registerSpriteShapeTools(server: McpServer, bridge: UnityBridge)
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_spriteShape_addPoint", "Add a spline point to a SpriteShapeController.", {
+  server.tool("unity_spriteShape_addPoint", "Add SpriteShape point", {
     ...goRef,
     position: z.object({ x: z.number(), y: z.number(), z: z.number() }),
-    index: z.number().optional().describe("Insert at index (appends if omitted)"),
+    index: z.number().optional(),
     tangentMode: z.enum(["Linear", "Continuous", "Broken"]).optional(),
     leftTangent: z.object({ x: z.number(), y: z.number() }).optional(),
     rightTangent: z.object({ x: z.number(), y: z.number() }).optional(),
@@ -37,9 +37,9 @@ export function registerSpriteShapeTools(server: McpServer, bridge: UnityBridge)
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_spriteShape_setPoint", "Modify a spline point on a SpriteShapeController.", {
+  server.tool("unity_spriteShape_setPoint", "Set SpriteShape point", {
     ...goRef,
-    index: z.number().describe("Point index"),
+    index: z.number(),
     position: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
     tangentMode: z.enum(["Linear", "Continuous", "Broken"]).optional(),
     leftTangent: z.object({ x: z.number(), y: z.number() }).optional(),
@@ -51,14 +51,14 @@ export function registerSpriteShapeTools(server: McpServer, bridge: UnityBridge)
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_spriteShape_getInfo", "Get SpriteShapeController information.", {
+  server.tool("unity_spriteShape_getInfo", "Get SpriteShape info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("spriteShape.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_spriteShape_find", "Find all SpriteShapeControllers in the scene.", {}, async (p) => {
+  server.tool("unity_spriteShape_find", "Find SpriteShapes", {}, async (p) => {
     const r = await bridge.request("spriteShape.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });

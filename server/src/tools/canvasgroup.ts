@@ -3,16 +3,16 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerCanvasGroupTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_canvasGroup_add", "Add a CanvasGroup to a GameObject.", {
+  server.tool("unity_canvasGroup_add", "Add CanvasGroup", {
     ...goRef,
-    alpha: z.number().optional().describe("Alpha (0-1)"),
+    alpha: z.number().optional(),
     interactable: z.boolean().optional(),
     blocksRaycasts: z.boolean().optional(),
     ignoreParentGroups: z.boolean().optional(),
@@ -21,7 +21,7 @@ export function registerCanvasGroupTools(server: McpServer, bridge: UnityBridge)
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_canvasGroup_set", "Set CanvasGroup properties.", {
+  server.tool("unity_canvasGroup_set", "Set CanvasGroup", {
     ...goRef,
     alpha: z.number().optional(),
     interactable: z.boolean().optional(),
@@ -32,7 +32,7 @@ export function registerCanvasGroupTools(server: McpServer, bridge: UnityBridge)
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_canvasGroup_find", "Find all CanvasGroup components in the scene.", {}, async (p) => {
+  server.tool("unity_canvasGroup_find", "Find CanvasGroups", {}, async (p) => {
     const r = await bridge.request("canvasGroup.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });

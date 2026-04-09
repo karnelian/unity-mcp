@@ -3,14 +3,14 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerUIMaskTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_uiMask_addMask", "Add a Mask component to a UI GameObject.", {
+  server.tool("unity_uiMask_addMask", "Add Mask", {
     ...goRef,
     showMaskGraphic: z.boolean().optional().describe("Show the mask graphic (default: true)"),
   }, async (p) => {
@@ -18,16 +18,16 @@ export function registerUIMaskTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_uiMask_addRectMask2D", "Add a RectMask2D component to a UI GameObject.", {
+  server.tool("unity_uiMask_addRectMask2D", "Add RectMask2D", {
     ...goRef,
-    softness: z.object({ x: z.number(), y: z.number() }).optional().describe("Mask softness"),
+    softness: z.object({ x: z.number(), y: z.number() }).optional(),
     padding: z.object({ x: z.number(), y: z.number(), z: z.number(), w: z.number() }).optional(),
   }, async (p) => {
     const r = await bridge.request("uiMask.addRectMask2D", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_uiMask_set", "Set Mask or RectMask2D properties.", {
+  server.tool("unity_uiMask_set", "Set mask properties", {
     ...goRef,
     showMaskGraphic: z.boolean().optional(),
     softness: z.object({ x: z.number(), y: z.number() }).optional(),

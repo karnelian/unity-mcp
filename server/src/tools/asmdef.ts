@@ -4,10 +4,10 @@ import { UnityBridge } from "../bridge/unity-bridge.js";
 
 export function registerAsmdefTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_asmdef_create", "Create an Assembly Definition (.asmdef) file.", {
-    path: z.string().describe("File path (e.g., Assets/Scripts/MyAssembly/MyAssembly.asmdef)"),
-    name: z.string().describe("Assembly name"),
-    references: z.array(z.string()).optional().describe("Referenced assembly names"),
+  server.tool("unity_asmdef_create", "Create asmdef", {
+    path: z.string(),
+    name: z.string(),
+    references: z.array(z.string()).optional(),
     includePlatforms: z.array(z.string()).optional(),
     excludePlatforms: z.array(z.string()).optional(),
     allowUnsafeCode: z.boolean().optional(),
@@ -19,15 +19,15 @@ export function registerAsmdefTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_asmdef_getInfo", "Get Assembly Definition information.", {
-    path: z.string().describe("Asmdef asset path"),
+  server.tool("unity_asmdef_getInfo", "Get asmdef info", {
+    path: z.string(),
   }, async (p) => {
     const r = await bridge.request("asmdef.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_asmdef_set", "Modify an Assembly Definition.", {
-    path: z.string().describe("Asmdef asset path"),
+  server.tool("unity_asmdef_set", "Modify asmdef", {
+    path: z.string(),
     references: z.array(z.string()).optional(),
     includePlatforms: z.array(z.string()).optional(),
     excludePlatforms: z.array(z.string()).optional(),
@@ -39,7 +39,7 @@ export function registerAsmdefTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_asmdef_find", "Find all Assembly Definition files in the project.", {
+  server.tool("unity_asmdef_find", "Find asmdef files", {
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("asmdef.find", p);

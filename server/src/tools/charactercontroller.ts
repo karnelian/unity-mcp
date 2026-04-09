@@ -3,14 +3,14 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerCharacterControllerTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_characterController_add", "Add a CharacterController to a GameObject.", {
+  server.tool("unity_characterController_add", "Add CharacterController", {
     ...goRef,
     height: z.number().optional().describe("Controller height (default: 2)"),
     radius: z.number().optional().describe("Controller radius (default: 0.5)"),
@@ -24,14 +24,14 @@ export function registerCharacterControllerTools(server: McpServer, bridge: Unit
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_characterController_get", "Get CharacterController properties.", {
+  server.tool("unity_characterController_get", "Get CharacterController", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("characterController.get", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_characterController_set", "Set CharacterController properties.", {
+  server.tool("unity_characterController_set", "Set CharacterController", {
     ...goRef,
     height: z.number().optional(),
     radius: z.number().optional(),
@@ -45,7 +45,7 @@ export function registerCharacterControllerTools(server: McpServer, bridge: Unit
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_characterController_find", "Find all GameObjects with CharacterController.", {}, async (p) => {
+  server.tool("unity_characterController_find", "Find CharacterControllers", {}, async (p) => {
     const r = await bridge.request("characterController.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });

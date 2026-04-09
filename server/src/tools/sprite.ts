@@ -7,10 +7,10 @@ const color = z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.numbe
 
 export function registerSpriteTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_sprite_create", "SpriteRenderer 오브젝트를 생성합니다.", {
+  server.tool("unity_sprite_create", "Create SpriteRenderer", {
     name: z.string().optional(),
     position: vec3.optional(),
-    spritePath: z.string().optional().describe("스프라이트 에셋 경로"),
+    spritePath: z.string().optional(),
     color: color.optional(),
     sortingOrder: z.number().optional(),
     sortingLayerName: z.string().optional(),
@@ -19,7 +19,7 @@ export function registerSpriteTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_sprite_setProperties", "SpriteRenderer 속성을 설정합니다.", {
+  server.tool("unity_sprite_setProperties", "Set SpriteRenderer properties", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     spritePath: z.string().optional(),
     color: color.optional(),
@@ -33,14 +33,14 @@ export function registerSpriteTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_sprite_find", "씬의 SpriteRenderer를 검색합니다.", {
+  server.tool("unity_sprite_find", "Find SpriteRenderers", {
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("sprite.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_sprite_setSortingOrder", "스프라이트의 소팅 순서를 설정합니다.", {
+  server.tool("unity_sprite_setSortingOrder", "Set sorting order", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
     sortingOrder: z.number().optional(),
     sortingLayerName: z.string().optional(),

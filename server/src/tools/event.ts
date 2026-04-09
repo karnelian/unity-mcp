@@ -6,10 +6,10 @@ export function registerEventTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_event_listEvents",
-    "GameObject의 모든 UnityEvent를 나열합니다 (Button.onClick, Slider.onValueChanged 등).",
+    "List UnityEvents",
     {
-      path: z.string().describe("GameObject 경로 또는 이름"),
-      componentType: z.string().optional().describe("특정 컴포넌트 타입 필터"),
+      path: z.string(),
+      componentType: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("event.listEvents", params);
@@ -19,11 +19,11 @@ export function registerEventTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_event_getListeners",
-    "UnityEvent의 등록된 리스너(콜백) 목록을 조회합니다.",
+    "Get event listeners",
     {
-      path: z.string().describe("GameObject 경로 또는 이름"),
+      path: z.string(),
       eventName: z.string().describe("이벤트 필드명 (예: onClick, onValueChanged)"),
-      componentType: z.string().optional().describe("컴포넌트 타입 (모호할 때)"),
+      componentType: z.string().optional(),
     },
     async (params) => {
       const result = await bridge.request("event.getListeners", params);
@@ -33,15 +33,15 @@ export function registerEventTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_event_addListener",
-    "UnityEvent에 영속 리스너를 추가합니다 (Inspector에서 설정하는 것과 동일).",
+    "Add event listener",
     {
-      path: z.string().describe("이벤트를 가진 GameObject 경로"),
+      path: z.string(),
       eventName: z.string().describe("이벤트 필드명 (예: onClick)"),
-      componentType: z.string().optional().describe("컴포넌트 타입"),
+      componentType: z.string().optional(),
       targetPath: z.string().describe("대상 GameObject 경로 (또는 'self')"),
-      methodName: z.string().describe("호출할 메서드 이름"),
+      methodName: z.string(),
       argumentType: z.enum(["void", "int", "float", "string", "bool", "object"]).optional().describe("인자 타입 (기본: void)"),
-      argumentValue: z.any().optional().describe("인자 값"),
+      argumentValue: z.any().optional(),
     },
     async (params) => {
       const result = await bridge.request("event.addListener", params);
@@ -51,12 +51,12 @@ export function registerEventTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_event_removeListener",
-    "UnityEvent에서 리스너를 제거합니다.",
+    "Remove event listener",
     {
-      path: z.string().describe("GameObject 경로"),
-      eventName: z.string().describe("이벤트 필드명"),
-      componentType: z.string().optional().describe("컴포넌트 타입"),
-      index: z.number().describe("제거할 리스너 인덱스"),
+      path: z.string(),
+      eventName: z.string(),
+      componentType: z.string().optional(),
+      index: z.number(),
     },
     async (params) => {
       const result = await bridge.request("event.removeListener", params);
@@ -66,12 +66,12 @@ export function registerEventTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool(
     "unity_event_setListenerState",
-    "리스너의 호출 상태를 변경합니다 (Off/RuntimeOnly/EditorAndRuntime).",
+    "Set listener state",
     {
-      path: z.string().describe("GameObject 경로"),
-      eventName: z.string().describe("이벤트 필드명"),
-      componentType: z.string().optional().describe("컴포넌트 타입"),
-      index: z.number().describe("리스너 인덱스"),
+      path: z.string(),
+      eventName: z.string(),
+      componentType: z.string().optional(),
+      index: z.number(),
       state: z.enum(["Off", "RuntimeOnly", "EditorAndRuntime"]).describe("호출 상태"),
     },
     async (params) => {

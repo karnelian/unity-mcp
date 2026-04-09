@@ -3,19 +3,19 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerLODTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_lod_add", "Add a LODGroup component to a GameObject.", {
+  server.tool("unity_lod_add", "Add LODGroup", {
     ...goRef,
     levels: z.array(z.object({
       screenRelativeHeight: z.number().describe("Screen height ratio (0-1) for LOD transition"),
-      renderers: z.array(z.string()).optional().describe("Renderer GameObject names for this level"),
-    })).optional().describe("LOD levels configuration"),
+      renderers: z.array(z.string()).optional(),
+    })).optional(),
     fadeMode: z.enum(["None", "CrossFade", "SpeedTree"]).optional(),
     animateCrossFading: z.boolean().optional(),
   }, async (p) => {
@@ -23,25 +23,25 @@ export function registerLODTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lod_getInfo", "Get LODGroup information from a GameObject.", {
+  server.tool("unity_lod_getInfo", "Get LODGroup info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("lod.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lod_setLevels", "Set LOD levels configuration.", {
+  server.tool("unity_lod_setLevels", "Set LOD levels", {
     ...goRef,
     levels: z.array(z.object({
       screenRelativeHeight: z.number(),
       renderers: z.array(z.string()).optional(),
-    })).describe("LOD levels"),
+    })),
   }, async (p) => {
     const r = await bridge.request("lod.setLevels", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lod_setTransition", "Set LOD transition percentages.", {
+  server.tool("unity_lod_setTransition", "Set LOD transitions", {
     ...goRef,
     fadeMode: z.enum(["None", "CrossFade", "SpeedTree"]).optional(),
     animateCrossFading: z.boolean().optional(),
@@ -50,12 +50,12 @@ export function registerLODTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lod_find", "Find all GameObjects with LODGroup in the scene.", {}, async (p) => {
+  server.tool("unity_lod_find", "Find LODGroups", {}, async (p) => {
     const r = await bridge.request("lod.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lod_remove", "Remove LODGroup from a GameObject.", {
+  server.tool("unity_lod_remove", "Remove LODGroup", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("lod.remove", p);

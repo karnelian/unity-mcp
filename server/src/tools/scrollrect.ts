@@ -3,16 +3,16 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerScrollRectTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_scrollRect_create", "Create a ScrollRect UI element.", {
-    name: z.string().optional().describe("GameObject name"),
-    parent: z.string().optional().describe("Parent Canvas or UI element"),
+  server.tool("unity_scrollRect_create", "Create ScrollRect", {
+    name: z.string().optional(),
+    parent: z.string().optional(),
     horizontal: z.boolean().optional(),
     vertical: z.boolean().optional(),
     movementType: z.enum(["Unrestricted", "Elastic", "Clamped"]).optional(),
@@ -25,7 +25,7 @@ export function registerScrollRectTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_scrollRect_set", "Set ScrollRect properties.", {
+  server.tool("unity_scrollRect_set", "Set ScrollRect", {
     ...goRef,
     horizontal: z.boolean().optional(),
     vertical: z.boolean().optional(),
@@ -40,14 +40,14 @@ export function registerScrollRectTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_scrollRect_getInfo", "Get ScrollRect information.", {
+  server.tool("unity_scrollRect_getInfo", "Get ScrollRect info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("scrollRect.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_scrollRect_find", "Find all ScrollRect components in the scene.", {}, async (p) => {
+  server.tool("unity_scrollRect_find", "Find ScrollRects", {}, async (p) => {
     const r = await bridge.request("scrollRect.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });

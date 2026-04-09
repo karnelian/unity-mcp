@@ -3,16 +3,16 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerJointTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_joint_addHinge", "Add a HingeJoint to a GameObject.", {
+  server.tool("unity_joint_addHinge", "Add HingeJoint", {
     ...goRef,
-    connectedBody: z.string().optional().describe("Connected Rigidbody name"),
+    connectedBody: z.string().optional(),
     anchor: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
     axis: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
     useLimits: z.boolean().optional(),
@@ -26,9 +26,9 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_joint_addSpring", "Add a SpringJoint to a GameObject.", {
+  server.tool("unity_joint_addSpring", "Add SpringJoint", {
     ...goRef,
-    connectedBody: z.string().optional().describe("Connected Rigidbody name"),
+    connectedBody: z.string().optional(),
     spring: z.number().optional(),
     damper: z.number().optional(),
     minDistance: z.number().optional(),
@@ -39,9 +39,9 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_joint_addFixed", "Add a FixedJoint to a GameObject.", {
+  server.tool("unity_joint_addFixed", "Add FixedJoint", {
     ...goRef,
-    connectedBody: z.string().optional().describe("Connected Rigidbody name"),
+    connectedBody: z.string().optional(),
     breakForce: z.number().optional(),
     breakTorque: z.number().optional(),
   }, async (p) => {
@@ -49,9 +49,9 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_joint_addCharacter", "Add a CharacterJoint for ragdoll setups.", {
+  server.tool("unity_joint_addCharacter", "Add CharacterJoint", {
     ...goRef,
-    connectedBody: z.string().optional().describe("Connected Rigidbody name"),
+    connectedBody: z.string().optional(),
     anchor: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
     axis: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
     swingAxis: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
@@ -60,9 +60,9 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_joint_addConfigurable", "Add a ConfigurableJoint with full control.", {
+  server.tool("unity_joint_addConfigurable", "Add ConfigurableJoint", {
     ...goRef,
-    connectedBody: z.string().optional().describe("Connected Rigidbody name"),
+    connectedBody: z.string().optional(),
     xMotion: z.enum(["Free", "Limited", "Locked"]).optional(),
     yMotion: z.enum(["Free", "Limited", "Locked"]).optional(),
     zMotion: z.enum(["Free", "Limited", "Locked"]).optional(),
@@ -74,16 +74,16 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_joint_getInfo", "Get joint information on a GameObject.", {
+  server.tool("unity_joint_getInfo", "Get joint info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("joint.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_joint_setProperties", "Set joint properties.", {
+  server.tool("unity_joint_setProperties", "Set joint", {
     ...goRef,
-    jointType: z.string().describe("Joint component type name"),
+    jointType: z.string(),
     breakForce: z.number().optional(),
     breakTorque: z.number().optional(),
     enableCollision: z.boolean().optional(),
@@ -93,7 +93,7 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_joint_remove", "Remove a joint from a GameObject.", {
+  server.tool("unity_joint_remove", "Remove joint", {
     ...goRef,
     jointType: z.string().optional().describe("Specific joint type to remove (default: first found)"),
   }, async (p) => {
@@ -101,8 +101,8 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_joint_find", "Find all GameObjects with joints in the scene.", {
-    jointType: z.string().optional().describe("Filter by joint type"),
+  server.tool("unity_joint_find", "Find joints", {
+    jointType: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("joint.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };

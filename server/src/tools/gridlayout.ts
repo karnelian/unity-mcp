@@ -3,14 +3,14 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 export function registerGridLayoutTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_gridLayout_create", "Create a Grid/GridLayout2D GameObject.", {
+  server.tool("unity_gridLayout_create", "Create GridLayout", {
     name: z.string().optional(),
     cellSize: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
     cellGap: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
@@ -21,7 +21,7 @@ export function registerGridLayoutTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_gridLayout_set", "Set Grid/GridLayout2D properties.", {
+  server.tool("unity_gridLayout_set", "Set GridLayout", {
     ...goRef,
     cellSize: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
     cellGap: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
@@ -32,14 +32,14 @@ export function registerGridLayoutTools(server: McpServer, bridge: UnityBridge) 
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_gridLayout_getInfo", "Get Grid/GridLayout2D information.", {
+  server.tool("unity_gridLayout_getInfo", "Get GridLayout info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("gridLayout.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_gridLayout_find", "Find all Grid components in the scene.", {}, async (p) => {
+  server.tool("unity_gridLayout_find", "Find GridLayoutGroups", {}, async (p) => {
     const r = await bridge.request("gridLayout.find", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });

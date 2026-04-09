@@ -3,18 +3,18 @@ import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 
 const goRef = {
-  name: z.string().optional().describe("GameObject name"),
-  path: z.string().optional().describe("GameObject path"),
-  instanceId: z.number().optional().describe("Instance ID"),
+  name: z.string().optional(),
+  path: z.string().optional(),
+  instanceId: z.number().optional(),
 };
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 
 export function registerLineRendererTools(server: McpServer, bridge: UnityBridge) {
 
-  server.tool("unity_lineRenderer_add", "Add a LineRenderer to a GameObject.", {
+  server.tool("unity_lineRenderer_add", "Add LineRenderer", {
     ...goRef,
-    positions: z.array(vec3).optional().describe("Array of positions"),
+    positions: z.array(vec3).optional(),
     startWidth: z.number().optional(),
     endWidth: z.number().optional(),
     startColor: z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() }).optional(),
@@ -27,15 +27,15 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lineRenderer_setPositions", "Set LineRenderer positions.", {
+  server.tool("unity_lineRenderer_setPositions", "Set LineRenderer positions", {
     ...goRef,
-    positions: z.array(vec3).describe("Array of positions"),
+    positions: z.array(vec3),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.setPositions", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lineRenderer_setProperties", "Set LineRenderer properties.", {
+  server.tool("unity_lineRenderer_setProperties", "Set LineRenderer", {
     ...goRef,
     startWidth: z.number().optional(),
     endWidth: z.number().optional(),
@@ -53,16 +53,16 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lineRenderer_getInfo", "Get LineRenderer information.", {
+  server.tool("unity_lineRenderer_getInfo", "Get LineRenderer info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("lineRenderer.getInfo", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_trailRenderer_add", "Add a TrailRenderer to a GameObject.", {
+  server.tool("unity_trailRenderer_add", "Add TrailRenderer", {
     ...goRef,
-    time: z.number().optional().describe("Trail duration in seconds"),
+    time: z.number().optional(),
     startWidth: z.number().optional(),
     endWidth: z.number().optional(),
     startColor: z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() }).optional(),
@@ -74,7 +74,7 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_trailRenderer_setProperties", "Set TrailRenderer properties.", {
+  server.tool("unity_trailRenderer_setProperties", "Set TrailRenderer", {
     ...goRef,
     time: z.number().optional(),
     startWidth: z.number().optional(),
@@ -89,7 +89,7 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
 
-  server.tool("unity_lineRenderer_find", "Find all LineRenderer or TrailRenderer in the scene.", {
+  server.tool("unity_lineRenderer_find", "Find LineRenderers", {
     type: z.enum(["Line", "Trail", "All"]).optional().describe("Filter type (default: All)"),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.find", p);
