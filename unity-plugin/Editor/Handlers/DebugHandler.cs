@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace KarnelLabs.MCP
@@ -13,6 +14,7 @@ namespace KarnelLabs.MCP
         public static void Register()
         {
             CommandRouter.Register("debug.screenshot", CaptureScreenshot);
+            CommandRouter.Register("debug.captureEditorWindow", CaptureEditorWindow);
             CommandRouter.Register("debug.log", Log);
             CommandRouter.Register("debug.clearConsole", ClearConsole);
             CommandRouter.Register("debug.getPrefs", GetPrefs);
@@ -89,6 +91,96 @@ namespace KarnelLabs.MCP
             finally
             {
                 if (texture != null) UnityEngine.Object.DestroyImmediate(texture);
+            }
+        }
+
+        private static object CaptureEditorWindow(JToken p)
+        {
+            string windowName = (string)p?["window"] ?? "InspectorWindow";
+
+            // Common shortcut aliases
+            switch (windowName.ToLower())
+            {
+                case "inspector": windowName = "InspectorWindow"; break;
+                case "hierarchy": windowName = "SceneHierarchyWindow"; break;
+                case "project": windowName = "ProjectBrowser"; break;
+                case "console": windowName = "ConsoleWindow"; break;
+                case "game": windowName = "GameView"; break;
+                case "scene": windowName = "SceneView"; break;
+                case "animation": windowName = "AnimationWindow"; break;
+                case "animator": windowName = "AnimatorControllerTool"; break;
+                case "profiler": windowName = "ProfilerWindow"; break;
+            }
+
+            var editorAsm = typeof(UnityEditor.Editor).Assembly;
+            Type type = editorAsm.GetType($"UnityEditor.{windowName}");
+            if (type == null) type = editorAsm.GetType(windowName);
+            if (type == null)
+            {
+                // Try all loaded assemblies for third-party windows
+                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    type = asm.GetTypes().FirstOrDefault(t => t.Name == windowName && typeof(EditorWindow).IsAssignableFrom(t));
+                    if (type != null) break;
+                }
+            }
+            if (type == null) throw new Exception($"EditorWindow type not found: {windowName}");
+
+            var windows = Resources.FindObjectsOfTypeAll(type);
+            if (windows.Length == 0) throw new Exception($"No {windowName} is currently open. Open it from Window menu first.");
+
+            var window = (EditorWindow)windows[0];
+            window.Focus();
+            window.Repaint();
+            InternalEditorUtility.RepaintAllViews();
+
+            // Access m_Parent (HostView/GUIView) via reflection
+            var parentField = typeof(EditorWindow).GetField("m_Parent", BindingFlags.Instance | BindingFlags.NonPublic);
+            var parent = parentField?.GetValue(window);
+            if (parent == null) throw new Exception("Window has no parent GUIView (m_Parent null)");
+
+            // Walk up to find GUIView type
+            Type guiViewType = parent.GetType();
+            while (guiViewType != null && guiViewType.Name != "GUIView") guiViewType = guiViewType.BaseType;
+            if (guiViewType == null) throw new Exception("GUIView base type not found in parent chain");
+
+            // GrabPixels(RenderTexture rt, Rect rect) — internal instance method
+            var grabMethod = guiViewType.GetMethod("GrabPixels", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (grabMethod == null) throw new Exception("GUIView.GrabPixels method not found (Unity version may not support this)");
+
+            var rect = window.position;
+            int w = Mathf.Max(1, (int)rect.width);
+            int h = Mathf.Max(1, (int)rect.height);
+
+            var rt = RenderTexture.GetTemporary(w, h, 24, RenderTextureFormat.ARGB32);
+            Texture2D tex = null;
+            try
+            {
+                grabMethod.Invoke(parent, new object[] { rt, new Rect(0, 0, w, h) });
+
+                var prev = RenderTexture.active;
+                RenderTexture.active = rt;
+                tex = new Texture2D(w, h, TextureFormat.RGB24, false);
+                tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
+                tex.Apply();
+                RenderTexture.active = prev;
+
+                byte[] png = tex.EncodeToPNG();
+                return new
+                {
+                    success = true,
+                    window = windowName,
+                    width = w,
+                    height = h,
+                    format = "png",
+                    size = png.Length,
+                    data = Convert.ToBase64String(png),
+                };
+            }
+            finally
+            {
+                if (tex != null) UnityEngine.Object.DestroyImmediate(tex);
+                RenderTexture.ReleaseTemporary(rt);
             }
         }
 

@@ -29,6 +29,26 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
   );
 
   server.tool(
+    "unity_debug_captureEditorWindow",
+    "Capture EditorWindow (inspector/hierarchy/project/console/etc)",
+    {
+      window: z.string().optional(),
+    },
+    async (params) => {
+      const result = await bridge.request("debug.captureEditorWindow", params);
+      if (result?.data) {
+        return {
+          content: [
+            { type: "image", data: result.data, mimeType: "image/png" },
+            { type: "text", text: `Captured ${result.window} (${result.width}x${result.height})` },
+          ],
+        };
+      }
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
+  server.tool(
     "unity_debug_log",
     "Log to console",
     {

@@ -1,6 +1,25 @@
 # Unity MCP — 710 Tools for AI-Powered Game Development
 
-MCP (Model Context Protocol) server that connects **Claude Code** directly to the **Unity Editor**. Control every aspect of Unity — scenes, assets, materials, physics, lighting, animation, UI, and more — through natural language.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Unity](https://img.shields.io/badge/Unity-2021.3+-black.svg)](https://unity.com)
+[![Node](https://img.shields.io/badge/Node-18+-green.svg)](https://nodejs.org)
+
+MCP (Model Context Protocol) server that connects **Claude Code** (or any MCP client) directly to the **Unity Editor**. Control every aspect of Unity — scenes, assets, materials, physics, lighting, animation, UI, and more — through natural language.
+
+**Free. Open-source. Full codebase access. No API key required.**
+
+## What Can You Do?
+
+Just talk to Claude Code in plain English (or any language):
+
+- _"Create a first-person controller with mouse look and WASD movement"_
+- _"Add a directional light, skybox fog, and bake lighting for this scene"_
+- _"Generate a tile palette from these sprites and paint a 20x20 dungeon"_
+- _"Capture a screenshot of the Inspector and tell me what's wrong with my Rigidbody setup"_
+- _"Find all missing script references and list them"_
+- _"Create a Cinemachine virtual camera that follows the player with smooth damping"_
+
+Claude reads your scene, edits components, creates scripts, bakes lighting, runs tests, captures screenshots — all while you focus on design decisions.
 
 ## Quick Start
 
@@ -114,6 +133,18 @@ Multi-instance support: each Unity project auto-registers to `~/.karnellabs-mcp/
 | **Unity Search** | 3 | Search assets, scene objects, and menus |
 | **Video** | 5 | Add video player, find players/clips, get info, set properties |
 
+## Editor Window Capture
+
+Beyond Scene/Game view, you can capture any EditorWindow (Inspector, Hierarchy, Project, Console, Profiler, Animator, etc.) as a PNG image that Claude can visually analyze:
+
+```
+"Capture the Inspector and check if my Rigidbody is correctly set up"
+"Show me the Hierarchy window"
+"Capture the Console window to see recent errors"
+```
+
+Supported shortcuts: `inspector`, `hierarchy`, `project`, `console`, `game`, `scene`, `animation`, `animator`, `profiler`. Any EditorWindow type name also works.
+
 ## 23 MCP Resources
 
 The server exposes **5 live Unity state resources** and **18 workflow guide resources** via the MCP resource protocol.
@@ -193,6 +224,30 @@ Running multiple Unity projects simultaneously? Each Unity instance registers it
 }
 ```
 
+## Troubleshooting
+
+**Claude Code doesn't see the MCP server**
+- Restart Claude Code after running `npx github:karnelian/unity-mcp setup`
+- Check `.mcp.json` exists in the project root
+- Run `npx github:karnelian/unity-mcp instances` to verify Unity is registered
+
+**Unity Editor shows "Connection refused"**
+- Open `Tools > KarnelLabs MCP > Server Window` inside Unity
+- Make sure the WebSocket server is running (green indicator)
+- Default port is `8099` — change via `UNITY_WS_PORT` env var if blocked
+
+**Tools are missing / compile errors after install**
+- Ensure all required packages are installed (check Conditional Features section)
+- Force reimport: `Assets > Reimport All` in Unity
+
+**Multiple Unity projects running**
+- Use `--port=PORT` in `.mcp.json` to target a specific instance
+- See Multi-Instance section below
+
+## Contributing
+
+Issues and PRs welcome at [github.com/karnelian/unity-mcp](https://github.com/karnelian/unity-mcp). This is a community project — if a tool is missing or broken, open an issue or send a PR.
+
 ## License
 
-MIT
+MIT — free for personal and commercial use.
