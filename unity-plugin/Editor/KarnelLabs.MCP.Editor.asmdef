@@ -127,7 +127,7 @@
       "name": "com.unity.2d.tilemap.extras",
       "expression": "3.0.0",
       "define": "UNITY_2D_TILEMAP_EXTRAS"
-    },
+    }
   ],
   "noEngineReferences": false
 }
