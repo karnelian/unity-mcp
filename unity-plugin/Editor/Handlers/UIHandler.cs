@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -473,60 +474,49 @@ namespace KarnelLabs.MCP
             if (go == null)
                 throw new McpException(-32000, $"UI element not found: {path ?? name}");
 
-            // Get screen position of the target element
-            var rectTransform = go.GetComponent<RectTransform>();
-            Vector2 screenPos;
-            if (rectTransform != null)
+            // Check if target is blocked by a higher-order Canvas (popup blocking)
+            var targetCanvas = go.GetComponentInParent<Canvas>()?.rootCanvas;
+            var targetOrder = targetCanvas != null ? targetCanvas.sortingOrder : 0;
+
+            // Find all active Canvases with higher sorting order that have raycast-blocking content
+            var allCanvases = UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+            foreach (var canvas in allCanvases)
             {
-                // Convert center of RectTransform to screen coordinates
-                var canvas = go.GetComponentInParent<Canvas>();
-                if (canvas != null && canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                if (canvas.rootCanvas != canvas) continue; // Skip nested canvases
+                if (!canvas.gameObject.activeInHierarchy) continue;
+                if (canvas.sortingOrder <= targetOrder) continue;
+                if (canvas == targetCanvas) continue;
+
+                // This canvas is above our target — check if it has any active children with raycastTarget Images
+                var images = canvas.GetComponentsInChildren<Image>(false);
+                foreach (var img in images)
                 {
-                    screenPos = RectTransformUtility.WorldToScreenPoint(null, rectTransform.position);
-                }
-                else
-                {
-                    var cam = canvas != null ? canvas.worldCamera : Camera.main;
-                    screenPos = RectTransformUtility.WorldToScreenPoint(cam, rectTransform.position);
+                    if (img.raycastTarget && img.gameObject.activeInHierarchy)
+                    {
+                        return new { success = false, reason = $"Blocked by Canvas (sortingOrder {canvas.sortingOrder} > {targetOrder})",
+                            target = go.name, blockedBy = GetPath(img.gameObject) };
+                    }
                 }
             }
-            else
-            {
-                screenPos = Camera.main.WorldToScreenPoint(go.transform.position);
-            }
 
-            // Raycast through EventSystem to find what's actually at this position
-            var eventData = new PointerEventData(EventSystem.current) { position = screenPos };
-            var raycastResults = new System.Collections.Generic.List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventData, raycastResults);
-
-            if (raycastResults.Count == 0)
-                return new { success = false, reason = "No UI element at screen position", target = go.name, screenPos = new { x = screenPos.x, y = screenPos.y } };
-
-            // The first raycast result is the topmost UI element
-            var hitGo = raycastResults[0].gameObject;
-            var isBlocked = !hitGo.transform.IsChildOf(go.transform) && hitGo != go;
-
-            if (isBlocked)
-                return new { success = false, reason = "Blocked by another UI element", target = go.name, blockedBy = GetPath(hitGo) };
-
-            // Execute click on the actual hit target (respects UI layering)
-            var button = hitGo.GetComponentInParent<Button>();
-            if (button != null && (button.gameObject == go || button.gameObject.transform.IsChildOf(go.transform) || go.transform.IsChildOf(button.gameObject.transform)))
+            // Not blocked — invoke click
+            var button = go.GetComponent<Button>();
+            if (button != null)
             {
                 button.onClick.Invoke();
-                return new { success = true, type = "Button", gameObject = button.gameObject.name, path = GetPath(button.gameObject) };
+                return new { success = true, type = "Button", gameObject = go.name, path = GetPath(go) };
             }
 
-            var toggle = hitGo.GetComponentInParent<Toggle>();
+            var toggle = go.GetComponent<Toggle>();
             if (toggle != null)
             {
                 toggle.isOn = !toggle.isOn;
-                return new { success = true, type = "Toggle", gameObject = toggle.gameObject.name, isOn = toggle.isOn, path = GetPath(toggle.gameObject) };
+                return new { success = true, type = "Toggle", gameObject = go.name, isOn = toggle.isOn, path = GetPath(go) };
             }
 
-            ExecuteEvents.Execute(hitGo, eventData, ExecuteEvents.pointerClickHandler);
-            return new { success = true, type = "PointerClick", gameObject = hitGo.name, path = GetPath(hitGo) };
+            var eventData = new PointerEventData(EventSystem.current);
+            ExecuteEvents.Execute(go, eventData, ExecuteEvents.pointerClickHandler);
+            return new { success = true, type = "PointerClick", gameObject = go.name, path = GetPath(go) };
         }
 
         private static string GetPath(GameObject go)
