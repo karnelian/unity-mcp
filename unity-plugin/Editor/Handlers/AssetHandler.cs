@@ -27,6 +27,7 @@ namespace KarnelLabs.MCP
             CommandRouter.Register("asset.setLabels", SetLabels);
             // ── 배치 도구 ──
             CommandRouter.Register("asset.importSettingsBatch", ImportSettingsBatch);
+            CommandRouter.Register("asset.importPackage", ImportPackage);
         }
 
         private static object SearchAssets(JToken p)
@@ -260,6 +261,30 @@ namespace KarnelLabs.MCP
         }
 
         // ── 헬퍼 ──────────────────────────────────────────────────
+
+        private static object ImportPackage(JToken p)
+        {
+            var packagePath = (string)p["path"];
+            if (string.IsNullOrEmpty(packagePath))
+                throw new McpException(-32602, "path is required");
+
+            // Resolve Packages/ path to absolute if needed
+            var resolvedPath = packagePath;
+            if (packagePath.StartsWith("Packages/"))
+            {
+                var fullPath = Path.GetFullPath(packagePath);
+                if (File.Exists(fullPath))
+                    resolvedPath = fullPath;
+            }
+
+            if (!File.Exists(resolvedPath))
+                throw new McpException(-32000, $"Package file not found: {resolvedPath}");
+
+            AssetDatabase.ImportPackage(resolvedPath, false); // false = non-interactive
+            AssetDatabase.Refresh();
+
+            return new { success = true, path = resolvedPath, message = "Package imported successfully" };
+        }
 
         private static void EnsureDirectoryExists(string assetPath)
         {

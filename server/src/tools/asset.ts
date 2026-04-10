@@ -134,4 +134,11 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     const r = await bridge.request("asset.setLabels", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
+
+  server.tool("unity_asset_importPackage", "Import .unitypackage file (non-interactive)", {
+    path: z.string().describe("Path to .unitypackage file (e.g. Packages/com.unity.textmeshpro/Package Resources/TMP Essential Resources.unitypackage)"),
+  }, async (p) => {
+    const r = await bridge.request("asset.importPackage", p);
+    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+  });
 }
