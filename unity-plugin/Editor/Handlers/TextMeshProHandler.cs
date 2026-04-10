@@ -84,7 +84,10 @@ namespace KarnelLabs.MCP
             if (p["fontStyle"] != null) tmp.fontStyle = ParseFontStyle((string)p["fontStyle"]);
             if (p["alignment"] != null) tmp.alignment = ParseAlignment((string)p["alignment"]);
             if (p["color"] != null) tmp.color = JsonHelper.ToColor(p["color"]);
-            if (p["enableWordWrapping"] != null) tmp.enableWordWrapping = (bool)p["enableWordWrapping"];
+            if (p["enableWordWrapping"] != null)
+                tmp.textWrappingMode = (bool)p["enableWordWrapping"]
+                    ? TextWrappingModes.Normal
+                    : TextWrappingModes.NoWrap;
             if (p["lineSpacing"] != null) tmp.lineSpacing = (float)p["lineSpacing"];
             if (p["characterSpacing"] != null) tmp.characterSpacing = (float)p["characterSpacing"];
             if (p["paragraphSpacing"] != null) tmp.paragraphSpacing = (float)p["paragraphSpacing"];
@@ -132,7 +135,7 @@ namespace KarnelLabs.MCP
                 alignment = tmp.alignment.ToString(),
                 color = new { r = tmp.color.r, g = tmp.color.g, b = tmp.color.b, a = tmp.color.a },
                 font = tmp.font != null ? tmp.font.name : null,
-                wordWrapping = tmp.enableWordWrapping,
+                wordWrapping = tmp.textWrappingMode != TextWrappingModes.NoWrap,
                 lineSpacing = tmp.lineSpacing,
                 characterSpacing = tmp.characterSpacing,
             };

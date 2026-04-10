@@ -41,52 +41,65 @@ namespace KarnelLabs.MCP
             return new { success = true, message = "Lightmap data cleared" };
         }
 
+        // Lightmapping.lightingSettings throws InvalidOperationException when no LightingSettings
+        // asset is assigned to the active scene. This helper returns null instead of throwing.
+        private static LightingSettings TryGetLS()
+        {
+            try { return Lightmapping.lightingSettings; }
+            catch { return null; }
+        }
+
         private static object GetSettings(JToken p)
         {
-            int bounces = -1;
-            bool hasSettings = false;
-            try
+            var ls = TryGetLS();
+            if (ls == null)
             {
-                var ls = Lightmapping.lightingSettings;
-                if (ls != null)
+                return new
                 {
-                    bounces = ls.maxBounces;
-                    hasSettings = true;
-                }
+                    isRunning = Lightmapping.isRunning,
+                    hasLightingSettings = false,
+                    message = "No LightingSettings asset assigned to active scene",
+                };
             }
-            catch { /* lightingSettings throws if no asset assigned */ }
 
             return new
             {
-                lightmapper = LightmapEditorSettings.lightmapper.ToString(),
-                bounces,
-                lightmapResolution = LightmapEditorSettings.bakeResolution,
-                lightmapPadding = LightmapEditorSettings.padding,
+                lightmapper = ls.lightmapper.ToString(),
+                bounces = ls.maxBounces,
+                lightmapResolution = ls.lightmapResolution,
+                lightmapPadding = ls.lightmapPadding,
                 isRunning = Lightmapping.isRunning,
-                hasLightingSettings = hasSettings,
+                hasLightingSettings = true,
             };
         }
 
         private static object SetSettings(JToken p)
         {
+            var ls = TryGetLS();
+            if (ls == null)
+                return new { success = false, message = "No LightingSettings asset assigned to active scene" };
+
             if (p["lightmapper"] != null)
             {
-                LightmapEditorSettings.lightmapper = (string)p["lightmapper"] switch
+                ls.lightmapper = (string)p["lightmapper"] switch
                 {
-                    "ProgressiveGPU" => LightmapEditorSettings.Lightmapper.ProgressiveGPU,
-                    "ProgressiveCPU" => LightmapEditorSettings.Lightmapper.ProgressiveCPU,
-                    _ => LightmapEditorSettings.lightmapper
+                    "ProgressiveGPU" => LightingSettings.Lightmapper.ProgressiveGPU,
+                    "ProgressiveCPU" => LightingSettings.Lightmapper.ProgressiveCPU,
+                    _ => ls.lightmapper
                 };
             }
-            if (p["directSampleCount"] != null) LightmapEditorSettings.directSampleCount = (int)p["directSampleCount"];
-            if (p["indirectSampleCount"] != null) LightmapEditorSettings.indirectSampleCount = (int)p["indirectSampleCount"];
-            if (p["environmentSampleCount"] != null) LightmapEditorSettings.environmentSampleCount = (int)p["environmentSampleCount"];
-            if (p["bounces"] != null) { try { if (Lightmapping.lightingSettings != null) Lightmapping.lightingSettings.maxBounces = (int)p["bounces"]; } catch { } }
-            if (p["lightmapResolution"] != null) LightmapEditorSettings.bakeResolution = (float)p["lightmapResolution"];
-            if (p["lightmapPadding"] != null) LightmapEditorSettings.padding = (int)p["lightmapPadding"];
-            if (p["compressLightmaps"] != null) LightmapEditorSettings.textureCompression = (bool)p["compressLightmaps"];
-            if (p["ambientOcclusion"] != null) LightmapEditorSettings.enableAmbientOcclusion = (bool)p["ambientOcclusion"];
-            if (p["aoMaxDistance"] != null) LightmapEditorSettings.aoMaxDistance = (float)p["aoMaxDistance"];
+            if (p["directSampleCount"] != null) ls.directSampleCount = (int)p["directSampleCount"];
+            if (p["indirectSampleCount"] != null) ls.indirectSampleCount = (int)p["indirectSampleCount"];
+            if (p["environmentSampleCount"] != null) ls.environmentSampleCount = (int)p["environmentSampleCount"];
+            if (p["bounces"] != null) ls.maxBounces = (int)p["bounces"];
+            if (p["lightmapResolution"] != null) ls.lightmapResolution = (float)p["lightmapResolution"];
+            if (p["lightmapPadding"] != null) ls.lightmapPadding = (int)p["lightmapPadding"];
+            if (p["compressLightmaps"] != null)
+                ls.lightmapCompression = (bool)p["compressLightmaps"]
+                    ? LightmapCompression.NormalQuality
+                    : LightmapCompression.None;
+            if (p["ambientOcclusion"] != null) ls.ao = (bool)p["ambientOcclusion"];
+            if (p["aoMaxDistance"] != null) ls.aoMaxDistance = (float)p["aoMaxDistance"];
 
             return new { success = true, message = "Lightmapping settings updated" };
         }
