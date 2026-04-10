@@ -207,6 +207,48 @@ namespace KarnelLabs.MCP
                         case SerializedPropertyType.Color:
                             sp.colorValue = new Color((float)prop.Value["r"], (float)prop.Value["g"], (float)prop.Value["b"], (float?)prop.Value["a"] ?? 1f);
                             applied.Add(prop.Name); break;
+                        case SerializedPropertyType.Enum:
+                            if (prop.Value.Type == JTokenType.Integer)
+                                sp.enumValueIndex = (int)prop.Value;
+                            else if (prop.Value.Type == JTokenType.String)
+                            {
+                                var names = sp.enumDisplayNames;
+                                var idx = System.Array.IndexOf(names, (string)prop.Value);
+                                if (idx >= 0) sp.enumValueIndex = idx;
+                                else sp.intValue = 0;
+                            }
+                            applied.Add(prop.Name); break;
+                        case SerializedPropertyType.Vector2:
+                            sp.vector2Value = new Vector2((float)prop.Value["x"], (float)prop.Value["y"]);
+                            applied.Add(prop.Name); break;
+                        case SerializedPropertyType.Vector4:
+                            sp.vector4Value = new Vector4((float)prop.Value["x"], (float)prop.Value["y"], (float)prop.Value["z"], (float)prop.Value["w"]);
+                            applied.Add(prop.Name); break;
+                        case SerializedPropertyType.Quaternion:
+                            sp.quaternionValue = Quaternion.Euler((float)prop.Value["x"], (float)prop.Value["y"], (float)prop.Value["z"]);
+                            applied.Add(prop.Name); break;
+                        case SerializedPropertyType.Rect:
+                            sp.rectValue = new Rect((float)prop.Value["x"], (float)prop.Value["y"], (float)prop.Value["width"], (float)prop.Value["height"]);
+                            applied.Add(prop.Name); break;
+                        case SerializedPropertyType.Vector2Int:
+                            sp.vector2IntValue = new Vector2Int((int)prop.Value["x"], (int)prop.Value["y"]);
+                            applied.Add(prop.Name); break;
+                        case SerializedPropertyType.Vector3Int:
+                            sp.vector3IntValue = new Vector3Int((int)prop.Value["x"], (int)prop.Value["y"], (int)prop.Value["z"]);
+                            applied.Add(prop.Name); break;
+                        case SerializedPropertyType.ObjectReference:
+                            if (prop.Value.Type == JTokenType.String)
+                            {
+                                var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>((string)prop.Value);
+                                if (asset != null) { sp.objectReferenceValue = asset; applied.Add(prop.Name); }
+                                else skipped.Add($"{prop.Name}(asset not found:{(string)prop.Value})");
+                            }
+                            else if (prop.Value.Type == JTokenType.Null)
+                            {
+                                sp.objectReferenceValue = null; applied.Add(prop.Name);
+                            }
+                            else skipped.Add($"{prop.Name}(ObjectReference expects string path or null)");
+                            break;
                         default: skipped.Add($"{prop.Name}(unsupported:{sp.propertyType})"); break;
                     }
                 }
