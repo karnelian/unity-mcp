@@ -239,9 +239,41 @@ namespace KarnelLabs.MCP
                         case SerializedPropertyType.ObjectReference:
                             if (prop.Value.Type == JTokenType.String)
                             {
-                                var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>((string)prop.Value);
-                                if (asset != null) { sp.objectReferenceValue = asset; applied.Add(prop.Name); }
-                                else skipped.Add($"{prop.Name}(asset not found:{(string)prop.Value})");
+                                var refPath = (string)prop.Value;
+                                UnityEngine.Object resolved = null;
+
+                                // Parse "path:ComponentType" format (e.g. "toggle_BGM:Toggle", "btn_Close:Button")
+                                string objPath = refPath;
+                                string compType = null;
+                                var colonIdx = refPath.LastIndexOf(':');
+                                if (colonIdx > 0 && !refPath.StartsWith("Assets/"))
+                                {
+                                    objPath = refPath.Substring(0, colonIdx);
+                                    compType = refPath.Substring(colonIdx + 1);
+                                }
+
+                                // 1) Asset path (starts with "Assets/")
+                                if (refPath.StartsWith("Assets/"))
+                                    resolved = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(refPath);
+
+                                // 2) Child of target GO (e.g. "toggle_BGM" or "toggle_BGM:Toggle")
+                                if (resolved == null && go != null)
+                                {
+                                    var child = go.transform.Find(objPath);
+                                    if (child != null)
+                                        resolved = ResolveComponent(child.gameObject, compType);
+                                }
+
+                                // 3) Scene object path (e.g. "Canvas/Panel_MainMenu")
+                                if (resolved == null)
+                                {
+                                    var sceneGo = GameObject.Find(objPath);
+                                    if (sceneGo != null)
+                                        resolved = ResolveComponent(sceneGo, compType);
+                                }
+
+                                if (resolved != null) { sp.objectReferenceValue = resolved; applied.Add(prop.Name); }
+                                else skipped.Add($"{prop.Name}(not found:{refPath})");
                             }
                             else if (prop.Value.Type == JTokenType.Null)
                             {
@@ -256,6 +288,19 @@ namespace KarnelLabs.MCP
             }
             var info = GameObjectFinder.ToRichInfo(go);
             return new { info, applied = applied.Count > 0 ? applied : null, skipped = skipped.Count > 0 ? skipped : null };
+        }
+
+        private static UnityEngine.Object ResolveComponent(GameObject go, string componentTypeName)
+        {
+            if (string.IsNullOrEmpty(componentTypeName))
+                return go;
+            foreach (var c in go.GetComponents<Component>())
+            {
+                if (c != null && (c.GetType().Name == componentTypeName || c.GetType().FullName == componentTypeName))
+                    return c;
+            }
+            // If component not found, return the GameObject itself as fallback
+            return go;
         }
 
         private static object DeleteGameObject(JToken p)
