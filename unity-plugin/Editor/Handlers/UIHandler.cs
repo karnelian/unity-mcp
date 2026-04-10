@@ -30,6 +30,7 @@ namespace KarnelLabs.MCP
             CommandRouter.Register("ui.addLayout", AddLayout);
             CommandRouter.Register("ui.findUI", FindUI);
             CommandRouter.Register("ui.setCanvasProperties", SetCanvasProperties);
+            CommandRouter.Register("ui.click", ClickUI);
         }
 
         private static void EnsureEventSystem()
@@ -437,6 +438,73 @@ namespace KarnelLabs.MCP
             if (p["pixelPerfect"] != null) canvas.pixelPerfect = p["pixelPerfect"].Value<bool>();
 
             return new { gameObject = go.name, renderMode = canvas.renderMode.ToString(), sortingOrder = canvas.sortingOrder };
+        }
+
+        private static object ClickUI(JToken p)
+        {
+            var path = (string)p["path"];
+            var name = (string)p["name"];
+
+            GameObject go = null;
+
+            // Find by path or name — supports inactive via transform.Find
+            if (!string.IsNullOrEmpty(path))
+            {
+                // Try direct Find first (active only)
+                go = GameObject.Find(path);
+                // Fallback: walk the path via transform.Find from root
+                if (go == null)
+                {
+                    var parts = path.Split('/');
+                    var root = GameObject.Find(parts[0]);
+                    if (root != null && parts.Length > 1)
+                    {
+                        var child = root.transform.Find(string.Join("/", parts, 1, parts.Length - 1));
+                        if (child != null) go = child.gameObject;
+                    }
+                }
+            }
+            else if (!string.IsNullOrEmpty(name))
+            {
+                var all = Resources.FindObjectsOfTypeAll<GameObject>();
+                go = all.FirstOrDefault(g => g.name == name && g.scene.isLoaded);
+            }
+
+            if (go == null)
+                throw new McpException(-32000, $"UI element not found: {path ?? name}");
+
+            // Try Button.onClick
+            var button = go.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.Invoke();
+                return new { success = true, type = "Button", gameObject = go.name, path = GetPath(go) };
+            }
+
+            // Try Toggle
+            var toggle = go.GetComponent<Toggle>();
+            if (toggle != null)
+            {
+                toggle.isOn = !toggle.isOn;
+                return new { success = true, type = "Toggle", gameObject = go.name, isOn = toggle.isOn, path = GetPath(go) };
+            }
+
+            // Generic pointer click via ExecuteEvents
+            var eventData = new PointerEventData(EventSystem.current) { position = go.transform.position };
+            ExecuteEvents.Execute(go, eventData, ExecuteEvents.pointerClickHandler);
+            return new { success = true, type = "PointerClick", gameObject = go.name, path = GetPath(go) };
+        }
+
+        private static string GetPath(GameObject go)
+        {
+            var path = go.name;
+            var t = go.transform.parent;
+            while (t != null)
+            {
+                path = t.name + "/" + path;
+                t = t.parent;
+            }
+            return path;
         }
     }
 }

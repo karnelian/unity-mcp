@@ -149,4 +149,12 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     const r = await bridge.request("ui.setCanvasProperties", p);
     return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
   });
+
+  server.tool("unity_ui_click", "Click a UI element (Button, Toggle, or generic pointer click). Works during Play mode.", {
+    path: z.string().optional().describe("Full path to the UI element (e.g. 'Canvas/Panel_MainMenu/btn_Start')"),
+    name: z.string().optional().describe("Name of the UI element to click"),
+  }, async (p) => {
+    const r = await bridge.request("ui.click", p);
+    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+  });
 }
