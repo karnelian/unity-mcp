@@ -25,6 +25,7 @@ namespace KarnelLabs.MCP
             CommandRouter.Register("editor.projectInfo", ProjectInfo);
             CommandRouter.Register("editor.getSelection", GetSelection);
             CommandRouter.Register("editor.getContext", GetContext);
+            CommandRouter.Register("editor.autoRefresh", AutoRefresh);
         }
 
         private static object PlayMode(JToken p)
@@ -370,6 +371,29 @@ namespace KarnelLabs.MCP
                 selection = new { gameObjects = selectedGOs, assets = selectedAssets },
                 sceneView = sceneViewInfo,
             };
+        }
+
+        private static object AutoRefresh(JToken p)
+        {
+            var action = (string)p?["action"] ?? "status";
+
+            switch (action)
+            {
+                case "pause":
+                    EditorPrefs.SetInt("kAutoRefresh", 0);
+                    return new { success = true, autoRefresh = false, message = "Auto Refresh paused" };
+
+                case "resume":
+                    EditorPrefs.SetInt("kAutoRefresh", 1);
+                    AssetDatabase.Refresh();
+                    UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
+                    return new { success = true, autoRefresh = true, message = "Auto Refresh resumed + recompile requested" };
+
+                case "status":
+                default:
+                    var isOn = EditorPrefs.GetInt("kAutoRefresh", 1) == 1;
+                    return new { autoRefresh = isOn, isCompiling = EditorApplication.isCompiling };
+            }
         }
     }
 }

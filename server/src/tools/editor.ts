@@ -143,4 +143,16 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     }
   );
 
+  server.tool(
+    "unity_editor_autoRefresh",
+    "Control Unity Auto Refresh. Pause before parallel agent work, resume after completion to trigger single recompile.",
+    {
+      action: z.enum(["pause", "resume", "status"]).describe("pause: disable auto-refresh, resume: re-enable + recompile, status: check current state"),
+    },
+    async (p) => {
+      const result = await bridge.request("editor.autoRefresh", p);
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    }
+  );
+
 }
