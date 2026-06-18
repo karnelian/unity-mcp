@@ -174,8 +174,16 @@ namespace KarnelLabs.MCP
                 // 메서드 이름
                 EditorGUILayout.LabelField(entry.Method, GUILayout.ExpandWidth(true));
 
+                EditorGUILayout.LabelField(entry.RiskLevel ?? "-", EditorStyles.miniLabel, GUILayout.Width(46));
                 EditorGUILayout.LabelField($"{entry.DurationMs}ms", EditorStyles.miniLabel, GUILayout.Width(54));
                 EditorGUILayout.LabelField($"{FormatBytes(entry.ResponseBytes)}", EditorStyles.miniLabel, GUILayout.Width(58));
+
+                if (!entry.Success && entry.ErrorCode.HasValue)
+                {
+                    var codeStyle = new GUIStyle(EditorStyles.miniLabel);
+                    codeStyle.normal.textColor = new Color(0.9f, 0.5f, 0.2f);
+                    EditorGUILayout.LabelField($"{entry.CodeName ?? SafetyPolicy.CodeName(entry.ErrorCode.Value)} ({entry.ErrorCode.Value})", codeStyle, GUILayout.Width(160));
+                }
 
                 // 에러 메시지 (있을 경우)
                 if (!entry.Success && !string.IsNullOrEmpty(entry.ErrorMessage))
@@ -231,6 +239,9 @@ namespace KarnelLabs.MCP
             public string Timestamp;
             public string Method;
             public bool Success;
+            public int? ErrorCode;
+            public string CodeName;
+            public string RiskLevel;
             public string ErrorMessage; // null = success
             public long DurationMs;
             public int RequestBytes;
@@ -240,15 +251,19 @@ namespace KarnelLabs.MCP
         private static readonly List<Entry> _entries = new();
         private static readonly object _lock = new();
 
-        public static void Add(string method, bool success, string errorMessage = null, long durationMs = 0, int requestBytes = 0, int responseBytes = 0)
+        public static void Add(string method, bool success, string errorMessage = null, long durationMs = 0, int requestBytes = 0, int responseBytes = 0, int? errorCode = null, string codeName = null, string riskLevel = null)
         {
             lock (_lock)
             {
+                var risk = SafetyPolicy.Describe(method);
                 _entries.Add(new Entry
                 {
                     Timestamp = DateTime.Now.ToString("HH:mm:ss"),
                     Method    = method ?? "(unknown)",
                     Success   = success,
+                    ErrorCode = errorCode,
+                    CodeName = codeName ?? (errorCode.HasValue ? SafetyPolicy.CodeName(errorCode.Value) : null),
+                    RiskLevel = riskLevel ?? risk.RiskLevel,
                     ErrorMessage = errorMessage,
                     DurationMs = durationMs,
                     RequestBytes = requestBytes,

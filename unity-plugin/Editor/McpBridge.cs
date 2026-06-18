@@ -259,14 +259,18 @@ namespace KarnelLabs.MCP
                     var sw = System.Diagnostics.Stopwatch.StartNew();
                     var (id, response) = CommandRouter.Dispatch(queued.Message);
                     sw.Stop();
-                    bool isError = response.Contains("\"error\"");
+                    var errorInfo = ExtractErrorInfo(response, logMethod);
+                    bool isError = errorInfo.HasError;
                     RequestLog.Add(
                         logMethod,
                         !isError,
-                        null,
+                        errorInfo.Message,
                         sw.ElapsedMilliseconds,
                         Encoding.UTF8.GetByteCount(queued.Message),
-                        Encoding.UTF8.GetByteCount(response)
+                        Encoding.UTF8.GetByteCount(response),
+                        errorInfo.Code,
+                        errorInfo.CodeName,
+                        errorInfo.RiskLevel
                     );
 
                     if (isError) Interlocked.Increment(ref _totalErrors);
@@ -277,7 +281,7 @@ namespace KarnelLabs.MCP
                 catch (Exception ex)
                 {
                     Debug.LogError($"[MCP] Dispatch error: {ex.Message}");
-                    RequestLog.Add(logMethod, false, ex.Message);
+                    RequestLog.Add(logMethod, false, ex.Message, errorCode: -32000, codeName: SafetyPolicy.CodeName(-32000));
                     Interlocked.Increment(ref _totalErrors);
                     Interlocked.Increment(ref _totalProcessed);
 
@@ -654,6 +658,49 @@ namespace KarnelLabs.MCP
         {
             public string Message;
             public DateTime EnqueueTime;
+        }
+
+        private struct ErrorInfo
+        {
+            public bool HasError;
+            public int? Code;
+            public string CodeName;
+            public string RiskLevel;
+            public string Message;
+        }
+
+        private static ErrorInfo ExtractErrorInfo(string response, string method)
+        {
+            var info = new ErrorInfo
+            {
+                HasError = false,
+                RiskLevel = SafetyPolicy.Describe(method).RiskLevel,
+            };
+
+            try
+            {
+                var obj = JObject.Parse(response);
+                var error = obj["error"] as JObject;
+                if (error == null) return info;
+
+                info.HasError = true;
+                info.Code = (int?)error["code"];
+                info.Message = (string)error["message"];
+
+                var data = error["data"];
+                info.CodeName = (string)data?["codeName"] ?? (info.Code.HasValue ? SafetyPolicy.CodeName(info.Code.Value) : null);
+                info.RiskLevel = (string)data?["risk"]?["riskLevel"] ?? info.RiskLevel;
+            }
+            catch
+            {
+                info.HasError = response != null && response.Contains("\"error\"");
+                if (info.HasError)
+                {
+                    info.CodeName = "UNITY_API_ERROR";
+                }
+            }
+
+            return info;
         }
 
         // ── 진단 정보 ──────────────────────────────────────────────

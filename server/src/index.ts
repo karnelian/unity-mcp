@@ -224,7 +224,7 @@ function resolveEnabledToolGroups(): string[] {
 
 const server = new McpServer({
   name: "karnellabs-unity-mcp",
-  version: "0.3.2",
+  version: "0.3.3",
 });
 
 const bridge = new UnityBridge({
