@@ -77,6 +77,151 @@ import { registerUnitySearchTools } from "./tools/unitysearch.js";
 import { registerGridLayoutTools } from "./tools/gridlayout.js";
 import { registerResources } from "./resources/index.js";
 
+type ToolRegistrar = (server: McpServer, bridge: UnityBridge) => void;
+
+interface ToolGroup {
+  name: string;
+  register: ToolRegistrar;
+}
+
+const TOOL_GROUPS: ToolGroup[] = [
+  { name: "scene", register: registerSceneTools },
+  { name: "script", register: registerScriptTools },
+  { name: "asset", register: registerAssetTools },
+  { name: "editor", register: registerEditorTools },
+  { name: "debug", register: registerDebugTools },
+  { name: "workflow", register: registerWorkflowTools },
+  { name: "batch", register: registerBatchTools },
+  { name: "material", register: registerMaterialTools },
+  { name: "light", register: registerLightTools },
+  { name: "camera", register: registerCameraTools },
+  { name: "physics", register: registerPhysicsTools },
+  { name: "ui", register: registerUITools },
+  { name: "prefab", register: registerPrefabTools },
+  { name: "component", register: registerComponentTools },
+  { name: "audio", register: registerAudioTools },
+  { name: "animator", register: registerAnimatorTools },
+  { name: "terrain", register: registerTerrainTools },
+  { name: "navmesh", register: registerNavMeshTools },
+  { name: "shader", register: registerShaderTools },
+  { name: "project", register: registerProjectTools },
+  { name: "scriptableobject", register: registerScriptableObjectTools },
+  { name: "texture", register: registerTextureTools },
+  { name: "model", register: registerModelTools },
+  { name: "package", register: registerPackageTools },
+  { name: "validation", register: registerValidationTools },
+  { name: "optimization", register: registerOptimizationTools },
+  { name: "placement", register: registerPlacementTools },
+  { name: "timeline", register: registerTimelineTools },
+  { name: "profiler", register: registerProfilerTools },
+  { name: "cleaner", register: registerCleanerTools },
+  { name: "cinemachine", register: registerCinemachineTools },
+  { name: "probuilder", register: registerProBuilderTools },
+  { name: "xr", register: registerXRTools },
+  { name: "perception", register: registerPerceptionTools },
+  { name: "event", register: registerEventTools },
+  { name: "smart", register: registerSmartTools },
+  { name: "particle", register: registerParticleTools },
+  { name: "tilemap2d", register: registerTilemap2DTools },
+  { name: "rendering", register: registerRenderingTools },
+  { name: "spline", register: registerSplineTools },
+  { name: "vfx", register: registerVFXTools },
+  { name: "inputsystem", register: registerInputSystemTools },
+  { name: "addressables", register: registerAddressablesTools },
+  { name: "uitoolkit", register: registerUIToolkitTools },
+  { name: "sprite", register: registerSpriteTools },
+  { name: "animation2d", register: registerAnimation2DTools },
+  { name: "localization", register: registerLocalizationTools },
+  { name: "versioncontrol", register: registerVersionControlTools },
+  { name: "joint", register: registerJointTools },
+  { name: "physics2d", register: registerPhysics2DTools },
+  { name: "lod", register: registerLODTools },
+  { name: "charactercontroller", register: registerCharacterControllerTools },
+  { name: "textmeshpro", register: registerTextMeshProTools },
+  { name: "lightmapping", register: registerLightmappingTools },
+  { name: "video", register: registerVideoTools },
+  { name: "linerenderer", register: registerLineRendererTools },
+  { name: "constraint", register: registerConstraintTools },
+  { name: "scrollrect", register: registerScrollRectTools },
+  { name: "canvasgroup", register: registerCanvasGroupTools },
+  { name: "uimask", register: registerUIMaskTools },
+  { name: "cloth", register: registerClothTools },
+  { name: "sortinglayer", register: registerSortingLayerTools },
+  { name: "occlusionculling", register: registerOcclusionCullingTools },
+  { name: "rendertexture", register: registerRenderTextureTools },
+  { name: "sceneview", register: registerSceneViewTools },
+  { name: "asmdef", register: registerAsmdefTools },
+  { name: "spriteshape", register: registerSpriteShapeTools },
+  { name: "skeletal2d", register: registerSkeletal2DTools },
+  { name: "ruletile", register: registerRuleTileTools },
+  { name: "computeshader", register: registerComputeShaderTools },
+  { name: "renderfeature", register: registerRenderFeatureTools },
+  { name: "preset", register: registerPresetTools },
+  { name: "unitysearch", register: registerUnitySearchTools },
+  { name: "gridlayout", register: registerGridLayoutTools }
+];
+
+const ALL_TOOL_GROUPS = TOOL_GROUPS.map(group => group.name);
+
+const PROFILE_GROUPS: Record<string, string[]> = {
+  core: [
+    "project", "editor", "debug", "scene", "script", "asset", "component",
+    "prefab", "package", "validation", "workflow", "batch", "asmdef", "unitysearch"
+  ],
+  ui: ["ui", "uitoolkit", "textmeshpro", "scrollrect", "canvasgroup", "uimask", "gridlayout"],
+  "2d": ["tilemap2d", "sprite", "animation2d", "physics2d", "spriteshape", "skeletal2d", "ruletile", "sortinglayer"],
+  rendering: ["material", "light", "camera", "shader", "texture", "rendering", "rendertexture", "renderfeature", "lightmapping", "occlusionculling", "computeshader"],
+  animation: ["animator", "timeline", "cinemachine", "animation2d"],
+  physics: ["physics", "physics2d", "navmesh", "joint", "charactercontroller", "cloth", "constraint"],
+  assets: ["asset", "material", "texture", "model", "scriptableobject", "preset", "addressables", "localization"],
+  mobile: ["profiler", "optimization", "cleaner", "texture", "model", "lod", "audio"],
+  xr: ["xr", "inputsystem", "camera", "rendering"],
+  media: ["audio", "video", "particle", "vfx", "linerenderer"],
+  terrain: ["terrain", "navmesh", "placement"],
+  full: ALL_TOOL_GROUPS,
+};
+
+function readOption(name: string, envName: string): string | undefined {
+  const cliValue = process.argv.find(arg => arg.startsWith(`--${name}=`));
+  if (cliValue) return cliValue.slice(name.length + 3);
+  return process.env[envName];
+}
+
+function splitList(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map(item => item.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function resolveEnabledToolGroups(): string[] {
+  const requestedProfiles = splitList(readOption("profile", "UNITY_MCP_PROFILE"));
+  const requestedTools = splitList(readOption("tools", "UNITY_MCP_TOOLS"));
+  const profiles = requestedProfiles.length > 0 ? requestedProfiles : ["core"];
+  const knownToolGroups = new Set(ALL_TOOL_GROUPS);
+  const enabled = new Set<string>();
+
+  for (const profile of profiles) {
+    const groups = PROFILE_GROUPS[profile];
+    if (!groups) {
+      console.error(`[Unity MCP] Unknown profile '${profile}'. Known profiles: ${Object.keys(PROFILE_GROUPS).join(", ")}`);
+      continue;
+    }
+    for (const group of groups) enabled.add(group);
+  }
+
+  for (const tool of requestedTools) {
+    if (!knownToolGroups.has(tool)) {
+      console.error(`[Unity MCP] Unknown tool group '${tool}'. Known groups: ${ALL_TOOL_GROUPS.join(", ")}`);
+      continue;
+    }
+    enabled.add(tool);
+  }
+
+  return ALL_TOOL_GROUPS.filter(group => enabled.has(group));
+}
+
 const server = new McpServer({
   name: "karnellabs-unity-mcp",
   version: "0.3.0",
@@ -95,81 +240,17 @@ const bridge = new UnityBridge({
   },
 });
 
-// Phase 1 도구 등록
-registerSceneTools(server, bridge);
-registerScriptTools(server, bridge);
-registerAssetTools(server, bridge);
-registerEditorTools(server, bridge);
-registerDebugTools(server, bridge);
-registerWorkflowTools(server, bridge);
-registerBatchTools(server, bridge);
-registerMaterialTools(server, bridge);
-registerLightTools(server, bridge);
-registerCameraTools(server, bridge);
-registerPhysicsTools(server, bridge);
-registerUITools(server, bridge);
-registerPrefabTools(server, bridge);
-registerComponentTools(server, bridge);
-registerAudioTools(server, bridge);
-registerAnimatorTools(server, bridge);
-registerTerrainTools(server, bridge);
-registerNavMeshTools(server, bridge);
-registerShaderTools(server, bridge);
-registerProjectTools(server, bridge);
-registerScriptableObjectTools(server, bridge);
-registerTextureTools(server, bridge);
-registerModelTools(server, bridge);
-registerPackageTools(server, bridge);
-registerValidationTools(server, bridge);
-registerOptimizationTools(server, bridge);
-registerPlacementTools(server, bridge);
-registerTimelineTools(server, bridge);
-registerProfilerTools(server, bridge);
-registerCleanerTools(server, bridge);
-registerCinemachineTools(server, bridge);
-registerProBuilderTools(server, bridge);
-registerXRTools(server, bridge);
-registerPerceptionTools(server, bridge);
-registerEventTools(server, bridge);
-registerSmartTools(server, bridge);
-registerParticleTools(server, bridge);
-registerTilemap2DTools(server, bridge);
-registerRenderingTools(server, bridge);
-registerSplineTools(server, bridge);
-registerVFXTools(server, bridge);
-registerInputSystemTools(server, bridge);
-registerAddressablesTools(server, bridge);
-registerUIToolkitTools(server, bridge);
-registerSpriteTools(server, bridge);
-registerAnimation2DTools(server, bridge);
-registerLocalizationTools(server, bridge);
-registerVersionControlTools(server, bridge);
-registerJointTools(server, bridge);
-registerPhysics2DTools(server, bridge);
-registerLODTools(server, bridge);
-registerCharacterControllerTools(server, bridge);
-registerTextMeshProTools(server, bridge);
-registerLightmappingTools(server, bridge);
-registerVideoTools(server, bridge);
-registerLineRendererTools(server, bridge);
-registerConstraintTools(server, bridge);
-registerScrollRectTools(server, bridge);
-registerCanvasGroupTools(server, bridge);
-registerUIMaskTools(server, bridge);
-registerClothTools(server, bridge);
-registerSortingLayerTools(server, bridge);
-registerOcclusionCullingTools(server, bridge);
-registerRenderTextureTools(server, bridge);
-registerSceneViewTools(server, bridge);
-registerAsmdefTools(server, bridge);
-registerSpriteShapeTools(server, bridge);
-registerSkeletal2DTools(server, bridge);
-registerRuleTileTools(server, bridge);
-registerComputeShaderTools(server, bridge);
-registerRenderFeatureTools(server, bridge);
-registerPresetTools(server, bridge);
-registerUnitySearchTools(server, bridge);
-registerGridLayoutTools(server, bridge);
+const enabledToolGroups = new Set(resolveEnabledToolGroups());
+
+for (const group of TOOL_GROUPS) {
+  if (enabledToolGroups.has(group.name)) {
+    group.register(server, bridge);
+  }
+}
+
+console.error(
+  `[Unity MCP] Tool profile '${readOption("profile", "UNITY_MCP_PROFILE") || "core"}' enabled ${enabledToolGroups.size}/${TOOL_GROUPS.length} tool groups: ${Array.from(enabledToolGroups).join(", ")}`
+);
 
 // 리소스 등록
 registerResources(server, bridge);

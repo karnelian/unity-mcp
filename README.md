@@ -46,7 +46,7 @@ Once installed, open the server window via **Tools > KarnelLabs MCP > Server Win
 </p>
 
 The window shows:
-- **Connection Status** — `Connected` (green) when Claude Code is attached
+- **Connection Status** — `Connected` (active socket), `Recently Active` (Claude made a recent MCP call), `Listening`, or `Stopped`
 - **Handlers** — number of registered C# command handlers (686+)
 - **Server Settings** — WebSocket port (default 8099), Start/Stop/Restart
 - **Claude Code Configuration** — copy-paste JSON for `.mcp.json` / `claude_desktop_config.json`
@@ -56,10 +56,35 @@ The window shows:
 ## Commands
 
 ```bash
-npx github:karnelian/unity-mcp setup       # First-time install (plugin + .mcp.json)
-npx github:karnelian/unity-mcp update       # Update plugin only (keeps .mcp.json)
-npx github:karnelian/unity-mcp instances    # List running Unity instances
+npx github:karnelian/unity-mcp setup                  # First-time install (plugin + .mcp.json, default profile: core)
+npx github:karnelian/unity-mcp setup --profile=core,ui # Install/update .mcp.json with UI tools enabled
+npx github:karnelian/unity-mcp update                  # Update plugin only (keeps .mcp.json)
+npx github:karnelian/unity-mcp instances               # List running Unity instances
 ```
+
+### Tool Profiles
+
+By default the MCP server exposes the lightweight `core` profile instead of all 74 tool categories. This keeps Claude Code's tool list smaller, cheaper, and less confusing. The installed package is the same; profiles only choose which tool groups are registered for the current MCP session.
+
+```bash
+npx github:karnelian/unity-mcp --profile=core,ui
+npx github:karnelian/unity-mcp --profile=core,2d
+npx github:karnelian/unity-mcp --profile=core,xr,rendering
+npx github:karnelian/unity-mcp --profile=full
+```
+
+Common profiles:
+
+- `core`: project/editor/debug/scene/script/asset/component/prefab/package/validation/workflow/batch
+- `ui`: uGUI, UI Toolkit, TextMeshPro, canvas/scroll/grid helpers
+- `2d`: sprites, tilemaps, 2D physics, Sprite Shape, Rule Tile, sorting layers
+- `rendering`: materials, lights, cameras, shaders, render textures/features, lightmapping
+- `animation`: Animator, Timeline, Cinemachine, 2D animation
+- `mobile`: profiler, optimization, cleaner, texture/model/LOD/audio helpers
+- `xr`: XR, Input System, camera/rendering helpers
+- `full`: all tool groups, for debugging or broad exploratory work
+
+You can add individual groups with `--tools=cinemachine,addressables` without switching to `full`. `setup --profile=...` writes the chosen profile into `.mcp.json`, so you normally set it once per project.
 
 ## Architecture
 

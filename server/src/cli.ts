@@ -8,7 +8,30 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const command = process.argv[2];
-const flags = new Set(process.argv.slice(3));
+const commandArgs = process.argv.slice(3);
+const flags = new Set(commandArgs);
+
+function readArg(name: string, args = process.argv.slice(2)): string | undefined {
+  const flag = args.find(a => a.startsWith(`--${name}=`));
+  return flag ? flag.slice(name.length + 3) : undefined;
+}
+
+function normalizeProfile(profile: string | undefined): string {
+  return (profile || "core")
+    .split(",")
+    .map(p => p.trim().toLowerCase())
+    .filter(Boolean)
+    .join(",") || "core";
+}
+
+function normalizeTools(tools: string | undefined): string | undefined {
+  const normalized = tools
+    ?.split(",")
+    .map(t => t.trim().toLowerCase())
+    .filter(Boolean)
+    .join(",");
+  return normalized || undefined;
+}
 
 if (command === "setup") {
   setup();
@@ -18,11 +41,16 @@ if (command === "setup") {
   listInstances();
 } else {
   // Default: run MCP server
-  // Support --port flag for multi-instance
-  const portFlag = process.argv.find(a => a.startsWith("--port="));
-  if (portFlag) {
-    process.env.UNITY_WS_PORT = portFlag.split("=")[1];
-  }
+  // Support --port / --profile / --tools flags for multi-instance and tool-surface control.
+  const port = readArg("port");
+  if (port) process.env.UNITY_WS_PORT = port;
+
+  const profile = readArg("profile");
+  if (profile) process.env.UNITY_MCP_PROFILE = normalizeProfile(profile);
+
+  const tools = normalizeTools(readArg("tools"));
+  if (tools) process.env.UNITY_MCP_TOOLS = tools;
+
   await import("./index.js");
 }
 
@@ -135,11 +163,16 @@ function setup() {
   if (!flags.has("--update")) {
     const mcpJsonPath = join(targetDir, ".mcp.json");
     const ghUrl = getGitHubUrl();
+    const profile = normalizeProfile(readArg("profile", commandArgs));
+    const tools = normalizeTools(readArg("tools", commandArgs));
+    const serverArgs = ["-y", ghUrl, `--profile=${profile}`];
+    if (tools) serverArgs.push(`--tools=${tools}`);
+    const shouldUpdateExistingConfig = Boolean(readArg("profile", commandArgs) || readArg("tools", commandArgs));
     const mcpConfig = {
       mcpServers: {
         "karnellabs-unity-mcp": {
           command: "npx",
-          args: ["-y", ghUrl],
+          args: serverArgs,
         },
       },
     };
@@ -147,13 +180,15 @@ function setup() {
     if (existsSync(mcpJsonPath)) {
       try {
         const existing = JSON.parse(readFileSync(mcpJsonPath, "utf-8"));
-        if (existing.mcpServers?.["karnellabs-unity-mcp"]) {
-          console.log("   ⏭️  .mcp.json already configured, skipping.");
+        if (existing.mcpServers?.["karnellabs-unity-mcp"] && !shouldUpdateExistingConfig) {
+          console.log("   ⏭️  .mcp.json already configured, skipping. Use setup --profile=... to update the tool profile.");
         } else {
           existing.mcpServers = existing.mcpServers || {};
           existing.mcpServers["karnellabs-unity-mcp"] = mcpConfig.mcpServers["karnellabs-unity-mcp"];
           writeFileSync(mcpJsonPath, JSON.stringify(existing, null, 2) + "\n");
-          console.log("   ✅ Added karnellabs-unity-mcp to existing .mcp.json");
+          console.log(existing.mcpServers?.["karnellabs-unity-mcp"] && shouldUpdateExistingConfig
+            ? `   ✅ Updated karnellabs-unity-mcp profile in .mcp.json (${profile}${tools ? ` + tools:${tools}` : ""})`
+            : "   ✅ Added karnellabs-unity-mcp to existing .mcp.json");
         }
       } catch {
         writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + "\n");
@@ -175,7 +210,8 @@ function setup() {
   console.log("  3. Open Claude Code in this folder and start working!");
   console.log("");
   console.log("Commands:");
-  console.log("  npx github:karnelian/unity-mcp update     — Update plugin only");
-  console.log("  npx github:karnelian/unity-mcp instances   — List running Unity instances");
+  console.log("  npx github:karnelian/unity-mcp setup --profile=core,ui  — Set/update tool profile");
+  console.log("  npx github:karnelian/unity-mcp update                   — Update plugin only");
+  console.log("  npx github:karnelian/unity-mcp instances                — List running Unity instances");
   console.log("");
 }

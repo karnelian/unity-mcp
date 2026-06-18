@@ -53,8 +53,10 @@ namespace KarnelLabs.MCP
             EditorGUILayout.LabelField("Connection Status", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
             {
-                var statusColor = McpBridge.IsConnected ? Color.green : Color.red;
-                var statusText = McpBridge.IsConnected ? "Connected" : "Disconnected";
+                var activeSocket = McpBridge.HasActiveClient;
+                var recentlyActive = McpBridge.IsRecentlyActive;
+                var statusColor = activeSocket ? Color.green : recentlyActive ? new Color(0.9f, 0.75f, 0.2f) : McpBridge.IsRunning ? new Color(0.4f, 0.7f, 1f) : Color.red;
+                var statusText = activeSocket ? "Connected" : recentlyActive ? "Recently Active" : McpBridge.IsRunning ? "Listening" : "Stopped";
 
                 var style = new GUIStyle(EditorStyles.label);
                 style.normal.textColor = statusColor;
@@ -129,6 +131,10 @@ namespace KarnelLabs.MCP
             // === 정보 ===
             EditorGUILayout.LabelField("Info", EditorStyles.boldLabel);
             EditorGUILayout.LabelField($"WebSocket: ws://127.0.0.1:{McpBridge.Port}");
+            EditorGUILayout.LabelField($"Active Socket: {(McpBridge.HasActiveClient ? "Yes" : "No")}");
+            EditorGUILayout.LabelField($"Client: {McpBridge.ClientEndpoint}");
+            var lastActivity = McpBridge.LastClientActivityUtc;
+            EditorGUILayout.LabelField($"Last Activity: {(lastActivity.HasValue ? lastActivity.Value.ToLocalTime().ToString("HH:mm:ss") : "-")}");
             EditorGUILayout.LabelField($"Unity Version: {Application.unityVersion}");
             EditorGUILayout.LabelField($"Project: {Application.productName}");
         }
