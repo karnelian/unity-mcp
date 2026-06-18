@@ -55,6 +55,30 @@ The window shows:
 
 ## Commands
 
+### Claude Code Marketplace Install
+
+This repository ships a Claude Code plugin marketplace entry. After the marketplace files are merged to GitHub, install it with:
+
+```bash
+gh auth login
+claude plugin marketplace add karnelian/unity-mcp
+claude plugin install unity-mcp@karnelian-unity-mcp -s user
+```
+
+The marketplace plugin starts the optimized MCP server automatically with the default `core` profile. Each Unity project still needs the Unity package setup once from the project root:
+
+```bash
+npx -y github:karnelian/unity-mcp setup --profile=core
+```
+
+For UI-heavy Unity projects:
+
+```bash
+npx -y github:karnelian/unity-mcp setup --profile=core,ui
+```
+
+After install/update, restart Claude Code so plugin MCP servers reload.
+
 ```bash
 npx github:karnelian/unity-mcp setup                  # First-time install (plugin + .mcp.json, default profile: core)
 npx github:karnelian/unity-mcp setup --profile=core,ui # Install/update .mcp.json with UI tools enabled
