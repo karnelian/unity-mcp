@@ -25,5 +25,7 @@ Do the following, read-only by default:
 Rules:
 
 - Read-only unless the user explicitly requests fixes.
+- If the user requests fixes, run `unity_mcp_safety_manifest` first, then use `dryRun: true` for planned scene/component mutations before applying them.
 - If fixing later, prefer workflow begin → small change → validation → compile/console check.
+- For deletes, undo-session, broad scene changes, or project settings changes, stop for explicit approval and use the manifest/describe `confirmationToken` if confirmation is enabled.
 - Do not invent required objects; label assumptions from `$ARGUMENTS`.

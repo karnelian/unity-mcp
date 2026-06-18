@@ -10,14 +10,16 @@ Use `$ARGUMENTS` as an optional error focus, class name, namespace, or file path
 Do the following loop:
 
 1. Confirm Unity MCP is connected. If it is not connected, tell the user to open Unity and start `Tools > KarnelLabs MCP > Server Window`, then stop.
-2. Run `unity_script_compileCheck` or `unity_project_health` to get the current compile status and Console compiler errors.
-3. Pick the smallest coherent error group to fix first. If `$ARGUMENTS` is provided, prioritize matching errors/files.
-4. Read only the directly relevant C# files.
-5. Explain the suspected root cause briefly before editing.
-6. Make the smallest safe C# change.
-7. Write scripts with `unity_script_writeAndCompile`.
-8. Re-run `unity_script_compileCheck` or `unity_project_health`.
-9. If compile errors remain, repeat from step 3 until either:
+2. Run `unity_mcp_safety_manifest` and note that this workflow should normally use only script mutating tools (`unity_script_edit` or `unity_script_writeAndCompile`).
+3. Run `unity_script_compileCheck` or `unity_project_health` to get the current compile status and Console compiler errors.
+4. Pick the smallest coherent error group to fix first. If `$ARGUMENTS` is provided, prioritize matching errors/files.
+5. Read only the directly relevant C# files.
+6. Explain the suspected root cause briefly before editing.
+7. Before the first script write, call the intended script write/edit tool with `dryRun: true` when supported and verify it targets only the intended file(s).
+8. Make the smallest safe C# change.
+9. Write scripts with `unity_script_writeAndCompile`.
+10. Re-run `unity_script_compileCheck` or `unity_project_health`.
+11. If compile errors remain, repeat from step 4 until either:
    - compilation is clean, or
    - the remaining errors require a product/design decision from the user.
 

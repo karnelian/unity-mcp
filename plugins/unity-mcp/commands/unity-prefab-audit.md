@@ -20,4 +20,5 @@ Do the following, read-only:
 Rules:
 
 - Read-only. Do not apply/revert overrides, rename prefabs, or edit assets without explicit approval.
-- Any future prefab apply/revert/delete must use dry-run/confirmation where available.
+- If the user requests prefab/asset fixes, run `unity_mcp_safety_manifest` first and use `dryRun: true` for asset/prefab mutations before applying them.
+- Any future prefab apply/revert/delete must use dry-run/confirmation where available; delete/revert flows require explicit approval and the manifest/describe `confirmationToken` when confirmation is enabled.

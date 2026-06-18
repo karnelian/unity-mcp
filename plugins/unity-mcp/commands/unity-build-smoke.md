@@ -9,10 +9,12 @@ Do the following:
 
 1. Confirm Unity MCP is connected. If it is not connected, tell the user to open Unity and start `Tools > KarnelLabs MCP > Server Window`, then stop.
 2. Run `unity_project_health` first.
-3. If compile errors exist, stop and recommend `/unity-compile-fix` first.
-4. Check build target, scenes in build, packages, render pipeline, and platform-specific obvious blockers.
-5. If a build tool is available and the user explicitly requested running the build, run the smallest safe smoke build. Otherwise, only produce a build smoke plan.
-6. Report expected output path, target, blockers, and follow-up checks.
+3. Run `unity_mcp_safety_manifest` and inspect `unity_editor_build` plus any build-target/settings tools that may be needed.
+4. If compile errors exist, stop and recommend `/unity-compile-fix` first.
+5. Check build target, scenes in build, packages, render pipeline, and platform-specific obvious blockers.
+6. If the user explicitly requested running a build, first call `unity_editor_build` with `dryRun: true` using the intended target/output. Summarize the dry-run risk/result before executing the real build.
+7. If build-target switching or project-setting changes are required, do not perform them by default; explain that they are high-risk and require explicit user approval and, when configured, the manifest/describe `confirmationToken`.
+8. Report expected output path, target, blockers, and follow-up checks.
 
 Rules:
 

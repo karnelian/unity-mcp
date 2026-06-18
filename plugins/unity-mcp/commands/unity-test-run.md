@@ -9,9 +9,10 @@ Do the following:
 
 1. Confirm Unity MCP is connected. If it is not connected, tell the user to open Unity and start `Tools > KarnelLabs MCP > Server Window`, then stop.
 2. Run `unity_project_health` or compile check first. If compile errors exist, stop and recommend `/unity-compile-fix`.
-3. Discover available EditMode/PlayMode tests if possible.
-4. If the user requested a specific run, run the smallest matching test set and poll until complete if the tool is async.
-5. Summarize passing/failing tests, failure messages, and next fix target.
+3. Run `unity_mcp_safety_manifest` and inspect `unity_editor_runTests`; treat test execution as medium-risk because it can enter PlayMode or mutate editor state.
+4. Discover available EditMode/PlayMode tests if possible.
+5. If the user requested a specific run, call `unity_editor_runTests` with `dryRun: true` for the smallest matching test set first, then run it for real only if the dry-run is scoped correctly.
+6. Summarize passing/failing tests, failure messages, and next fix target.
 
 Rules:
 
