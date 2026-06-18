@@ -4,14 +4,14 @@
     "name": "karnelian"
   },
   "description": "Claude Code marketplace for Karnelian Unity MCP tools.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "plugins": [
     {
       "name": "unity-mcp",
       "displayName": "Unity MCP",
       "source": "./plugins/unity-mcp",
       "description": "Connect Claude Code to the Unity Editor through the optimized Karnelian Unity MCP server.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "author": {
         "name": "karnelian"
       },
@@ -21,7 +21,19 @@
       "category": "game-development",
       "tags": ["unity", "mcp", "claude-code", "game-development"],
       "keywords": ["unity", "mcp", "claude-code", "game-development"],
-      "mcpServers": "./mcp.json"
+      "mcpServers": {
+        "karnellabs-unity-mcp": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "github:karnelian/unity-mcp",
+            "--profile=core"
+          ],
+          "env": {
+            "UNITY_MCP_PROFILE": "core"
+          }
+        }
+      }
     }
   ]
 }
