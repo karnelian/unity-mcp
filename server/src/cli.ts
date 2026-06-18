@@ -10,6 +10,8 @@ const __dirname = dirname(__filename);
 const command = process.argv[2];
 const commandArgs = process.argv.slice(3);
 const flags = new Set(commandArgs);
+const NEWTONSOFT_PACKAGE = "com.unity.nuget.newtonsoft-json";
+const NEWTONSOFT_VERSION = "3.2.1";
 
 function readArg(name: string, args = process.argv.slice(2)): string | undefined {
   const flag = args.find(a => a.startsWith(`--${name}=`));
@@ -103,8 +105,39 @@ function update() {
   console.log("📦 Updating Unity plugin...");
   cpSync(unityPluginSrc, pluginDest, { recursive: true, force: true });
   console.log("   ✅ Plugin updated at Assets/KarnelLabsMCP/Editor/");
+  ensureNewtonsoftPackage(targetDir);
   console.log("");
   console.log("Reopen Unity to recompile the plugin.");
+}
+
+function ensureNewtonsoftPackage(targetDir: string) {
+  const packagesDir = join(targetDir, "Packages");
+  const manifestPath = join(packagesDir, "manifest.json");
+
+  if (!existsSync(packagesDir)) {
+    mkdirSync(packagesDir, { recursive: true });
+  }
+
+  let manifest: any = { dependencies: {} };
+  if (existsSync(manifestPath)) {
+    try {
+      manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
+    } catch {
+      console.error(`❌ Failed to parse ${manifestPath}.`);
+      console.error(`   Add this dependency manually under dependencies: "${NEWTONSOFT_PACKAGE}": "${NEWTONSOFT_VERSION}"`);
+      process.exit(1);
+    }
+  }
+
+  manifest.dependencies = manifest.dependencies || {};
+  if (manifest.dependencies[NEWTONSOFT_PACKAGE]) {
+    console.log(`   ✅ Newtonsoft Json package already present (${NEWTONSOFT_PACKAGE}@${manifest.dependencies[NEWTONSOFT_PACKAGE]})`);
+    return;
+  }
+
+  manifest.dependencies[NEWTONSOFT_PACKAGE] = NEWTONSOFT_VERSION;
+  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
+  console.log(`   ✅ Added Unity Newtonsoft Json package (${NEWTONSOFT_PACKAGE}@${NEWTONSOFT_VERSION}) to Packages/manifest.json`);
 }
 
 function listInstances() {
@@ -159,7 +192,11 @@ function setup() {
   cpSync(unityPluginSrc, pluginDest, { recursive: true, force: true });
   console.log("   ✅ Plugin installed to Assets/KarnelLabsMCP/Editor/");
 
-  // 2. Create .mcp.json (skip if --update flag)
+  // 2. Ensure Unity's official Newtonsoft.Json package is available.
+  // The editor bridge uses Newtonsoft.Json/JObject for JSON-RPC parsing.
+  ensureNewtonsoftPackage(targetDir);
+
+  // 3. Create .mcp.json (skip if --update flag)
   if (!flags.has("--update")) {
     const mcpJsonPath = join(targetDir, ".mcp.json");
     const ghUrl = getGitHubUrl();
@@ -200,7 +237,7 @@ function setup() {
     }
   }
 
-  // 3. Done
+  // 4. Done
   console.log("");
   console.log("🎉 Setup complete!");
   console.log("");

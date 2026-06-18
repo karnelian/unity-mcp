@@ -30,7 +30,8 @@ npx github:karnelian/unity-mcp setup
 
 This single command:
 1. Installs the Unity Editor plugin to `Assets/KarnelLabsMCP/Editor/`
-2. Creates `.mcp.json` for Claude Code auto-connection
+2. Adds Unity's official `com.unity.nuget.newtonsoft-json` package to `Packages/manifest.json` when missing
+3. Creates `.mcp.json` for Claude Code auto-connection
 
 Then:
 1. Open the project in Unity
