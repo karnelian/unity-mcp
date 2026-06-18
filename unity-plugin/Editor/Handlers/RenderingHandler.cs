@@ -70,7 +70,7 @@ namespace KarnelLabs.MCP
 
             return new
             {
-                success = true, name = go.name, instanceId = go.GetInstanceID(),
+                success = true, name = go.name, instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go), isGlobal,
             };
         }
@@ -106,7 +106,7 @@ namespace KarnelLabs.MCP
 
         private static object FindVolumes(JToken p)
         {
-            var volumes = UnityEngine.Object.FindObjectsByType<Volume>(FindObjectsSortMode.None);
+            var volumes = UnityEngine.Object.FindObjectsByType<Volume>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             return new
             {
                 count = volumes.Length,

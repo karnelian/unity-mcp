@@ -46,7 +46,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var groups = Object.FindObjectsByType<CanvasGroup>(FindObjectsSortMode.None);
+            var groups = Object.FindObjectsByType<CanvasGroup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var result = groups.Select(cg => new
             {
                 gameObject = cg.gameObject.name,

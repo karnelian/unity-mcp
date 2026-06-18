@@ -84,7 +84,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var cloths = Object.FindObjectsByType<Cloth>(FindObjectsSortMode.None);
+            var cloths = Object.FindObjectsByType<Cloth>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var result = cloths.Select(c => new
             {
                 gameObject = c.gameObject.name,

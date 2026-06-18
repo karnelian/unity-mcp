@@ -188,7 +188,7 @@ namespace KarnelLabs.MCP
         private static object Find(JToken p)
         {
             string jointType = (string)p?["jointType"];
-            var allJoints = Object.FindObjectsByType<Joint>(FindObjectsSortMode.None);
+            var allJoints = Object.FindObjectsByType<Joint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             if (jointType != null)
                 allJoints = allJoints.Where(j => j.GetType().Name == jointType).ToArray();

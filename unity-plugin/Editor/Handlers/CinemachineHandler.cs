@@ -383,7 +383,7 @@ namespace KarnelLabs.MCP
 
         private static object FindCameras(JToken p)
         {
-            var vcams = UnityEngine.Object.FindObjectsByType<CinemachineCamera>(FindObjectsSortMode.None);
+            var vcams = UnityEngine.Object.FindObjectsByType<CinemachineCamera>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             var results = new List<object>();
             foreach (var v in vcams)

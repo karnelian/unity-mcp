@@ -68,7 +68,11 @@ namespace KarnelLabs.MCP
                     {
                         if (iter.propertyType == SerializedPropertyType.ObjectReference &&
                             iter.objectReferenceValue == null &&
+#if UNITY_6000_5_OR_NEWER
+                            iter.objectReferenceEntityIdValue != default)
+#else
                             iter.objectReferenceInstanceIDValue != 0)
+#endif
                         {
                             results.Add(new
                             {
@@ -154,7 +158,7 @@ namespace KarnelLabs.MCP
         private static object FindDisabledRenderers(JToken p)
         {
             var results = new List<object>();
-            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None);
+            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             foreach (var r in renderers)
             {
                 if (!r.enabled)
@@ -243,7 +247,7 @@ namespace KarnelLabs.MCP
         {
             var threshold = p["vertexThreshold"]?.Value<int>() ?? 10000;
             var results = new List<(string name, string path, string meshName, int vertexCount, int triangleCount)>();
-            var meshFilters = UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsSortMode.None);
+            var meshFilters = UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             foreach (var mf in meshFilters)
             {
                 if (mf.sharedMesh == null) continue;

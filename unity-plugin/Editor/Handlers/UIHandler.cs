@@ -90,7 +90,7 @@ namespace KarnelLabs.MCP
             return new
             {
                 name = go.name,
-                instanceId = go.GetInstanceID(),
+                instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 anchoredPosition = rt != null ? new { rt.anchoredPosition.x, rt.anchoredPosition.y } : null,
                 sizeDelta = rt != null ? new { x = rt.sizeDelta.x, y = rt.sizeDelta.y } : null,
@@ -414,13 +414,13 @@ namespace KarnelLabs.MCP
 
         private static object FindUI(JToken p)
         {
-            var canvases = UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+            var canvases = UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var results = canvases.Select(c => new
             {
                 name = c.gameObject.name,
                 renderMode = c.renderMode.ToString(),
                 childCount = c.transform.childCount,
-                instanceId = c.gameObject.GetInstanceID(),
+                instanceId = c.gameObject.GetInstanceIdCompat(),
             }).ToArray();
             return new { canvases = results };
         }
@@ -479,7 +479,7 @@ namespace KarnelLabs.MCP
             var targetOrder = targetCanvas != null ? targetCanvas.sortingOrder : 0;
 
             // Find all active Canvases with higher sorting order that have raycast-blocking content
-            var allCanvases = UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+            var allCanvases = UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             foreach (var canvas in allCanvases)
             {
                 if (canvas.rootCanvas != canvas) continue; // Skip nested canvases

@@ -239,7 +239,7 @@ namespace KarnelLabs.MCP
 
             // Collect all materials used by renderers in scene
             var usedMaterials = new HashSet<string>();
-            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None);
+            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             foreach (var r in renderers)
             {
                 foreach (var mat in r.sharedMaterials)

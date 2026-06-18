@@ -114,7 +114,7 @@ namespace KarnelLabs.MCP
                     Operation = operationName,
                     ObjectName = go.name,
                     ObjectPath = GameObjectFinder.GetFullPath(go.transform),
-                    InstanceId = go.GetInstanceID(),
+                    InstanceId = go.GetInstanceIdCompat(),
                     GlobalId = GlobalObjectId.GetGlobalObjectIdSlow(go).ToString(),
                     SerializedState = json,
                     UndoGroup = Undo.GetCurrentGroup(),

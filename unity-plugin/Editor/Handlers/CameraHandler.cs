@@ -31,7 +31,7 @@ namespace KarnelLabs.MCP
             return new
             {
                 name = go.name,
-                instanceId = go.GetInstanceID(),
+                instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 fieldOfView = cam.fieldOfView,
                 nearClipPlane = cam.nearClipPlane,

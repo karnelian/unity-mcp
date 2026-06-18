@@ -52,7 +52,7 @@ namespace KarnelLabs.MCP
 
             var allGOs = includeInactive
                 ? Resources.FindObjectsOfTypeAll<GameObject>().Where(go => go.scene.isLoaded)
-                : UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None).AsEnumerable();
+                : UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).AsEnumerable();
 
             foreach (var go in allGOs)
             {
@@ -83,7 +83,7 @@ namespace KarnelLabs.MCP
             int meshCount = 0;
             var materialSet = new HashSet<int>();
 
-            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None);
+            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             foreach (var r in renderers)
             {
                 var mf = r.GetComponent<MeshFilter>();
@@ -101,7 +101,7 @@ namespace KarnelLabs.MCP
                     totalTris += smr.sharedMesh.triangles.Length / 3;
                 }
                 foreach (var mat in r.sharedMaterials)
-                    if (mat != null) materialSet.Add(mat.GetInstanceID());
+                    if (mat != null) materialSet.Add(mat.GetInstanceIdCompat());
             }
 
             return new
@@ -201,7 +201,7 @@ namespace KarnelLabs.MCP
         private static object ComponentStats(JToken p)
         {
             var typeCounts = new Dictionary<string, int>();
-            var allComponents = UnityEngine.Object.FindObjectsByType<Component>(FindObjectsSortMode.None);
+            var allComponents = UnityEngine.Object.FindObjectsByType<Component>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             foreach (var comp in allComponents)
             {

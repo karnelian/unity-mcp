@@ -46,7 +46,7 @@ namespace KarnelLabs.MCP
             return new
             {
                 name = go.name,
-                instanceId = go.GetInstanceID(),
+                instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 type = light.type.ToString(),
                 color = new { light.color.r, light.color.g, light.color.b, light.color.a },
@@ -133,7 +133,7 @@ namespace KarnelLabs.MCP
         private static object FindLights(JToken p)
         {
             var typeFilter = p["type"]?.Value<string>();
-            var lights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsSortMode.None);
+            var lights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             IEnumerable<Light> filtered = lights;
 
             if (!string.IsNullOrEmpty(typeFilter))
@@ -291,7 +291,7 @@ namespace KarnelLabs.MCP
 
             return new
             {
-                success = true, name = go.name, instanceId = go.GetInstanceID(),
+                success = true, name = go.name, instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 size = new { probe.size.x, probe.size.y, probe.size.z },
                 resolution = probe.resolution,
@@ -320,7 +320,7 @@ namespace KarnelLabs.MCP
 
         private static object FindReflectionProbes(JToken p)
         {
-            var probes = UnityEngine.Object.FindObjectsByType<ReflectionProbe>(FindObjectsSortMode.None);
+            var probes = UnityEngine.Object.FindObjectsByType<ReflectionProbe>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             return new
             {
                 count = probes.Length,
@@ -355,7 +355,7 @@ namespace KarnelLabs.MCP
 
             return new
             {
-                success = true, name = go.name, instanceId = go.GetInstanceID(),
+                success = true, name = go.name, instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 probeCount = group.probePositions.Length,
             };

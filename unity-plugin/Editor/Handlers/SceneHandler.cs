@@ -75,7 +75,7 @@ namespace KarnelLabs.MCP
             return new
             {
                 name = t.name,
-                instanceId = t.gameObject.GetInstanceID(),
+                instanceId = t.gameObject.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetFullPath(t),
                 active = t.gameObject.activeSelf,
                 tag = t.tag,
@@ -307,7 +307,7 @@ namespace KarnelLabs.MCP
         {
             var go = FindGo(p);
             var deletedPath = GameObjectFinder.GetFullPath(go.transform);
-            var deletedId = go.GetInstanceID();
+            var deletedId = go.GetInstanceIdCompat();
             WorkflowManager.SnapshotObject(go, $"scene.delete({deletedPath})");
             Undo.DestroyObjectImmediate(go);
             return new { success = true, deleted = deletedPath, instanceId = deletedId };
@@ -360,7 +360,7 @@ namespace KarnelLabs.MCP
         private static object FindObjects(JToken p)
         {
             string name = (string)p?["name"]; string tag = (string)p?["tag"]; string layer = (string)p?["layer"]; string componentType = (string)p?["componentType"];
-            var all = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            var all = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             IEnumerable<GameObject> results = all;
             if (!string.IsNullOrEmpty(name)) results = results.Where(g => g.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
             if (!string.IsNullOrEmpty(tag)) results = results.Where(g => g.CompareTag(tag));
@@ -537,13 +537,13 @@ namespace KarnelLabs.MCP
             var objects = Selection.gameObjects;
             return new
             {
-                active = active != null ? new { name = active.name, path = GameObjectFinder.GetPath(active), instanceId = active.GetInstanceID() } : null,
+                active = active != null ? new { name = active.name, path = GameObjectFinder.GetPath(active), instanceId = active.GetInstanceIdCompat() } : null,
                 count = objects.Length,
                 selected = objects.Select(o => new
                 {
                     name = o.name,
                     path = GameObjectFinder.GetPath(o),
-                    instanceId = o.GetInstanceID(),
+                    instanceId = o.GetInstanceIdCompat(),
                 }).ToArray(),
             };
         }

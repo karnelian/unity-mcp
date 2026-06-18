@@ -40,7 +40,7 @@ namespace KarnelLabs.MCP
             if (p["rotation"] != null)
                 go.transform.localRotation = Quaternion.Euler(0, 0, (float)p["rotation"]);
 
-            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceID() };
+            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceIdCompat() };
         }
 
         private static object AddIK(JToken p)
@@ -98,13 +98,13 @@ namespace KarnelLabs.MCP
 
             if (type == "SpriteSkin" || type == "All")
             {
-                var skins = Object.FindObjectsByType<SpriteSkin>(FindObjectsSortMode.None);
+                var skins = Object.FindObjectsByType<SpriteSkin>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
                 foreach (var s in skins)
                     results.Add(new { gameObject = s.gameObject.name, path = GameObjectFinder.GetPath(s.gameObject), type = "SpriteSkin" });
             }
             if (type == "IK" || type == "All")
             {
-                var solvers = Object.FindObjectsByType<Solver2D>(FindObjectsSortMode.None);
+                var solvers = Object.FindObjectsByType<Solver2D>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
                 foreach (var s in solvers)
                     results.Add(new { gameObject = s.gameObject.name, path = GameObjectFinder.GetPath(s.gameObject), type = s.GetType().Name });
             }

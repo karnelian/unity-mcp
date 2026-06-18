@@ -182,13 +182,13 @@ namespace KarnelLabs.MCP
 
             if (type == "Line" || type == "All")
             {
-                var lines = Object.FindObjectsByType<LineRenderer>(FindObjectsSortMode.None);
+                var lines = Object.FindObjectsByType<LineRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
                 foreach (var lr in lines)
                     results.Add(new { gameObject = lr.gameObject.name, path = GameObjectFinder.GetPath(lr.gameObject), type = "LineRenderer", positionCount = lr.positionCount });
             }
             if (type == "Trail" || type == "All")
             {
-                var trails = Object.FindObjectsByType<TrailRenderer>(FindObjectsSortMode.None);
+                var trails = Object.FindObjectsByType<TrailRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
                 foreach (var tr in trails)
                     results.Add(new { gameObject = tr.gameObject.name, path = GameObjectFinder.GetPath(tr.gameObject), type = "TrailRenderer", positionCount = 0 });
             }

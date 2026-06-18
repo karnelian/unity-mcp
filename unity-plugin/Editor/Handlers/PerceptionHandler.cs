@@ -24,7 +24,7 @@ namespace KarnelLabs.MCP
         {
             var scene = SceneManager.GetActiveScene();
             var roots = scene.GetRootGameObjects();
-            var allTransforms = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsSortMode.None);
+            var allTransforms = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             int totalObjects = allTransforms.Length;
 
             // Component statistics
@@ -62,9 +62,9 @@ namespace KarnelLabs.MCP
                 .ToArray();
 
             // Light counts
-            var lights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsSortMode.None);
-            var cameras = UnityEngine.Object.FindObjectsByType<Camera>(FindObjectsSortMode.None);
-            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None);
+            var lights = UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var cameras = UnityEngine.Object.FindObjectsByType<Camera>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             int totalVertices = 0;
             int totalTriangles = 0;
             foreach (var r in renderers)
@@ -223,7 +223,7 @@ namespace KarnelLabs.MCP
 
         private static object SceneMaterials(JToken p)
         {
-            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None);
+            var renderers = UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var materialMap = new Dictionary<string, (Material mat, int count, List<string> users)>();
 
             foreach (var r in renderers)
@@ -231,7 +231,7 @@ namespace KarnelLabs.MCP
                 foreach (var mat in r.sharedMaterials)
                 {
                     if (mat == null) continue;
-                    string key = mat.GetInstanceID().ToString();
+                    string key = mat.GetInstanceIdCompat().ToString();
                     if (!materialMap.ContainsKey(key))
                         materialMap[key] = (mat, 0, new List<string>());
 

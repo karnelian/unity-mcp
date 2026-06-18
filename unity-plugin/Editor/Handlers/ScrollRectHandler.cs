@@ -59,7 +59,7 @@ namespace KarnelLabs.MCP
             if (p["decelerationRate"] != null) sr.decelerationRate = (float)p["decelerationRate"];
             if (p["scrollSensitivity"] != null) sr.scrollSensitivity = (float)p["scrollSensitivity"];
 
-            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceID() };
+            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceIdCompat() };
         }
 
         private static object Set(JToken p)
@@ -115,7 +115,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var scrollRects = Object.FindObjectsByType<ScrollRect>(FindObjectsSortMode.None);
+            var scrollRects = Object.FindObjectsByType<ScrollRect>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var result = scrollRects.Select(sr => new
             {
                 gameObject = sr.gameObject.name,

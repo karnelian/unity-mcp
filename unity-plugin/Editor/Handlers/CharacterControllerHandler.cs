@@ -74,7 +74,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var controllers = Object.FindObjectsByType<CharacterController>(FindObjectsSortMode.None);
+            var controllers = Object.FindObjectsByType<CharacterController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var result = controllers.Select(cc => new
             {
                 gameObject = cc.gameObject.name,

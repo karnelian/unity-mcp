@@ -70,7 +70,7 @@ namespace KarnelLabs.MCP
 
             return new
             {
-                success = true, name = go.name, instanceId = go.GetInstanceID(),
+                success = true, name = go.name, instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 knotCount = spline.Count, closed = spline.Closed,
             };
@@ -223,7 +223,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var containers = UnityEngine.Object.FindObjectsByType<SplineContainer>(FindObjectsSortMode.None);
+            var containers = UnityEngine.Object.FindObjectsByType<SplineContainer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var nameFilter = p["nameFilter"]?.Value<string>();
             var results = containers
                 .Where(c => string.IsNullOrEmpty(nameFilter) || c.gameObject.name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase))
@@ -231,7 +231,7 @@ namespace KarnelLabs.MCP
                 {
                     name = c.gameObject.name,
                     path = GameObjectFinder.GetPath(c.gameObject),
-                    instanceId = c.gameObject.GetInstanceID(),
+                    instanceId = c.gameObject.GetInstanceIdCompat(),
                     knotCount = c.Spline.Count,
                     closed = c.Spline.Closed,
                 }).ToArray();

@@ -51,7 +51,7 @@ namespace KarnelLabs.MCP
             return new
             {
                 name = terrain.gameObject.name,
-                instanceId = terrain.gameObject.GetInstanceID(),
+                instanceId = terrain.gameObject.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(terrain.gameObject),
                 size = new { td.size.x, td.size.y, td.size.z },
                 heightmapResolution = td.heightmapResolution,

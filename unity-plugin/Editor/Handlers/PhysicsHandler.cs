@@ -41,7 +41,7 @@ namespace KarnelLabs.MCP
             return new
             {
                 gameObject = hit.collider.gameObject.name,
-                instanceId = hit.collider.gameObject.GetInstanceID(),
+                instanceId = hit.collider.gameObject.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(hit.collider.gameObject),
                 point = new { hit.point.x, hit.point.y, hit.point.z },
                 normal = new { hit.normal.x, hit.normal.y, hit.normal.z },
@@ -74,7 +74,7 @@ namespace KarnelLabs.MCP
                 objects = colliders.Select(c => new
                 {
                     name = c.gameObject.name,
-                    instanceId = c.gameObject.GetInstanceID(),
+                    instanceId = c.gameObject.GetInstanceIdCompat(),
                     path = GameObjectFinder.GetPath(c.gameObject),
                 }).ToArray(),
             };
@@ -93,7 +93,7 @@ namespace KarnelLabs.MCP
                 objects = colliders.Select(c => new
                 {
                     name = c.gameObject.name,
-                    instanceId = c.gameObject.GetInstanceID(),
+                    instanceId = c.gameObject.GetInstanceIdCompat(),
                     path = GameObjectFinder.GetPath(c.gameObject),
                 }).ToArray(),
             };

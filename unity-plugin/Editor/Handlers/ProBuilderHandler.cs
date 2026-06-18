@@ -298,7 +298,7 @@ namespace KarnelLabs.MCP
 
         private static object FindProBuilderObjects(JToken p)
         {
-            var meshes = UnityEngine.Object.FindObjectsByType<ProBuilderMesh>(FindObjectsSortMode.None);
+            var meshes = UnityEngine.Object.FindObjectsByType<ProBuilderMesh>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var results = meshes.Select(m => new
             {
                 name = m.gameObject.name,

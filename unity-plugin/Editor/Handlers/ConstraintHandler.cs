@@ -164,7 +164,7 @@ namespace KarnelLabs.MCP
         {
             string typeFilter = (string)p?["constraintType"];
 
-            var allGOs = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+            var allGOs = Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                 .Where(mb => mb is IConstraint)
                 .Select(mb => mb.gameObject)
                 .Distinct();

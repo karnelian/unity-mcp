@@ -254,7 +254,7 @@ namespace KarnelLabs.MCP
 
         private static object FindInteractables(JToken p)
         {
-            var interactables = UnityEngine.Object.FindObjectsByType<XRBaseInteractable>(FindObjectsSortMode.None);
+            var interactables = UnityEngine.Object.FindObjectsByType<XRBaseInteractable>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var results = interactables.Select(i => new
             {
                 name = i.gameObject.name,
@@ -268,7 +268,7 @@ namespace KarnelLabs.MCP
 
         private static object FindInteractors(JToken p)
         {
-            var interactors = UnityEngine.Object.FindObjectsByType<XRBaseInteractor>(FindObjectsSortMode.None);
+            var interactors = UnityEngine.Object.FindObjectsByType<XRBaseInteractor>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var results = interactors.Select(i => new
             {
                 name = i.gameObject.name,
@@ -377,8 +377,8 @@ namespace KarnelLabs.MCP
 
         private static object GetXRRigInfo(JToken p)
         {
-            var rigs = UnityEngine.Object.FindObjectsByType<ActionBasedController>(FindObjectsSortMode.None);
-            var cameras = UnityEngine.Object.FindObjectsByType<TrackedPoseDriver>(FindObjectsSortMode.None);
+            var rigs = UnityEngine.Object.FindObjectsByType<ActionBasedController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var cameras = UnityEngine.Object.FindObjectsByType<TrackedPoseDriver>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             return new
             {

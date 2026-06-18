@@ -35,7 +35,7 @@ namespace KarnelLabs.MCP
             return new
             {
                 name = go.name,
-                instanceId = go.GetInstanceID(),
+                instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 clip = src.clip?.name,
                 volume = src.volume,
@@ -151,7 +151,7 @@ namespace KarnelLabs.MCP
 
         private static object FindSources(JToken p)
         {
-            var sources = UnityEngine.Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None);
+            var sources = UnityEngine.Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             return new { count = sources.Length, sources = sources.Select(SourceInfo).ToArray() };
         }
 

@@ -58,7 +58,7 @@ namespace KarnelLabs.MCP
 
             return new
             {
-                success = true, name = go.name, instanceId = go.GetInstanceID(),
+                success = true, name = go.name, instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 hasAsset = vfx.visualEffectAsset != null,
             };
@@ -163,7 +163,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var effects = UnityEngine.Object.FindObjectsByType<VisualEffect>(FindObjectsSortMode.None);
+            var effects = UnityEngine.Object.FindObjectsByType<VisualEffect>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var nameFilter = p["nameFilter"]?.Value<string>();
             var results = effects
                 .Where(v => string.IsNullOrEmpty(nameFilter) || v.gameObject.name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase))
@@ -171,7 +171,7 @@ namespace KarnelLabs.MCP
                 {
                     name = v.gameObject.name,
                     path = GameObjectFinder.GetPath(v.gameObject),
-                    instanceId = v.gameObject.GetInstanceID(),
+                    instanceId = v.gameObject.GetInstanceIdCompat(),
                     hasAsset = v.visualEffectAsset != null,
                     assetName = v.visualEffectAsset?.name,
                     aliveParticles = v.aliveParticleCount,

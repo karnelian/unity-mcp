@@ -41,7 +41,7 @@ namespace KarnelLabs.MCP
                 fullType = comp.GetType().FullName,
                 enabled = behaviour?.enabled,
                 gameObject = comp.gameObject.name,
-                instanceId = comp.GetInstanceID(),
+                instanceId = comp.GetInstanceIdCompat(),
             };
         }
 

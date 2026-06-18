@@ -50,7 +50,7 @@ namespace KarnelLabs.MCP
 
             return new
             {
-                success = true, name = go.name, instanceId = go.GetInstanceID(),
+                success = true, name = go.name, instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
                 hasUXML = doc.visualTreeAsset != null,
                 hasPanelSettings = doc.panelSettings != null,
@@ -78,12 +78,12 @@ namespace KarnelLabs.MCP
 
         private static object FindUIDocuments(JToken p)
         {
-            var docs = UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None);
+            var docs = UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var results = docs.Select(d => new
             {
                 name = d.gameObject.name,
                 path = GameObjectFinder.GetPath(d.gameObject),
-                instanceId = d.gameObject.GetInstanceID(),
+                instanceId = d.gameObject.GetInstanceIdCompat(),
                 hasUXML = d.visualTreeAsset != null,
                 uxmlName = d.visualTreeAsset?.name,
                 sortingOrder = d.sortingOrder,

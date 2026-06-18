@@ -63,8 +63,8 @@ namespace KarnelLabs.MCP
             return new
             {
                 success = true,
-                grid = new { name = gridGo.name, instanceId = gridGo.GetInstanceID(), path = GameObjectFinder.GetPath(gridGo) },
-                tilemap = new { name = tmGo.name, instanceId = tmGo.GetInstanceID(), path = GameObjectFinder.GetPath(tmGo) },
+                grid = new { name = gridGo.name, instanceId = gridGo.GetInstanceIdCompat(), path = GameObjectFinder.GetPath(gridGo) },
+                tilemap = new { name = tmGo.name, instanceId = tmGo.GetInstanceIdCompat(), path = GameObjectFinder.GetPath(tmGo) },
             };
         }
 
@@ -194,7 +194,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var tilemaps = UnityEngine.Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+            var tilemaps = UnityEngine.Object.FindObjectsByType<Tilemap>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var filter = p?["nameFilter"]?.Value<string>();
             if (!string.IsNullOrEmpty(filter))
                 tilemaps = tilemaps.Where(t => t.gameObject.name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
@@ -206,7 +206,7 @@ namespace KarnelLabs.MCP
                 {
                     name = t.gameObject.name,
                     path = GameObjectFinder.GetPath(t.gameObject),
-                    instanceId = t.gameObject.GetInstanceID(),
+                    instanceId = t.gameObject.GetInstanceIdCompat(),
                     tileCount = GetTileCount(t),
                 }).ToArray(),
             };
@@ -241,7 +241,7 @@ namespace KarnelLabs.MCP
 
             return new
             {
-                success = true, name = go.name, instanceId = go.GetInstanceID(),
+                success = true, name = go.name, instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go),
             };
         }
@@ -280,7 +280,7 @@ namespace KarnelLabs.MCP
 
         private static object FindSprites(JToken p)
         {
-            var sprites = UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None);
+            var sprites = UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var filter = p?["nameFilter"]?.Value<string>();
             if (!string.IsNullOrEmpty(filter))
                 sprites = sprites.Where(s => s.gameObject.name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();

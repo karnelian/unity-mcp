@@ -84,7 +84,7 @@ namespace KarnelLabs.MCP
             {
                 success = true,
                 name = go.name,
-                instanceId = go.GetInstanceID(),
+                instanceId = go.GetInstanceIdCompat(),
                 path = GameObjectFinder.GetPath(go)
             };
         }
@@ -101,7 +101,7 @@ namespace KarnelLabs.MCP
             {
                 name = ps.gameObject.name,
                 path = GameObjectFinder.GetPath(ps.gameObject),
-                instanceId = ps.gameObject.GetInstanceID(),
+                instanceId = ps.gameObject.GetInstanceIdCompat(),
                 isPlaying = ps.isPlaying,
                 isPaused = ps.isPaused,
                 isStopped = ps.isStopped,
@@ -469,7 +469,7 @@ namespace KarnelLabs.MCP
         private static object Find(JToken p)
         {
             var filter = p?["nameFilter"]?.Value<string>();
-            var particles = UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None);
+            var particles = UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             if (!string.IsNullOrEmpty(filter))
                 particles = particles.Where(ps => ps.gameObject.name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
@@ -481,7 +481,7 @@ namespace KarnelLabs.MCP
                 {
                     name = ps.gameObject.name,
                     path = GameObjectFinder.GetPath(ps.gameObject),
-                    instanceId = ps.gameObject.GetInstanceID(),
+                    instanceId = ps.gameObject.GetInstanceIdCompat(),
                     isPlaying = ps.isPlaying,
                     particleCount = ps.particleCount,
                     main = new

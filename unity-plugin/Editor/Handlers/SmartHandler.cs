@@ -61,7 +61,7 @@ namespace KarnelLabs.MCP
                 throw new McpException(-32003, $"Component type not found: {componentName}");
 
             // Find all instances
-            var allComponents = UnityEngine.Object.FindObjectsByType(componentType, FindObjectsSortMode.None);
+            var allComponents = UnityEngine.Object.FindObjectsByType(componentType, FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var results = new List<object>();
 
             foreach (Component comp in allComponents)
@@ -222,7 +222,7 @@ namespace KarnelLabs.MCP
                 throw new McpException(-32602, $"Field '{fieldName}' is not an array/list");
 
             // Find matching objects
-            var allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            var allObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var matched = new List<GameObject>();
 
             foreach (var obj in allObjects)

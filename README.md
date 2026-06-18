@@ -31,7 +31,8 @@ npx github:karnelian/unity-mcp setup
 This single command:
 1. Installs the Unity Editor plugin to `Assets/KarnelLabsMCP/Editor/`
 2. Adds Unity's official `com.unity.nuget.newtonsoft-json` package to `Packages/manifest.json` when missing — this uses Unity Package Manager and does **not** require a separate `nuget` CLI install
-3. Creates `.mcp.json` for Claude Code auto-connection
+3. Installs a Unity 6000.5+ compatibility layer for `GetEntityId`, missing-reference checks, and non-deprecated `FindObjectsByType` overloads
+4. Creates `.mcp.json` for Claude Code auto-connection
 
 Then:
 1. Open the project in Unity

@@ -147,8 +147,8 @@ namespace KarnelLabs.MCP
         private static object GetInfo(JToken p)
         {
             var triangulation = NavMesh.CalculateTriangulation();
-            var agents = UnityEngine.Object.FindObjectsByType<NavMeshAgent>(FindObjectsSortMode.None);
-            var obstacles = UnityEngine.Object.FindObjectsByType<NavMeshObstacle>(FindObjectsSortMode.None);
+            var agents = UnityEngine.Object.FindObjectsByType<NavMeshAgent>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var obstacles = UnityEngine.Object.FindObjectsByType<NavMeshObstacle>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             return new
             {
                 hasNavMesh = triangulation.vertices.Length > 0,

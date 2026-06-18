@@ -102,7 +102,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var controllers = Object.FindObjectsByType<SpriteShapeController>(FindObjectsSortMode.None);
+            var controllers = Object.FindObjectsByType<SpriteShapeController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var result = controllers.Select(ssc => new
             {
                 gameObject = ssc.gameObject.name,

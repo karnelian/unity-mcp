@@ -55,7 +55,7 @@ namespace KarnelLabs.MCP
                 var go = t.gameObject;
                 var path = GetFullPath(t);
 
-                _idCache[go.GetInstanceID()] = go;
+                _idCache[go.GetInstanceIdCompat()] = go;
                 _pathCache[path] = go;
 
                 if (!_nameCache.TryGetValue(go.name, out var list))
@@ -223,7 +223,7 @@ namespace KarnelLabs.MCP
             return new
             {
                 name = go.name,
-                instanceId = go.GetInstanceID(),
+                instanceId = go.GetInstanceIdCompat(),
                 path = GetFullPath(t),
                 active = go.activeSelf,
                 activeInHierarchy = go.activeInHierarchy,

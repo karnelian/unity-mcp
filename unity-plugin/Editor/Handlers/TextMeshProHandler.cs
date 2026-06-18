@@ -42,7 +42,7 @@ namespace KarnelLabs.MCP
             if (p["alignment"] != null) tmp.alignment = ParseAlignment((string)p["alignment"]);
             if (p["fontStyle"] != null) tmp.fontStyle = ParseFontStyle((string)p["fontStyle"]);
 
-            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceID() };
+            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceIdCompat() };
         }
 
         private static object Create3D(JToken p)
@@ -57,7 +57,7 @@ namespace KarnelLabs.MCP
             if (p["position"] != null) go.transform.position = JsonHelper.ToVector3(p["position"]);
             if (p["color"] != null) tmp.color = JsonHelper.ToColor(p["color"]);
 
-            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceID() };
+            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceIdCompat() };
         }
 
         private static object SetText(JToken p)
@@ -144,7 +144,7 @@ namespace KarnelLabs.MCP
         private static object Find(JToken p)
         {
             string textFilter = (string)p?["textFilter"];
-            var all = Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None);
+            var all = Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             if (!string.IsNullOrEmpty(textFilter))
                 all = all.Where(t => t.text != null && t.text.Contains(textFilter)).ToArray();

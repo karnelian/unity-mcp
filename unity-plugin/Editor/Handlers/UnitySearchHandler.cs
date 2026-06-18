@@ -42,7 +42,7 @@ namespace KarnelLabs.MCP
             int maxResults = p["maxResults"]?.Value<int>() ?? 100;
 
             // Search GameObjects in scene by name
-            var allGOs = Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            var allGOs = Object.FindObjectsByType<GameObject>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var filtered = allGOs.Where(go =>
             {
                 if (go.name.Contains(query, System.StringComparison.OrdinalIgnoreCase)) return true;
@@ -55,7 +55,7 @@ namespace KarnelLabs.MCP
             {
                 name = go.name,
                 path = GameObjectFinder.GetPath(go),
-                instanceId = go.GetInstanceID(),
+                instanceId = go.GetInstanceIdCompat(),
                 components = go.GetComponents<Component>().Where(c => c != null).Select(c => c.GetType().Name).ToArray(),
                 active = go.activeInHierarchy,
             }).ToArray();

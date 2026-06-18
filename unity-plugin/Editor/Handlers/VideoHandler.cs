@@ -100,7 +100,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var players = Object.FindObjectsByType<VideoPlayer>(FindObjectsSortMode.None);
+            var players = Object.FindObjectsByType<VideoPlayer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var result = players.Select(vp => new
             {
                 gameObject = vp.gameObject.name,

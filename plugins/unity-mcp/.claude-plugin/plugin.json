@@ -1,7 +1,7 @@
 {
   "name": "unity-mcp",
   "displayName": "Unity MCP",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Connect Claude Code to the Unity Editor through the optimized Karnelian Unity MCP server.",
   "author": {
     "name": "karnelian"

@@ -116,7 +116,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var lodGroups = Object.FindObjectsByType<LODGroup>(FindObjectsSortMode.None);
+            var lodGroups = Object.FindObjectsByType<LODGroup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var result = lodGroups.Select(lg => new
             {
                 gameObject = lg.gameObject.name,

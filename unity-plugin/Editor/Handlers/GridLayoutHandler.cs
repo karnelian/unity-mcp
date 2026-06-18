@@ -47,7 +47,7 @@ namespace KarnelLabs.MCP
                 };
             }
 
-            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceID() };
+            return new { success = true, gameObject = go.name, instanceId = go.GetInstanceIdCompat() };
         }
 
         private static object Set(JToken p)
@@ -104,7 +104,7 @@ namespace KarnelLabs.MCP
 
         private static object Find(JToken p)
         {
-            var grids = Object.FindObjectsByType<Grid>(FindObjectsSortMode.None);
+            var grids = Object.FindObjectsByType<Grid>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var result = grids.Select(g => new
             {
                 gameObject = g.gameObject.name,
