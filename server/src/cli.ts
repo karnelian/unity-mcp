@@ -138,6 +138,7 @@ function ensureNewtonsoftPackage(targetDir: string) {
   manifest.dependencies[NEWTONSOFT_PACKAGE] = NEWTONSOFT_VERSION;
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
   console.log(`   ✅ Added Unity Newtonsoft Json package (${NEWTONSOFT_PACKAGE}@${NEWTONSOFT_VERSION}) to Packages/manifest.json`);
+  console.log("      Unity Package Manager resolves this package; no external nuget CLI is required.");
 }
 
 function listInstances() {

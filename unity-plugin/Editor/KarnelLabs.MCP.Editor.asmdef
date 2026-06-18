@@ -2,6 +2,7 @@
   "name": "KarnelLabs.MCP.Editor",
   "rootNamespace": "KarnelLabs.MCP",
   "references": [
+    "Newtonsoft.Json",
     "Unity.ProBuilder",
     "Unity.ProBuilder.Editor",
     "Unity.Cinemachine",
