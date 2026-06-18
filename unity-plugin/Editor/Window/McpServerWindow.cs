@@ -8,7 +8,8 @@ namespace KarnelLabs.MCP
     public class McpServerWindow : EditorWindow
     {
         private int _port;
-        private Vector2 _scrollPos;
+        private Vector2 _windowScrollPos;
+        private Vector2 _configScrollPos;
         private Vector2 _logScrollPos;
         private string _mcpJsonConfig;
 
@@ -22,6 +23,12 @@ namespace KarnelLabs.MCP
         {
             _port = McpBridge.Port;
             UpdateMcpJsonConfig();
+            EditorApplication.update += OnEditorUpdate;
+        }
+
+        private void OnDisable()
+        {
+            EditorApplication.update -= OnEditorUpdate;
         }
 
         private void UpdateMcpJsonConfig()
@@ -47,6 +54,7 @@ namespace KarnelLabs.MCP
 
         private void OnGUI()
         {
+            _windowScrollPos = EditorGUILayout.BeginScrollView(_windowScrollPos);
             GUILayout.Space(10);
 
             // === 연결 상태 ===
@@ -109,7 +117,7 @@ namespace KarnelLabs.MCP
                 MessageType.Info
             );
 
-            _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos, GUILayout.Height(120));
+            _configScrollPos = EditorGUILayout.BeginScrollView(_configScrollPos, GUILayout.Height(120));
             EditorGUILayout.TextArea(_mcpJsonConfig, EditorStyles.textArea);
             EditorGUILayout.EndScrollView();
 
@@ -131,12 +139,14 @@ namespace KarnelLabs.MCP
             // === 정보 ===
             EditorGUILayout.LabelField("Info", EditorStyles.boldLabel);
             EditorGUILayout.LabelField($"WebSocket: ws://127.0.0.1:{McpBridge.Port}");
+            EditorGUILayout.LabelField($"Connected: {(McpBridge.IsConnected ? "Yes" : "No")}");
             EditorGUILayout.LabelField($"Active Socket: {(McpBridge.HasActiveClient ? "Yes" : "No")}");
             EditorGUILayout.LabelField($"Client: {McpBridge.ClientEndpoint}");
             var lastActivity = McpBridge.LastClientActivityUtc;
             EditorGUILayout.LabelField($"Last Activity: {(lastActivity.HasValue ? lastActivity.Value.ToLocalTime().ToString("HH:mm:ss") : "-")}");
             EditorGUILayout.LabelField($"Unity Version: {Application.unityVersion}");
             EditorGUILayout.LabelField($"Project: {Application.productName}");
+            EditorGUILayout.EndScrollView();
         }
 
         private void DrawRequestLog()
@@ -155,7 +165,7 @@ namespace KarnelLabs.MCP
             }
 
             // 로그 스크롤 뷰: 최대 5줄 높이
-            _logScrollPos = EditorGUILayout.BeginScrollView(_logScrollPos, GUILayout.Height(110));
+            _logScrollPos = EditorGUILayout.BeginScrollView(_logScrollPos, GUILayout.MinHeight(110), GUILayout.MaxHeight(220));
 
             // 최신 항목을 위쪽에 표시
             for (int i = entries.Count - 1; i >= 0; i--)
@@ -176,7 +186,8 @@ namespace KarnelLabs.MCP
 
                 EditorGUILayout.LabelField(entry.RiskLevel ?? "-", EditorStyles.miniLabel, GUILayout.Width(46));
                 EditorGUILayout.LabelField($"{entry.DurationMs}ms", EditorStyles.miniLabel, GUILayout.Width(54));
-                EditorGUILayout.LabelField($"{FormatBytes(entry.ResponseBytes)}", EditorStyles.miniLabel, GUILayout.Width(58));
+                EditorGUILayout.LabelField($"req {FormatBytes(entry.RequestBytes)}", EditorStyles.miniLabel, GUILayout.Width(70));
+                EditorGUILayout.LabelField($"res {FormatBytes(entry.ResponseBytes)}", EditorStyles.miniLabel, GUILayout.Width(70));
 
                 if (!entry.Success && entry.ErrorCode.HasValue)
                 {
@@ -216,6 +227,11 @@ namespace KarnelLabs.MCP
 
         // 실시간 업데이트
         private void OnInspectorUpdate()
+        {
+            Repaint();
+        }
+
+        private void OnEditorUpdate()
         {
             Repaint();
         }
