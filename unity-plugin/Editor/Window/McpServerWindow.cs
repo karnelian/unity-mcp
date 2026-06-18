@@ -193,7 +193,8 @@ namespace KarnelLabs.MCP
                 {
                     var codeStyle = new GUIStyle(EditorStyles.miniLabel);
                     codeStyle.normal.textColor = new Color(0.9f, 0.5f, 0.2f);
-                    EditorGUILayout.LabelField($"{entry.CodeName ?? SafetyPolicy.CodeName(entry.ErrorCode.Value)} ({entry.ErrorCode.Value})", codeStyle, GUILayout.Width(160));
+                    var codeText = $"{entry.CodeName ?? SafetyPolicy.CodeName(entry.ErrorCode.Value)} ({entry.ErrorCode.Value})";
+                    EditorGUILayout.LabelField(new GUIContent(codeText, codeText), codeStyle, GUILayout.MinWidth(220), GUILayout.MaxWidth(320));
                 }
 
                 // 에러 메시지 (있을 경우)
@@ -201,7 +202,7 @@ namespace KarnelLabs.MCP
                 {
                     var errStyle = new GUIStyle(EditorStyles.miniLabel);
                     errStyle.normal.textColor = new Color(0.9f, 0.5f, 0.2f);
-                    EditorGUILayout.LabelField(entry.ErrorMessage, errStyle, GUILayout.MaxWidth(200));
+                    EditorGUILayout.LabelField(new GUIContent(entry.ErrorMessage, entry.ErrorMessage), errStyle, GUILayout.MinWidth(180), GUILayout.MaxWidth(320));
                 }
 
                 EditorGUILayout.EndHorizontal();
