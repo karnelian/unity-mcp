@@ -1,7 +1,7 @@
-# Unity MCP — 710 Tools for AI-Powered Game Development
+# Unity MCP — 717 Tools for AI-Powered Game Development
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Unity](https://img.shields.io/badge/Unity-2021.3+-black.svg)](https://unity.com)
+[![Unity](https://img.shields.io/badge/Unity-6000.0+-black.svg)](https://unity.com)
 [![Node](https://img.shields.io/badge/Node-18+-green.svg)](https://nodejs.org)
 
 MCP (Model Context Protocol) server that connects **Claude Code** (or any MCP client) directly to the **Unity Editor**. Control every aspect of Unity — scenes, assets, materials, physics, lighting, animation, UI, and more — through natural language.
@@ -118,6 +118,17 @@ You can add individual groups with `--tools=cinemachine,addressables` without sw
 - Heavy list tools now accept `maxResults`, `offset`, `summaryOnly`, and `includeDetails` where practical, starting with hierarchy, asset search, package list, and captured logs.
 - MCP text results are compact JSON by default. Set `MCP_PRETTY_JSON=1` or `UNITY_MCP_PRETTY_JSON=1` for human-readable pretty JSON while debugging.
 - Recent Requests in the Server Window include duration and response size, and `editor.diagnostics` includes recent request metrics.
+
+### Maintainer Validation
+
+Before releasing or updating the Claude Code marketplace entry, run:
+
+```bash
+npm run validate
+npm run validate:plugin
+```
+
+`npm run validate` performs a high-severity npm audit for the server package and rebuilds the TypeScript server plus bundled Unity Editor plugin. `npm run validate:plugin` validates both Claude Code marketplace manifests in strict mode.
 
 ## Architecture
 
