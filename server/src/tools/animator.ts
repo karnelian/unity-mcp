@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
 
@@ -9,7 +10,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     parameters: z.array(z.object({ name: z.string(), type: z.enum(["Float", "Int", "Bool", "Trigger"]) })).optional(),
   }, async (p) => {
     const r = await bridge.request("animator.createController", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_assign_controller", "Assign AnimatorController", {
@@ -17,7 +18,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     controllerPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("animator.assignController", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_add_parameter", "Add Animator parameter", {
@@ -25,21 +26,21 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     parameterName: z.string(), parameterType: z.enum(["Float", "Int", "Bool", "Trigger"]).optional(),
   }, async (p) => {
     const r = await bridge.request("animator.addParameter", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_remove_parameter", "Remove Animator parameter", {
     controllerPath: z.string(), parameterName: z.string(),
   }, async (p) => {
     const r = await bridge.request("animator.removeParameter", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_get_parameters", "Get Animator parameters", {
     controllerPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("animator.getParameters", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_set_parameter", "Set Animator parameter", {
@@ -48,7 +49,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     value: z.union([z.number(), z.boolean()]).optional(),
   }, async (p) => {
     const r = await bridge.request("animator.setParameter", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_add_state", "Add Animator state", {
@@ -56,7 +57,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     clipPath: z.string().optional(), isDefault: z.boolean().optional(), speed: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("animator.addState", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_add_transition", "Add Animator transition", {
@@ -69,21 +70,21 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("animator.addTransition", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_get_states", "Get Animator states", {
     controllerPath: z.string(), layerIndex: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("animator.getStates", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_get_info", "Get Animator info", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("animator.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_add_layer", "Add Animator layer", {
@@ -93,7 +94,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     blendingMode: z.enum(["Override", "Additive"]).optional(),
   }, async (p) => {
     const r = await bridge.request("animator.addLayer", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_remove_layer", "Remove Animator layer", {
@@ -101,7 +102,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     layerIndex: z.number(),
   }, async (p) => {
     const r = await bridge.request("animator.removeLayer", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_set_layer_weight", "Set layer weight", {
@@ -110,14 +111,14 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     weight: z.number(),
   }, async (p) => {
     const r = await bridge.request("animator.setLayerWeight", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_get_layers", "Get Animator layers", {
     controllerPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("animator.getLayers", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_create_blend_tree", "Create BlendTree", {
@@ -131,7 +132,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("animator.createBlendTree", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_remove_state", "Remove Animator state", {
@@ -140,7 +141,7 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     layerIndex: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("animator.removeState", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_animator_remove_transition", "Remove Animator transition", {
@@ -149,6 +150,6 @@ export function registerAnimatorTools(server: McpServer, bridge: UnityBridge) {
     layerIndex: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("animator.removeTransition", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

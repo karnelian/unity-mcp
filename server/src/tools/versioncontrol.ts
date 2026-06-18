@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerVersionControlTools(server: McpServer, bridge: UnityBridge) {
 
@@ -10,7 +11,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     {},
     async (p) => {
       const r = await bridge.request("vcs.getStatus", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -22,7 +23,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     },
     async (p) => {
       const r = await bridge.request("vcs.getChanges", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -35,7 +36,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     },
     async (p) => {
       const r = await bridge.request("vcs.getHistory", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -47,7 +48,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     },
     async (p) => {
       const r = await bridge.request("vcs.getBranches", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -57,7 +58,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     {},
     async (p) => {
       const r = await bridge.request("vcs.getCurrentBranch", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -67,7 +68,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     {},
     async (p) => {
       const r = await bridge.request("vcs.getRemotes", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -81,7 +82,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     },
     async (p) => {
       const r = await bridge.request("vcs.getDiff", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -91,7 +92,7 @@ export function registerVersionControlTools(server: McpServer, bridge: UnityBrid
     {},
     async (p) => {
       const r = await bridge.request("vcs.getStash", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 }

@@ -36,6 +36,8 @@ namespace KarnelLabs.MCP
         private static CancellationTokenSource _cts;
         private static volatile bool _isRunning;
         private static volatile bool _clientConnected;
+        private static long _lastClientActivityTicks;
+        private static string _clientEndpoint;
         private static int _port;
 
         // ── 메시지 큐 ──────────────────────────────────────────────
@@ -57,7 +59,26 @@ namespace KarnelLabs.MCP
         private static Thread _keepAliveThread;
 
         // ── 공개 프로퍼티 ──────────────────────────────────────────
-        public static bool IsConnected => _clientConnected;
+        public static bool IsRunning => _isRunning;
+        public static bool HasActiveClient => _clientConnected;
+        public static bool IsRecentlyActive
+        {
+            get
+            {
+                var ticks = Interlocked.Read(ref _lastClientActivityTicks);
+                return ticks > 0 && (DateTime.UtcNow - new DateTime(ticks, DateTimeKind.Utc)).TotalSeconds < 15;
+            }
+        }
+        public static bool IsConnected => _clientConnected || IsRecentlyActive;
+        public static string ClientEndpoint => _clientEndpoint ?? "-";
+        public static DateTime? LastClientActivityUtc
+        {
+            get
+            {
+                var ticks = Interlocked.Read(ref _lastClientActivityTicks);
+                return ticks > 0 ? new DateTime(ticks, DateTimeKind.Utc) : (DateTime?)null;
+            }
+        }
         public static int Port => _port;
         public static int HandlerCount => CommandRouter.HandlerCount;
         public static long TotalProcessed => _totalProcessed;
@@ -120,6 +141,11 @@ namespace KarnelLabs.MCP
             try { _tcpClient?.Close(); } catch { }
             _clientStream = null;
             _tcpClient = null;
+        }
+
+        private static void MarkClientActivity()
+        {
+            Interlocked.Exchange(ref _lastClientActivityTicks, DateTime.UtcNow.Ticks);
         }
 
         public static void SetPort(int port)
@@ -230,9 +256,18 @@ namespace KarnelLabs.MCP
 
                 try
                 {
+                    var sw = System.Diagnostics.Stopwatch.StartNew();
                     var (id, response) = CommandRouter.Dispatch(queued.Message);
+                    sw.Stop();
                     bool isError = response.Contains("\"error\"");
-                    RequestLog.Add(logMethod, !isError);
+                    RequestLog.Add(
+                        logMethod,
+                        !isError,
+                        null,
+                        sw.ElapsedMilliseconds,
+                        Encoding.UTF8.GetByteCount(queued.Message),
+                        Encoding.UTF8.GetByteCount(response)
+                    );
 
                     if (isError) Interlocked.Increment(ref _totalErrors);
                     Interlocked.Increment(ref _totalProcessed);
@@ -283,7 +318,10 @@ namespace KarnelLabs.MCP
                 try
                 {
                     if (_clientConnected && stream.CanWrite)
+                    {
                         await WsWriteText(stream, response, CancellationToken.None);
+                        MarkClientActivity();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -326,8 +364,10 @@ namespace KarnelLabs.MCP
 
                     _tcpClient = client;
                     _clientStream = stream;
+                    _clientEndpoint = client.Client.RemoteEndPoint?.ToString();
                     _clientConnected = true;
-                    Debug.Log("[KarnelLabs MCP] Client connected");
+                    MarkClientActivity();
+                    Debug.Log($"[KarnelLabs MCP] Client connected ({ClientEndpoint})");
 
                     await HandleClient(stream, ct);
 
@@ -570,6 +610,8 @@ namespace KarnelLabs.MCP
 
         private static void EnqueueMessage(string message)
         {
+            MarkClientActivity();
+
             if (!TryAdmitRequest())
             {
                 string rejectId = "null";
@@ -622,6 +664,10 @@ namespace KarnelLabs.MCP
             {
                 isRunning = _isRunning,
                 isConnected = IsConnected,
+                hasActiveClient = HasActiveClient,
+                isRecentlyActive = IsRecentlyActive,
+                clientEndpoint = ClientEndpoint,
+                lastClientActivityUtc = LastClientActivityUtc?.ToString("O"),
                 port = _port,
                 handlerCount = HandlerCount,
                 pendingRequests = _pendingRequests,
@@ -630,6 +676,7 @@ namespace KarnelLabs.MCP
                 totalProcessed = _totalProcessed,
                 totalErrors = _totalErrors,
                 totalRejected = _totalRejected,
+                recentRequests = RequestLog.GetAll(),
                 hasActiveWorkflow = WorkflowManager.HasActiveSession,
                 workflowSnapshots = WorkflowManager.SnapshotCount,
             };

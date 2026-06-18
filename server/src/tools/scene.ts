@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
 
@@ -9,13 +10,17 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     "Get scene hierarchy",
     {
       path: z.string().optional(),
-      depth: z.number().optional(),
-      includeComponents: z.boolean().optional(),
+      depth: z.number().optional().default(2),
+      includeComponents: z.boolean().optional().default(false),
       nameFilter: z.string().optional(),
+      maxResults: z.number().optional().describe("Paginate large array fields in the response; default 50 when set"),
+      offset: z.number().optional(),
+      summaryOnly: z.boolean().optional().describe("Return counts for large arrays instead of full item details"),
+      includeDetails: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("scene.hierarchy", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result, params);
     }
   );
 
@@ -32,7 +37,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.create", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -50,7 +55,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.setTransform", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -65,7 +70,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.addComponent", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -81,7 +86,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.setComponent", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -95,7 +100,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.delete", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -111,7 +116,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.duplicate", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -124,7 +129,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.manage", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -139,7 +144,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.find", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -155,13 +160,13 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.select", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
   server.tool("unity_scene_listLoaded", "List loaded scenes", {}, async () => {
     const r = await bridge.request("scene.listLoaded", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_setActive", "Set active scene", {
@@ -169,7 +174,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     scenePath: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("scene.setActiveScene", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_moveToScene", "Move to scene", {
@@ -178,14 +183,14 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     targetScenePath: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("scene.moveToScene", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_openAdditive", "Open scene additive", {
     scenePath: z.string(),
   }, async (p) => {
     const r = await bridge.request("scene.openAdditive", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_close", "Close scene", {
@@ -194,7 +199,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     removeScene: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("scene.close", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_saveAs", "Save scene as", {
@@ -202,7 +207,7 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     sceneName: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("scene.saveAs", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   // ── Editor extensions ──
@@ -211,26 +216,26 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     steps: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("scene.undo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_redo", "Redo", {
     steps: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("scene.redo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_setSelection", "Set selection", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("scene.setSelection", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_getSelection", "Get selection", {}, async () => {
     const r = await bridge.request("scene.getSelection", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_setParent", "Set parent", {
@@ -239,11 +244,11 @@ export function registerSceneTools(server: McpServer, bridge: UnityBridge) {
     worldPositionStays: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("scene.setParent", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scene_getContext", "Get scene context", {}, async () => {
     const r = await bridge.request("scene.getContext", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

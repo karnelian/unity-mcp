@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 const color = z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() });
@@ -20,7 +21,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     loop: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_getInfo", "Get ParticleSystem info", {
@@ -29,7 +30,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setMain", "Set particle main", {
@@ -47,7 +48,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     scalingMode: z.enum(["Hierarchy", "Local", "Shape"]).optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setMain", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setEmission", "Set particle emission", {
@@ -63,7 +64,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setEmission", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setShape", "Set particle shape", {
@@ -76,7 +77,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     length: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setShape", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setRenderer", "Set particle renderer", {
@@ -89,7 +90,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     maxParticleSize: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setRenderer", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setColorOverLifetime", "Set particle color", {
@@ -105,7 +106,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setColorOverLifetime", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setSizeOverLifetime", "Set particle size", {
@@ -117,7 +118,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setSizeOverLifetime", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setRotationOverLifetime", "Set particle rotation", {
@@ -126,7 +127,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     angularVelocity: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setRotationOverLifetime", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setNoise", "Set particle noise", {
@@ -139,7 +140,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     damping: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setNoise", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setCollision", "Set particle collision", {
@@ -152,7 +153,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     enableDynamicColliders: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setCollision", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setTrails", "Set particle trails", {
@@ -167,7 +168,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     textureMode: z.enum(["Stretch", "Tile", "DistributePerSegment", "RepeatPerSegment"]).optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setTrails", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setVelocityOverLifetime", "Set particle velocity", {
@@ -178,7 +179,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     speedModifier: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setVelocityOverLifetime", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_play", "Control particle playback", {
@@ -186,14 +187,14 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     action: z.enum(["play", "stop", "pause", "clear", "restart"]),
   }, async (p) => {
     const r = await bridge.request("particle.play", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_find", "Find ParticleSystems", {
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setSubEmitters", "Set particle sub-emitters", {
@@ -201,7 +202,7 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     enabled: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setSubEmitters", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_particle_setTextureSheetAnimation", "Set particle texture sheet", {
@@ -212,6 +213,6 @@ export function registerParticleTools(server: McpServer, bridge: UnityBridge) {
     cycleCount: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("particle.setTextureSheetAnimation", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

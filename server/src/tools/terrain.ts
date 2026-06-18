@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 const vec2 = z.object({ x: z.number(), y: z.number() });
@@ -13,14 +14,14 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     position: vec3.optional(), savePath: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_get_info", "Get Terrain info", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_set_height", "Set terrain height", {
@@ -29,7 +30,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     height: z.number(), radius: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.setHeight", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_get_height", "Get terrain height", {
@@ -37,7 +38,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     worldX: z.number(), worldZ: z.number(),
   }, async (p) => {
     const r = await bridge.request("terrain.getHeight", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_flatten", "Flatten terrain", {
@@ -45,7 +46,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     height: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.flatten", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_perlin_noise", "Apply perlin noise", {
@@ -56,7 +57,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     additive: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.perlinNoise", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_smooth", "Smooth terrain", {
@@ -64,7 +65,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     iterations: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.smooth", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_add_layer", "Add terrain layer", {
@@ -73,7 +74,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     normalMapPath: z.string().optional(), tileSize: vec2.optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.addLayer", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_paint_texture", "Paint terrain texture", {
@@ -82,7 +83,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     radius: z.number().optional(), opacity: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.paintTexture", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_set_size", "Set terrain size", {
@@ -90,7 +91,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     width: z.number().optional(), height: z.number().optional(), length: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.setSize", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_addTree", "Add tree", {
@@ -106,7 +107,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.addTree", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_removeTree", "Remove trees", {
@@ -114,14 +115,14 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     prototypeIndex: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.removeTree", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_getTreePrototypes", "Get tree prototypes", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.getTreePrototypes", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_setTreePrototypes", "Set tree prototypes", {
@@ -131,7 +132,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     })),
   }, async (p) => {
     const r = await bridge.request("terrain.setTreePrototypes", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_setDetailLayer", "Set detail layer", {
@@ -142,14 +143,14 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     density: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.setDetailLayer", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_getDetailPrototypes", "Get detail prototypes", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.getDetailPrototypes", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_setHoles", "Set terrain holes", {
@@ -159,7 +160,7 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     isHole: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("terrain.setHoles", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_terrain_getSteepness", "Get terrain steepness", {
@@ -168,6 +169,6 @@ export function registerTerrainTools(server: McpServer, bridge: UnityBridge) {
     y: z.number(),
   }, async (p) => {
     const r = await bridge.request("terrain.getSteepness", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

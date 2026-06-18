@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerComputeShaderTools(server: McpServer, bridge: UnityBridge) {
 
@@ -9,21 +10,21 @@ export function registerComputeShaderTools(server: McpServer, bridge: UnityBridg
     folder: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("computeShader.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_computeShader_getInfo", "Get ComputeShader info", {
     path: z.string(),
   }, async (p) => {
     const r = await bridge.request("computeShader.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_computeShader_getSource", "Get ComputeShader source", {
     path: z.string(),
   }, async (p) => {
     const r = await bridge.request("computeShader.getSource", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_computeShader_dispatch", "Dispatch ComputeShader", {
@@ -34,6 +35,6 @@ export function registerComputeShaderTools(server: McpServer, bridge: UnityBridg
     threadGroupsZ: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("computeShader.dispatch", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

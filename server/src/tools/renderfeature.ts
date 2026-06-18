@@ -1,12 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerRenderFeatureTools(server: McpServer, bridge: UnityBridge) {
 
   server.tool("unity_renderFeature_list", "List RendererFeatures", {}, async (p) => {
     const r = await bridge.request("renderFeature.list", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_renderFeature_add", "Add RendererFeature", {
@@ -14,7 +15,7 @@ export function registerRenderFeatureTools(server: McpServer, bridge: UnityBridg
     name: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("renderFeature.add", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_renderFeature_remove", "Remove RendererFeature", {
@@ -22,7 +23,7 @@ export function registerRenderFeatureTools(server: McpServer, bridge: UnityBridg
     index: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("renderFeature.remove", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_renderFeature_setActive", "Set RendererFeature active", {
@@ -31,6 +32,6 @@ export function registerRenderFeatureTools(server: McpServer, bridge: UnityBridg
     active: z.boolean(),
   }, async (p) => {
     const r = await bridge.request("renderFeature.setActive", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

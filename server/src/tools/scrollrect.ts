@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -22,7 +23,7 @@ export function registerScrollRectTools(server: McpServer, bridge: UnityBridge) 
     scrollSensitivity: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("scrollRect.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scrollRect_set", "Set ScrollRect", {
@@ -37,18 +38,18 @@ export function registerScrollRectTools(server: McpServer, bridge: UnityBridge) 
     normalizedPosition: z.object({ x: z.number(), y: z.number() }).optional(),
   }, async (p) => {
     const r = await bridge.request("scrollRect.set", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scrollRect_getInfo", "Get ScrollRect info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("scrollRect.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_scrollRect_find", "Find ScrollRects", {}, async (p) => {
     const r = await bridge.request("scrollRect.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

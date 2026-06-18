@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -19,7 +20,7 @@ export function registerSpriteShapeTools(server: McpServer, bridge: UnityBridge)
     adaptiveUV: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("spriteShape.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spriteShape_addPoint", "Add SpriteShape point", {
@@ -34,7 +35,7 @@ export function registerSpriteShapeTools(server: McpServer, bridge: UnityBridge)
     corner: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("spriteShape.addPoint", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spriteShape_setPoint", "Set SpriteShape point", {
@@ -48,18 +49,18 @@ export function registerSpriteShapeTools(server: McpServer, bridge: UnityBridge)
     spriteIndex: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("spriteShape.setPoint", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spriteShape_getInfo", "Get SpriteShape info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("spriteShape.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spriteShape_find", "Find SpriteShapes", {}, async (p) => {
     const r = await bridge.request("spriteShape.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

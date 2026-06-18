@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
 
@@ -9,7 +10,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     includeInherited: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("component.list", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_get", "Get component properties", {
@@ -17,7 +18,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     componentType: z.string(), index: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("component.get", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_remove", "Remove component", {
@@ -25,7 +26,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     componentType: z.string(), index: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("component.remove", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_enable", "Enable/disable component", {
@@ -35,7 +36,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     index: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("component.enable", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_copy", "Copy component", {
@@ -43,7 +44,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     componentType: z.string(), index: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("component.copy", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_paste", "Paste component", {
@@ -51,7 +52,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     asNew: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("component.paste", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_get_all_properties", "Get all serialized properties", {
@@ -59,7 +60,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     componentType: z.string(), index: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("component.getAll", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_move", "Move component", {
@@ -69,7 +70,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     index: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("component.move", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_enable_batch", "Batch enable/disable components", {
@@ -79,7 +80,7 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     })),
   }, async (p) => {
     const r = await bridge.request("component.enableBatch", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_component_remove_batch", "Batch remove components", {
@@ -89,6 +90,6 @@ export function registerComponentTools(server: McpServer, bridge: UnityBridge) {
     })),
   }, async (p) => {
     const r = await bridge.request("component.removeBatch", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

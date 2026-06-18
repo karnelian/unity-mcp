@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -24,7 +25,7 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     loop: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.add", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_lineRenderer_setPositions", "Set LineRenderer positions", {
@@ -32,7 +33,7 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     positions: z.array(vec3),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.setPositions", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_lineRenderer_setProperties", "Set LineRenderer", {
@@ -50,14 +51,14 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     shadowCastingMode: z.enum(["Off", "On", "TwoSided", "ShadowsOnly"]).optional(),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.setProperties", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_lineRenderer_getInfo", "Get LineRenderer info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("lineRenderer.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_trailRenderer_add", "Add TrailRenderer", {
@@ -71,7 +72,7 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     minVertexDistance: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.addTrail", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_trailRenderer_setProperties", "Set TrailRenderer", {
@@ -86,13 +87,13 @@ export function registerLineRendererTools(server: McpServer, bridge: UnityBridge
     emitting: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.setTrailProperties", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_lineRenderer_find", "Find LineRenderers", {
     type: z.enum(["Line", "Trail", "All"]).optional(),
   }, async (p) => {
     const r = await bridge.request("lineRenderer.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

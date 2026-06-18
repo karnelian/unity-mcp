@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerScriptableObjectTools(server: McpServer, bridge: UnityBridge) {
 
@@ -14,7 +15,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.create", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -27,7 +28,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.find", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -39,7 +40,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.getProperties", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -53,7 +54,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.setProperty", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -66,7 +67,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.duplicate", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -78,7 +79,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.delete", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -90,7 +91,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.toJson", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -103,7 +104,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.fromJson", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -113,7 +114,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     {},
     async (params) => {
       const result = await bridge.request("so.getTypes", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -125,7 +126,7 @@ export function registerScriptableObjectTools(server: McpServer, bridge: UnityBr
     },
     async (params) => {
       const result = await bridge.request("so.getInfo", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

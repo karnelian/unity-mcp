@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -20,7 +21,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     freezeRotation: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.addRigidbody", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_setRigidbody", "Set Rigidbody2D", {
@@ -34,7 +35,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     simulated: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.setRigidbody", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_addCollider", "Add Collider2D", {
@@ -47,7 +48,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     direction: z.enum(["Vertical", "Horizontal"]).optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.addCollider", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_setCollider", "Set Collider2D", {
@@ -61,7 +62,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     usedByEffector: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.setCollider", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_addJoint", "Add Joint2D", {
@@ -72,7 +73,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     autoConfigureConnectedAnchor: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.addJoint", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_raycast", "Raycast2D", {
@@ -82,7 +83,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     layerMask: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.raycast", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_overlapCircle", "OverlapCircle2D", {
@@ -91,7 +92,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     layerMask: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.overlapCircle", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_overlapBox", "OverlapBox2D", {
@@ -101,7 +102,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     layerMask: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.overlapBox", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_createMaterial", "Create PhysicsMaterial2D", {
@@ -111,19 +112,19 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     bounciness: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.createMaterial", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_getGravity", "Get 2D gravity", {}, async (p) => {
     const r = await bridge.request("physics2d.getGravity", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_setGravity", "Set 2D gravity", {
     gravity: z.object({ x: z.number(), y: z.number() }),
   }, async (p) => {
     const r = await bridge.request("physics2d.setGravity", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_addEffector", "Add Effector2D", {
@@ -132,7 +133,7 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     useColliderMask: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.addEffector", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics2d_setEffector", "Set Effector2D", {
@@ -145,6 +146,6 @@ export function registerPhysics2DTools(server: McpServer, bridge: UnityBridge) {
     density: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics2d.setEffector", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -18,7 +19,7 @@ export function registerCanvasGroupTools(server: McpServer, bridge: UnityBridge)
     ignoreParentGroups: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("canvasGroup.add", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_canvasGroup_set", "Set CanvasGroup", {
@@ -29,11 +30,11 @@ export function registerCanvasGroupTools(server: McpServer, bridge: UnityBridge)
     ignoreParentGroups: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("canvasGroup.set", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_canvasGroup_find", "Find CanvasGroups", {}, async (p) => {
     const r = await bridge.request("canvasGroup.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

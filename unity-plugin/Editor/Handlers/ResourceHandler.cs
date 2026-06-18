@@ -20,6 +20,8 @@ namespace KarnelLabs.MCP
             CommandRouter.Register("resource.recentConsole", GetRecentConsole);
             CommandRouter.Register("resource.compileStatus", GetCompileStatus);
             CommandRouter.Register("resource.installedPackages", GetInstalledPackages);
+            CommandRouter.Register("resource.projectHealth", GetProjectHealth);
+            CommandRouter.Register("project.health", GetProjectHealth);
         }
 
         private static object GetProjectInfo(JToken p)
@@ -101,6 +103,28 @@ namespace KarnelLabs.MCP
             {
                 status = hasErrors ? "error" : (isCompiling ? "compiling" : "ok"),
                 hasErrors, isCompiling, assemblyCount = assemblies.Length,
+            };
+        }
+
+        private static object GetProjectHealth(JToken p)
+        {
+            var project = GetProjectInfo(p);
+            var scene = GetCurrentScene(p);
+            var compile = GetCompileStatus(p);
+            var console = GetRecentConsole(p);
+            var packages = GetInstalledPackages(p);
+            var diagnostics = McpBridge.GetDiagnostics();
+
+            return new
+            {
+                generatedAtUtc = DateTime.UtcNow.ToString("O"),
+                project,
+                scene,
+                compile,
+                console,
+                packages,
+                diagnostics,
+                recommendation = "Start with compile/console errors first; keep hierarchy and asset scans scoped unless more detail is needed."
             };
         }
 

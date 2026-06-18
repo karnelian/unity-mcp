@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -18,7 +19,7 @@ export function registerSkeletal2DTools(server: McpServer, bridge: UnityBridge) 
     length: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("skeletal2d.addBone", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_skeletal2d_addIK", "Add 2D IK", {
@@ -30,7 +31,7 @@ export function registerSkeletal2DTools(server: McpServer, bridge: UnityBridge) 
     tolerance: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("skeletal2d.addIK", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_skeletal2d_addSpriteSkin", "Add SpriteSkin", {
@@ -38,20 +39,20 @@ export function registerSkeletal2DTools(server: McpServer, bridge: UnityBridge) 
     autoRebind: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("skeletal2d.addSpriteSkin", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_skeletal2d_getInfo", "Get skeletal 2D info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("skeletal2d.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_skeletal2d_find", "Find skeletal 2D objects", {
     type: z.enum(["Bone", "IK", "SpriteSkin", "All"]).optional(),
   }, async (p) => {
     const r = await bridge.request("skeletal2d.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

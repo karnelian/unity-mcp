@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
 
@@ -12,7 +13,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("editor.playMode", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -27,7 +28,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("editor.build", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -40,7 +41,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("editor.buildSettings", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -52,7 +53,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("editor.executeMenu", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -65,7 +66,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("editor.runTests", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -77,7 +78,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("editor.testList", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -87,7 +88,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("editor.testResults", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -100,12 +101,12 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
       if (status.connected) {
         try {
           const info = await bridge.request("editor.projectInfo", {});
-          return { content: [{ type: "text", text: JSON.stringify({ ...status, ...info }, null, 2) }] };
+          return textResult({ ...status, ...info });
         } catch {
-          return { content: [{ type: "text", text: JSON.stringify(status, null, 2) }] };
+          return textResult(status);
         }
       }
-      return { content: [{ type: "text", text: JSON.stringify(status, null, 2) }] };
+      return textResult(status);
     }
   );
 
@@ -119,7 +120,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("editor.console", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -129,7 +130,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("editor.projectInfo", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -139,7 +140,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     {},
     async () => {
       const result = await bridge.request("editor.diagnostics", {});
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -151,7 +152,7 @@ export function registerEditorTools(server: McpServer, bridge: UnityBridge) {
     },
     async (p) => {
       const result = await bridge.request("editor.autoRefresh", p);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 

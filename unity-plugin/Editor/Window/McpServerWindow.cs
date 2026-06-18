@@ -53,8 +53,10 @@ namespace KarnelLabs.MCP
             EditorGUILayout.LabelField("Connection Status", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
             {
-                var statusColor = McpBridge.IsConnected ? Color.green : Color.red;
-                var statusText = McpBridge.IsConnected ? "Connected" : "Disconnected";
+                var activeSocket = McpBridge.HasActiveClient;
+                var recentlyActive = McpBridge.IsRecentlyActive;
+                var statusColor = activeSocket ? Color.green : recentlyActive ? new Color(0.9f, 0.75f, 0.2f) : McpBridge.IsRunning ? new Color(0.4f, 0.7f, 1f) : Color.red;
+                var statusText = activeSocket ? "Connected" : recentlyActive ? "Recently Active" : McpBridge.IsRunning ? "Listening" : "Stopped";
 
                 var style = new GUIStyle(EditorStyles.label);
                 style.normal.textColor = statusColor;
@@ -129,6 +131,10 @@ namespace KarnelLabs.MCP
             // === 정보 ===
             EditorGUILayout.LabelField("Info", EditorStyles.boldLabel);
             EditorGUILayout.LabelField($"WebSocket: ws://127.0.0.1:{McpBridge.Port}");
+            EditorGUILayout.LabelField($"Active Socket: {(McpBridge.HasActiveClient ? "Yes" : "No")}");
+            EditorGUILayout.LabelField($"Client: {McpBridge.ClientEndpoint}");
+            var lastActivity = McpBridge.LastClientActivityUtc;
+            EditorGUILayout.LabelField($"Last Activity: {(lastActivity.HasValue ? lastActivity.Value.ToLocalTime().ToString("HH:mm:ss") : "-")}");
             EditorGUILayout.LabelField($"Unity Version: {Application.unityVersion}");
             EditorGUILayout.LabelField($"Project: {Application.productName}");
         }
@@ -168,6 +174,9 @@ namespace KarnelLabs.MCP
                 // 메서드 이름
                 EditorGUILayout.LabelField(entry.Method, GUILayout.ExpandWidth(true));
 
+                EditorGUILayout.LabelField($"{entry.DurationMs}ms", EditorStyles.miniLabel, GUILayout.Width(54));
+                EditorGUILayout.LabelField($"{FormatBytes(entry.ResponseBytes)}", EditorStyles.miniLabel, GUILayout.Width(58));
+
                 // 에러 메시지 (있을 경우)
                 if (!entry.Success && !string.IsNullOrEmpty(entry.ErrorMessage))
                 {
@@ -187,6 +196,14 @@ namespace KarnelLabs.MCP
             var rect = EditorGUILayout.GetControlRect(false, 1);
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 0.5f));
             GUILayout.Space(5);
+        }
+
+        private static string FormatBytes(int bytes)
+        {
+            if (bytes <= 0) return "0B";
+            if (bytes < 1024) return $"{bytes}B";
+            if (bytes < 1024 * 1024) return $"{bytes / 1024f:F1}KB";
+            return $"{bytes / (1024f * 1024f):F1}MB";
         }
 
         // 실시간 업데이트
@@ -215,12 +232,15 @@ namespace KarnelLabs.MCP
             public string Method;
             public bool Success;
             public string ErrorMessage; // null = success
+            public long DurationMs;
+            public int RequestBytes;
+            public int ResponseBytes;
         }
 
         private static readonly List<Entry> _entries = new();
         private static readonly object _lock = new();
 
-        public static void Add(string method, bool success, string errorMessage = null)
+        public static void Add(string method, bool success, string errorMessage = null, long durationMs = 0, int requestBytes = 0, int responseBytes = 0)
         {
             lock (_lock)
             {
@@ -230,6 +250,9 @@ namespace KarnelLabs.MCP
                     Method    = method ?? "(unknown)",
                     Success   = success,
                     ErrorMessage = errorMessage,
+                    DurationMs = durationMs,
+                    RequestBytes = requestBytes,
+                    ResponseBytes = responseBytes,
                 });
 
                 // 오래된 항목 제거

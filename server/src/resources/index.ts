@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 import { registerGuideResources } from "./guides.js";
+import { formatResult } from "../utils/format.js";
 
 function makeResourceHandler(bridge: UnityBridge, method: string) {
   return async (uri: URL) => {
@@ -11,7 +12,7 @@ function makeResourceHandler(bridge: UnityBridge, method: string) {
           {
             uri: uri.href,
             mimeType: "application/json",
-            text: JSON.stringify(result, null, 2),
+            text: formatResult(result),
           },
         ],
       };
@@ -59,6 +60,12 @@ export function registerResources(server: McpServer, bridge: UnityBridge) {
     "installed-packages",
     "unity://packages/installed",
     makeResourceHandler(bridge, "resource.installedPackages")
+  );
+
+  server.resource(
+    "project-health",
+    "unity://project/health",
+    makeResourceHandler(bridge, "resource.projectHealth")
   );
 
   // Unity workflow guides (static, no bridge needed)

@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerInputSystemTools(server: McpServer, bridge: UnityBridge) {
 
@@ -10,14 +11,14 @@ export function registerInputSystemTools(server: McpServer, bridge: UnityBridge)
     maps: z.array(z.string()).optional(),
   }, async (p) => {
     const r = await bridge.request("input.createActionAsset", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_getActionAsset", "Get InputActionAsset", {
     assetPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("input.getActionAsset", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_addActionMap", "Add ActionMap", {
@@ -25,7 +26,7 @@ export function registerInputSystemTools(server: McpServer, bridge: UnityBridge)
     mapName: z.string(),
   }, async (p) => {
     const r = await bridge.request("input.addActionMap", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_addAction", "Add InputAction", {
@@ -36,7 +37,7 @@ export function registerInputSystemTools(server: McpServer, bridge: UnityBridge)
     expectedControlType: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("input.addAction", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_addBinding", "Add input binding", {
@@ -46,7 +47,7 @@ export function registerInputSystemTools(server: McpServer, bridge: UnityBridge)
     bindingPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("input.addBinding", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_removeAction", "Remove InputAction", {
@@ -55,7 +56,7 @@ export function registerInputSystemTools(server: McpServer, bridge: UnityBridge)
     actionName: z.string(),
   }, async (p) => {
     const r = await bridge.request("input.removeAction", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_removeActionMap", "Remove ActionMap", {
@@ -63,12 +64,12 @@ export function registerInputSystemTools(server: McpServer, bridge: UnityBridge)
     mapName: z.string(),
   }, async (p) => {
     const r = await bridge.request("input.removeActionMap", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_findActionAssets", "Find InputActionAssets", {}, async () => {
     const r = await bridge.request("input.findActionAssets", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_addPlayerInput", "Add PlayerInput", {
@@ -77,13 +78,13 @@ export function registerInputSystemTools(server: McpServer, bridge: UnityBridge)
     defaultMap: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("input.addPlayerInput", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_input_getPlayerInput", "Get PlayerInput", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("input.getPlayerInput", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

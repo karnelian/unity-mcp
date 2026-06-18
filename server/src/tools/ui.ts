@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const color = z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() });
 const vec2 = z.object({ x: z.number(), y: z.number() });
@@ -11,21 +12,21 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     name: z.string().optional(), renderMode: z.enum(["ScreenSpaceOverlay", "ScreenSpaceCamera", "WorldSpace"]).optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createCanvas", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_create_panel", "Create UI Panel", {
     name: z.string().optional(), parent: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createPanel", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_create_button", "Create UI Button", {
     name: z.string().optional(), text: z.string().optional(), parent: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createButton", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_create_text", "Create UI Text", {
@@ -33,14 +34,14 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     alignment: z.string().optional(), color: color.optional(), parent: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createText", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_create_image", "Create UI Image", {
     name: z.string().optional(), spritePath: z.string().optional(), color: color.optional(), parent: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createImage", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_create_slider", "Create UI Slider", {
@@ -48,28 +49,28 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     value: z.number().optional(), parent: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createSlider", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_create_toggle", "Create UI Toggle", {
     name: z.string().optional(), isOn: z.boolean().optional(), parent: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createToggle", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_create_dropdown", "Create UI Dropdown", {
     name: z.string().optional(), options: z.array(z.string()).optional(), parent: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createDropdown", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_create_input_field", "Create UI InputField", {
     name: z.string().optional(), placeholder: z.string().optional(), text: z.string().optional(), parent: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.createInputField", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_set_rect_transform", "Set RectTransform", {
@@ -78,7 +79,7 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     anchorMin: vec2.optional(), anchorMax: vec2.optional(), pivot: vec2.optional(),
   }, async (p) => {
     const r = await bridge.request("ui.setRectTransform", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_set_text", "Set UI Text", {
@@ -87,7 +88,7 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     color: color.optional(), fontStyle: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.setText", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_set_image", "Set UI Image", {
@@ -97,7 +98,7 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     fillAmount: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.setImage", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_set_button", "Set UI Button", {
@@ -105,7 +106,7 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     interactable: z.boolean().optional(), text: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.setButton", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_set_slider", "Set UI Slider", {
@@ -114,7 +115,7 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     wholeNumbers: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.setSlider", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_set_toggle", "Set UI Toggle", {
@@ -122,7 +123,7 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     isOn: z.boolean().optional(), interactable: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.setToggle", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_add_layout", "Add layout group", {
@@ -133,12 +134,12 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     cellSize: vec2.optional(),
   }, async (p) => {
     const r = await bridge.request("ui.addLayout", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_find", "Find UI objects", {}, async () => {
     const r = await bridge.request("ui.findUI", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_set_canvas", "Set Canvas settings", {
@@ -147,7 +148,7 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     sortingOrder: z.number().optional(), pixelPerfect: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("ui.setCanvasProperties", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_ui_click", "Click a UI element (Button, Toggle, or generic pointer click). Works during Play mode.", {
@@ -155,6 +156,6 @@ export function registerUITools(server: McpServer, bridge: UnityBridge) {
     name: z.string().optional().describe("Name of the UI element to click"),
   }, async (p) => {
     const r = await bridge.request("ui.click", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

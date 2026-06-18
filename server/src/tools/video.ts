@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -20,7 +21,7 @@ export function registerVideoTools(server: McpServer, bridge: UnityBridge) {
     renderMode: z.enum(["CameraFarPlane", "CameraNearPlane", "RenderTexture", "MaterialOverride"]).optional(),
   }, async (p) => {
     const r = await bridge.request("video.addPlayer", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_video_setPlayer", "Set VideoPlayer", {
@@ -34,19 +35,19 @@ export function registerVideoTools(server: McpServer, bridge: UnityBridge) {
     audioOutputMode: z.enum(["None", "AudioSource", "Direct"]).optional(),
   }, async (p) => {
     const r = await bridge.request("video.setPlayer", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_video_getInfo", "Get VideoPlayer info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("video.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_video_find", "Find VideoPlayers", {}, async (p) => {
     const r = await bridge.request("video.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_video_findClips", "Find VideoClips", {
@@ -54,6 +55,6 @@ export function registerVideoTools(server: McpServer, bridge: UnityBridge) {
     folder: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("video.findClips", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

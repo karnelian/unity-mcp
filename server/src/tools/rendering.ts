@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 const color = z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() });
@@ -17,19 +18,19 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
     size: vec3.optional(),
   }, async (p) => {
     const r = await bridge.request("rendering.createVolume", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_getVolumeInfo", "Get Volume info", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("rendering.getVolumeInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_findVolumes", "Find Volumes", {}, async () => {
     const r = await bridge.request("rendering.findVolumes", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_addOverride", "Add volume override", {
@@ -37,7 +38,7 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
     overrideType: z.string(),
   }, async (p) => {
     const r = await bridge.request("rendering.addOverride", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_removeOverride", "Remove volume override", {
@@ -45,7 +46,7 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
     overrideType: z.string(),
   }, async (p) => {
     const r = await bridge.request("rendering.removeOverride", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_setOverrideProperty", "Set override property", {
@@ -55,17 +56,17 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
     value: z.any(),
   }, async (p) => {
     const r = await bridge.request("rendering.setOverrideProperty", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_getOverrides", "Get volume overrides", {}, async () => {
     const r = await bridge.request("rendering.getOverrides", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_getPipelineInfo", "Get pipeline info", {}, async () => {
     const r = await bridge.request("rendering.getPipelineInfo", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_setFog", "Set fog settings", {
@@ -77,12 +78,12 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
     endDistance: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("rendering.setFog", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_getFog", "Get fog settings", {}, async () => {
     const r = await bridge.request("rendering.getFog", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_setSkybox", "Set skybox", {
@@ -91,7 +92,7 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
     reflectionIntensity: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("rendering.setSkybox", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_rendering_setGlobalShaderProperty", "Set global shader property", {
@@ -102,6 +103,6 @@ export function registerRenderingTools(server: McpServer, bridge: UnityBridge) {
     vectorValue: z.object({ x: z.number(), y: z.number(), z: z.number(), w: z.number().optional() }).optional(),
   }, async (p) => {
     const r = await bridge.request("rendering.setGlobalShaderProperty", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerAsmdefTools(server: McpServer, bridge: UnityBridge) {
 
@@ -16,14 +17,14 @@ export function registerAsmdefTools(server: McpServer, bridge: UnityBridge) {
     noEngineReferences: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("asmdef.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asmdef_getInfo", "Get asmdef info", {
     path: z.string(),
   }, async (p) => {
     const r = await bridge.request("asmdef.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asmdef_set", "Modify asmdef", {
@@ -36,13 +37,13 @@ export function registerAsmdefTools(server: McpServer, bridge: UnityBridge) {
     defineConstraints: z.array(z.string()).optional(),
   }, async (p) => {
     const r = await bridge.request("asmdef.set", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asmdef_find", "Find asmdef files", {
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("asmdef.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

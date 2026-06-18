@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge) {
 
@@ -14,7 +15,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.createClip", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -26,7 +27,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.getClipInfo", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -38,7 +39,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.findClips", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -52,7 +53,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.setSpriteKeyframes", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -67,7 +68,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.setClipSettings", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -82,7 +83,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.createSpriteAtlas", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -94,7 +95,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.getSpriteAtlasInfo", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -107,7 +108,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.addToSpriteAtlas", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -120,7 +121,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.removeFromSpriteAtlas", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -137,7 +138,7 @@ export function registerAnimation2DTools(server: McpServer, bridge: UnityBridge)
     },
     async (p) => {
       const r = await bridge.request("animation2d.sliceSprite", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 }
