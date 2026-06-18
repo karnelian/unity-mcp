@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { UnityBridge } from "./bridge/unity-bridge.js";
+import { describeUnityTarget, resolveUnityTarget } from "./registry.js";
 import { registerSceneTools } from "./tools/scene.js";
 import { registerScriptTools } from "./tools/script.js";
 import { registerAssetTools } from "./tools/asset.js";
@@ -224,18 +225,28 @@ function resolveEnabledToolGroups(): string[] {
 
 const server = new McpServer({
   name: "karnellabs-unity-mcp",
-  version: "0.3.6",
+  version: "0.3.9",
 });
 
-const bridge = new UnityBridge({
+const explicitPort = readOption("port", "UNITY_WS_PORT");
+const unityTarget = resolveUnityTarget({
   host: process.env.UNITY_WS_HOST || "127.0.0.1",
-  port: parseInt(process.env.UNITY_WS_PORT || "8099", 10),
+  explicitPort,
+  cwd: process.cwd(),
+});
+console.error(`[Unity MCP] Unity target: ${describeUnityTarget(unityTarget)}`);
+
+const bridge = new UnityBridge({
+  host: unityTarget.host,
+  port: unityTarget.port,
+  resolvePort: explicitPort ? undefined : async () => resolveUnityTarget({ host: unityTarget.host, cwd: process.cwd() }).port,
   timeouts: {
     default: 30_000,
     build: 300_000,
   },
   reconnect: {
     interval: 3_000,
+    maxInterval: 30_000,
     maxAttempts: Infinity,
   },
 });

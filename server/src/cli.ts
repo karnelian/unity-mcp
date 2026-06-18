@@ -197,44 +197,50 @@ function setup() {
   // The editor bridge uses Newtonsoft.Json/JObject for JSON-RPC parsing.
   ensureNewtonsoftPackage(targetDir);
 
-  // 3. Create .mcp.json (skip if --update flag)
+  // 3. Optional legacy .mcp.json creation.
+  // Global Claude plugin installs should not need project-local MCP config; duplicate
+  // definitions can start two Node clients and cause Unity connection flapping.
   if (!flags.has("--update")) {
-    const mcpJsonPath = join(targetDir, ".mcp.json");
-    const ghUrl = getGitHubUrl();
-    const profile = normalizeProfile(readArg("profile", commandArgs));
-    const tools = normalizeTools(readArg("tools", commandArgs));
-    const serverArgs = ["-y", ghUrl, `--profile=${profile}`];
-    if (tools) serverArgs.push(`--tools=${tools}`);
-    const shouldUpdateExistingConfig = Boolean(readArg("profile", commandArgs) || readArg("tools", commandArgs));
-    const mcpConfig = {
-      mcpServers: {
-        "karnellabs-unity-mcp": {
-          command: "npx",
-          args: serverArgs,
+    if (flags.has("--mcp-config")) {
+      const mcpJsonPath = join(targetDir, ".mcp.json");
+      const ghUrl = getGitHubUrl();
+      const profile = normalizeProfile(readArg("profile", commandArgs));
+      const tools = normalizeTools(readArg("tools", commandArgs));
+      const serverArgs = ["-y", ghUrl, `--profile=${profile}`];
+      if (tools) serverArgs.push(`--tools=${tools}`);
+      const shouldUpdateExistingConfig = Boolean(readArg("profile", commandArgs) || readArg("tools", commandArgs));
+      const mcpConfig = {
+        mcpServers: {
+          "karnellabs-unity-mcp": {
+            command: "npx",
+            args: serverArgs,
+          },
         },
-      },
-    };
+      };
 
-    if (existsSync(mcpJsonPath)) {
-      try {
-        const existing = JSON.parse(readFileSync(mcpJsonPath, "utf-8"));
-        if (existing.mcpServers?.["karnellabs-unity-mcp"] && !shouldUpdateExistingConfig) {
-          console.log("   ⏭️  .mcp.json already configured, skipping. Use setup --profile=... to update the tool profile.");
-        } else {
-          existing.mcpServers = existing.mcpServers || {};
-          existing.mcpServers["karnellabs-unity-mcp"] = mcpConfig.mcpServers["karnellabs-unity-mcp"];
-          writeFileSync(mcpJsonPath, JSON.stringify(existing, null, 2) + "\n");
-          console.log(existing.mcpServers?.["karnellabs-unity-mcp"] && shouldUpdateExistingConfig
-            ? `   ✅ Updated karnellabs-unity-mcp profile in .mcp.json (${profile}${tools ? ` + tools:${tools}` : ""})`
-            : "   ✅ Added karnellabs-unity-mcp to existing .mcp.json");
+      if (existsSync(mcpJsonPath)) {
+        try {
+          const existing = JSON.parse(readFileSync(mcpJsonPath, "utf-8"));
+          if (existing.mcpServers?.["karnellabs-unity-mcp"] && !shouldUpdateExistingConfig) {
+            console.log("   ⏭️  .mcp.json already configured, skipping. Use setup --mcp-config --profile=... to update the tool profile.");
+          } else {
+            existing.mcpServers = existing.mcpServers || {};
+            existing.mcpServers["karnellabs-unity-mcp"] = mcpConfig.mcpServers["karnellabs-unity-mcp"];
+            writeFileSync(mcpJsonPath, JSON.stringify(existing, null, 2) + "\n");
+            console.log(existing.mcpServers?.["karnellabs-unity-mcp"] && shouldUpdateExistingConfig
+              ? `   ✅ Updated karnellabs-unity-mcp profile in .mcp.json (${profile}${tools ? ` + tools:${tools}` : ""})`
+              : "   ✅ Added karnellabs-unity-mcp to existing .mcp.json");
+          }
+        } catch {
+          writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + "\n");
+          console.log("   ✅ Created .mcp.json");
         }
-      } catch {
+      } else {
         writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + "\n");
         console.log("   ✅ Created .mcp.json");
       }
     } else {
-      writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + "\n");
-      console.log("   ✅ Created .mcp.json");
+      console.log("   ⏭️  Skipped project .mcp.json. Use the Claude plugin globally, or pass --mcp-config for legacy local config.");
     }
   }
 
@@ -248,7 +254,8 @@ function setup() {
   console.log("  3. Open Claude Code in this folder and start working!");
   console.log("");
   console.log("Commands:");
-  console.log("  npx github:karnelian/unity-mcp setup --profile=core,ui  — Set/update tool profile");
+  console.log("  npx github:karnelian/unity-mcp setup --profile=core,ui  — Install/update Unity plugin (no local .mcp.json by default)");
+  console.log("  npx github:karnelian/unity-mcp setup --mcp-config    — Also write legacy project .mcp.json");
   console.log("  npx github:karnelian/unity-mcp update                   — Update plugin only");
   console.log("  npx github:karnelian/unity-mcp instances                — List running Unity instances");
   console.log("");

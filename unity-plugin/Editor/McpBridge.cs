@@ -27,6 +27,8 @@ namespace KarnelLabs.MCP
         private const int ProcessPerFrame = 10;
         private const int StaleRequestSeconds = 30;
         private const int KeepAliveIntervalMs = 50;
+        private const int DefaultPort = 8099;
+        private const int MaxAutoPort = 8199;
         private const string WsGuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
         // ── 서버 상태 ──────────────────────────────────────────────
@@ -39,6 +41,7 @@ namespace KarnelLabs.MCP
         private static long _lastClientActivityTicks;
         private static string _clientEndpoint;
         private static int _port;
+        private static readonly object ClientLock = new();
 
         // ── 메시지 큐 ──────────────────────────────────────────────
         private static readonly ConcurrentQueue<QueuedRequest> IncomingQueue = new();
@@ -89,7 +92,7 @@ namespace KarnelLabs.MCP
 
         static McpBridge()
         {
-            _port = SessionState.GetInt("KarnelLabs_MCP_Port", 8099);
+            _port = SessionState.GetInt("KarnelLabs_MCP_Port", DefaultPort);
 
             // 통계 복원
             _totalProcessed = long.Parse(EditorPrefs.GetString("KarnelLabs_MCP_TotalProcessed", "0"));
@@ -113,7 +116,7 @@ namespace KarnelLabs.MCP
 
             Task.Run(() => RunServer(_cts.Token));
             StartKeepAlive();
-            Debug.Log($"[KarnelLabs MCP] Server starting on ws://127.0.0.1:{_port}");
+            Debug.Log($"[KarnelLabs MCP] Server starting on ws://127.0.0.1:{_port} (auto-port enabled)");
         }
 
         public static void Stop()
@@ -136,11 +139,15 @@ namespace KarnelLabs.MCP
 
         private static void CloseClient()
         {
-            _clientConnected = false;
-            try { _clientStream?.Close(); } catch { }
-            try { _tcpClient?.Close(); } catch { }
-            _clientStream = null;
-            _tcpClient = null;
+            lock (ClientLock)
+            {
+                _clientConnected = false;
+                try { _clientStream?.Close(); } catch { }
+                try { _tcpClient?.Close(); } catch { }
+                _clientStream = null;
+                _tcpClient = null;
+                _clientEndpoint = null;
+            }
         }
 
         private static void MarkClientActivity()
@@ -198,7 +205,7 @@ namespace KarnelLabs.MCP
         {
             if (SessionState.GetBool("KarnelLabs_MCP_WasRunning", true))
             {
-                _port = SessionState.GetInt("KarnelLabs_MCP_Port", 8099);
+                _port = SessionState.GetInt("KarnelLabs_MCP_Port", DefaultPort);
                 CommandRouter.RegisterAll();
                 Start();
             }
@@ -344,8 +351,10 @@ namespace KarnelLabs.MCP
         {
             try
             {
-                _tcpListener = new TcpListener(IPAddress.Loopback, _port);
-                _tcpListener.Start();
+                _tcpListener = StartListenerWithAutoPort(_port);
+                SessionState.SetInt("KarnelLabs_MCP_Port", _port);
+                RegistryService.RegisterInstance();
+                Debug.Log($"[KarnelLabs MCP] Server listening on ws://127.0.0.1:{_port}");
 
                 while (!ct.IsCancellationRequested)
                 {
@@ -355,28 +364,7 @@ namespace KarnelLabs.MCP
                     catch (SocketException) { break; }
                     catch (InvalidOperationException) { break; }
 
-                    // 기존 클라이언트 종료 (단일 클라이언트만 허용)
-                    CloseClient();
-
-                    var stream = client.GetStream();
-
-                    if (!await WsHandshake(stream, ct))
-                    {
-                        try { client.Close(); } catch { }
-                        continue;
-                    }
-
-                    _tcpClient = client;
-                    _clientStream = stream;
-                    _clientEndpoint = client.Client.RemoteEndPoint?.ToString();
-                    _clientConnected = true;
-                    MarkClientActivity();
-                    Debug.Log($"[KarnelLabs MCP] Client connected ({ClientEndpoint})");
-
-                    await HandleClient(stream, ct);
-
-                    CloseClient();
-                    Debug.Log("[KarnelLabs MCP] Client disconnected");
+                    _ = Task.Run(async () => await AcceptClient(client, ct), ct);
                 }
             }
             catch (OperationCanceledException) { }
@@ -384,6 +372,104 @@ namespace KarnelLabs.MCP
             {
                 if (_isRunning)
                     Debug.LogError($"[KarnelLabs MCP] Server error: {ex.Message}");
+            }
+        }
+
+        private static TcpListener StartListenerWithAutoPort(int preferredPort)
+        {
+            var startPort = Math.Max(1, Math.Min(65535, preferredPort));
+            var lastPort = Math.Min(65535, Math.Max(startPort, MaxAutoPort));
+            SocketException lastError = null;
+
+            for (var port = startPort; port <= lastPort; port++)
+            {
+                try
+                {
+                    var listener = new TcpListener(IPAddress.Loopback, port);
+                    listener.Start();
+                    if (port != _port)
+                    {
+                        Debug.LogWarning($"[KarnelLabs MCP] Port {_port} unavailable; auto-selected {port}");
+                        _port = port;
+                    }
+                    return listener;
+                }
+                catch (SocketException ex)
+                {
+                    lastError = ex;
+                }
+            }
+
+            throw new InvalidOperationException($"No available MCP port in range {startPort}-{lastPort}: {lastError?.Message}");
+        }
+
+        private static async Task AcceptClient(TcpClient client, CancellationToken ct)
+        {
+            NetworkStream stream = null;
+            try
+            {
+                stream = client.GetStream();
+
+                if (!await WsHandshake(stream, ct))
+                {
+                    try { client.Close(); } catch { }
+                    return;
+                }
+
+                lock (ClientLock)
+                {
+                    if (_clientConnected && _tcpClient != null)
+                    {
+                        _ = RejectExtraClient(stream, client);
+                        return;
+                    }
+
+                    _tcpClient = client;
+                    _clientStream = stream;
+                    _clientEndpoint = client.Client.RemoteEndPoint?.ToString();
+                    _clientConnected = true;
+                }
+
+                MarkClientActivity();
+                Debug.Log($"[KarnelLabs MCP] Client connected ({ClientEndpoint})");
+
+                await HandleClient(stream, ct);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                if (_isRunning) Debug.LogWarning($"[KarnelLabs MCP] Client error: {ex.Message}");
+            }
+            finally
+            {
+                lock (ClientLock)
+                {
+                    if (ReferenceEquals(stream, _clientStream))
+                    {
+                        _clientConnected = false;
+                        try { _clientStream?.Close(); } catch { }
+                        try { _tcpClient?.Close(); } catch { }
+                        _clientStream = null;
+                        _tcpClient = null;
+                        _clientEndpoint = null;
+                        Debug.Log("[KarnelLabs MCP] Client disconnected");
+                    }
+                }
+            }
+        }
+
+        private static async Task RejectExtraClient(NetworkStream stream, TcpClient client)
+        {
+            try
+            {
+                await WsWriteClose(stream, 1013, "Unity MCP already has an active client", CancellationToken.None);
+                Debug.LogWarning("[KarnelLabs MCP] Rejected extra MCP client; keeping existing connection");
+            }
+            catch { }
+            finally
+            {
+                try { stream.Close(); } catch { }
+                try { client.Close(); } catch { }
             }
         }
 
@@ -520,6 +606,16 @@ namespace KarnelLabs.MCP
         {
             var payload = Encoding.UTF8.GetBytes(text);
             await WsWriteFrame(stream, 0x1, payload, ct);
+        }
+
+        private static async Task WsWriteClose(NetworkStream stream, ushort code, string reason, CancellationToken ct)
+        {
+            var reasonBytes = Encoding.UTF8.GetBytes(reason ?? string.Empty);
+            var payload = new byte[2 + reasonBytes.Length];
+            payload[0] = (byte)(code >> 8);
+            payload[1] = (byte)(code & 0xFF);
+            Buffer.BlockCopy(reasonBytes, 0, payload, 2, reasonBytes.Length);
+            await WsWriteFrame(stream, 0x8, payload, ct);
         }
 
         private static async Task WsWriteFrame(NetworkStream stream, int opcode, byte[] payload, CancellationToken ct)

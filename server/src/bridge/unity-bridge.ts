@@ -23,12 +23,14 @@ export class McpError extends Error {
 export interface BridgeConfig {
   host: string;
   port: number;
+  resolvePort?: () => number | Promise<number>;
   timeouts: {
     default: number;
     build: number;
   };
   reconnect: {
     interval: number;
+    maxInterval?: number;
     maxAttempts: number;
   };
 }
@@ -54,10 +56,12 @@ export class UnityBridge {
   private _connected = false;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private shouldReconnect = true;
+  private reconnectAttempts = 0;
+  private connecting = false;
 
   constructor(config: BridgeConfig) {
     this.config = config;
-    this.connect();
+    void this.connect();
   }
 
   get connected(): boolean {
@@ -128,14 +132,26 @@ export class UnityBridge {
     this.rejectAllPending("Bridge disposed");
   }
 
-  private connect(): void {
-    const url = `ws://${this.config.host}:${this.config.port}`;
+  private async connect(): Promise<void> {
+    if (this.connecting || !this.shouldReconnect) return;
+    this.connecting = true;
 
     try {
+      if (this.config.resolvePort) {
+        const nextPort = await this.config.resolvePort();
+        if (Number.isInteger(nextPort) && nextPort > 0 && nextPort <= 65535 && nextPort !== this.config.port) {
+          console.error(`[Unity Bridge] Retargeting Unity port ${this.config.port} → ${nextPort}`);
+          this.config.port = nextPort;
+        }
+      }
+
+      const url = `ws://${this.config.host}:${this.config.port}`;
       this.ws = new WebSocket(url);
 
       this.ws.on("open", () => {
         this._connected = true;
+        this.connecting = false;
+        this.reconnectAttempts = 0;
         console.error(`[Unity Bridge] Connected to ${url}`);
       });
 
@@ -143,18 +159,19 @@ export class UnityBridge {
         this.onMessage(data.toString());
       });
 
-      this.ws.on("close", () => {
-        this.onClose();
+      this.ws.on("close", (code: number, reason: Buffer) => {
+        this.onClose(code, reason.toString());
       });
 
       this.ws.on("error", (err: Error) => {
-        // 연결 실패는 close 이벤트에서 처리
-        // 초기 연결 실패 시 로그만 출력 (stderr로)
         if (!this._connected) {
+          this.connecting = false;
           console.error(`[Unity Bridge] Connection failed: ${err.message}`);
         }
       });
-    } catch {
+    } catch (err) {
+      this.connecting = false;
+      console.error(`[Unity Bridge] Failed before connect: ${(err as Error).message}`);
       this.scheduleReconnect();
     }
   }
@@ -184,15 +201,19 @@ export class UnityBridge {
     }
   }
 
-  private onClose(): void {
+  private onClose(code?: number, reason?: string): void {
     const wasConnected = this._connected;
     this._connected = false;
+    this.connecting = false;
     this.ws = null;
 
     this.rejectAllPending("연결 끊김");
 
     if (wasConnected) {
-      console.error("[Unity Bridge] Disconnected from Unity");
+      const detail = code ? ` (code ${code}${reason ? `: ${reason}` : ""})` : "";
+      console.error(`[Unity Bridge] Disconnected from Unity${detail}`);
+    } else if (code || reason) {
+      console.error(`[Unity Bridge] Unity connection closed before ready${code ? ` (code ${code}${reason ? `: ${reason}` : ""})` : ""}`);
     }
 
     if (this.shouldReconnect) {
@@ -210,9 +231,16 @@ export class UnityBridge {
 
   private scheduleReconnect(): void {
     if (this.reconnectTimer || !this.shouldReconnect) return;
+    if (this.reconnectAttempts >= this.config.reconnect.maxAttempts) return;
+
+    this.reconnectAttempts += 1;
+    const base = this.config.reconnect.interval;
+    const max = this.config.reconnect.maxInterval ?? base;
+    const delay = Math.min(max, base * 2 ** Math.max(0, this.reconnectAttempts - 1));
+
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
-      this.connect();
-    }, this.config.reconnect.interval);
+      void this.connect();
+    }, delay);
   }
 }
