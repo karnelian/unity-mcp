@@ -289,7 +289,7 @@ namespace KarnelLabs.MCP
                         if (idToken != null) errorId = idToken.ToString(Newtonsoft.Json.Formatting.None);
                     }
                     catch { }
-                    OutgoingQueue.Enqueue(JsonRpc.Error(errorId, -32000, ex.Message));
+                    OutgoingQueue.Enqueue(JsonRpc.Error(errorId, -32000, ex.Message, SafetyPolicy.ErrorData(-32000, logMethod)));
                 }
                 finally
                 {
@@ -676,6 +676,14 @@ namespace KarnelLabs.MCP
                 totalProcessed = _totalProcessed,
                 totalErrors = _totalErrors,
                 totalRejected = _totalRejected,
+                safety = new
+                {
+                    requireHighRiskConfirmation = SafetyPolicy.RequireHighRiskConfirmation,
+                    dryRunParameter = "dryRun",
+                    confirmationParameter = "confirmationToken",
+                    confirmationTokenFormat = "confirm:<method-with-dots-replaced-by-colons>",
+                    policy = "Dry-run is supported centrally for mutating methods. High-risk confirmation is enforced only when UNITY_MCP_REQUIRE_CONFIRMATION=1 or MCP_REQUIRE_CONFIRMATION=1."
+                },
                 recentRequests = RequestLog.GetAll(),
                 hasActiveWorkflow = WorkflowManager.HasActiveSession,
                 workflowSnapshots = WorkflowManager.SnapshotCount,

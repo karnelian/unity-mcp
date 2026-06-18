@@ -1,4 +1,4 @@
-# Unity MCP — 717 Tools for AI-Powered Game Development
+# Unity MCP — 718 Tools for AI-Powered Game Development
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Unity](https://img.shields.io/badge/Unity-6000.0+-black.svg)](https://unity.com)
@@ -130,6 +130,16 @@ npm run validate:plugin
 
 `npm run validate` performs a high-severity npm audit for the server package and rebuilds the TypeScript server plus bundled Unity Editor plugin. `npm run validate:plugin` validates both Claude Code marketplace manifests in strict mode.
 
+### Safety Layer
+
+Unity MCP now includes a central non-breaking safety policy:
+
+- `unity_mcp_safety_describe` reports risk metadata for an internal Unity method, including risk level, dry-run support, and confirmation token.
+- Passing `dryRun: true` through the Unity bridge returns a `wouldExecute` preview before handler execution.
+- High-risk confirmation is opt-in for compatibility: set `UNITY_MCP_REQUIRE_CONFIRMATION=1` or `MCP_REQUIRE_CONFIRMATION=1` to require `confirmationToken` for destructive/high-risk methods.
+- JSON-RPC errors include structured `data` fields such as `codeName`, `retryable`, `suggestedNextTool`, and method risk metadata.
+- `unity_editor_diagnostics` exposes the active safety policy alongside request latency, response size, and recent failure data.
+
 ## Architecture
 
 ```
@@ -242,7 +252,7 @@ The server exposes **5 live Unity state resources** and **18 workflow guide reso
 
 ## Requirements
 
-- **Unity** 2021.3+ (tested on Unity 6)
+- **Unity** 6000.0+ (Unity 6)
 - **Node.js** 18+
 - **Claude Code** (or any MCP-compatible client)
 

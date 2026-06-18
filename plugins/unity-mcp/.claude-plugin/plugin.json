@@ -1,7 +1,7 @@
 {
   "name": "unity-mcp",
   "displayName": "Unity MCP",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Connect Claude Code to the Unity Editor through the optimized Karnelian Unity MCP server.",
   "author": {
     "name": "karnelian"
@@ -9,7 +9,12 @@
   "homepage": "https://github.com/karnelian/unity-mcp",
   "repository": "https://github.com/karnelian/unity-mcp",
   "license": "MIT",
-  "keywords": ["unity", "mcp", "claude-code", "game-development"],
+  "keywords": [
+    "unity",
+    "mcp",
+    "claude-code",
+    "game-development"
+  ],
   "mcpServers": {
     "karnellabs-unity-mcp": {
       "command": "npx",

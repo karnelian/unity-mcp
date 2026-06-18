@@ -57,4 +57,16 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
     }
   );
 
+  server.tool(
+    "unity_mcp_safety_describe",
+    "Describe central MCP safety policy, risk metadata, dry-run behavior, and confirmation token for an internal Unity method such as scene.delete or project.setBuildTarget",
+    {
+      method: z.string(),
+      params: z.record(z.string(), z.any()).optional(),
+    },
+    async (params) => {
+      const result = await bridge.request("safety.describe", params);
+      return textResult(result);
+    }
+  );
 }

@@ -161,10 +161,18 @@ namespace KarnelLabs.MCP
                 method = request.Method;
 
                 if (string.IsNullOrEmpty(method))
-                    return (id, JsonRpc.Error(id, -32600, "Invalid request: missing method"));
+                    return (id, JsonRpc.Error(id, -32600, "Invalid request: missing method", SafetyPolicy.ErrorData(-32600, method)));
 
                 if (!Handlers.TryGetValue(method, out var handler))
-                    return (id, JsonRpc.Error(id, -32601, $"Unknown method: {method}"));
+                    return (id, JsonRpc.Error(id, -32601, $"Unknown method: {method}", SafetyPolicy.ErrorData(-32601, method)));
+
+                var risk = SafetyPolicy.Describe(method);
+
+                if (SafetyPolicy.IsDryRun(request.Params))
+                    return (id, JsonRpc.Success(id, SafetyPolicy.DryRunResult(risk, request.Params)));
+
+                if (!SafetyPolicy.HasValidConfirmation(request.Params, risk))
+                    return (id, JsonRpc.Error(id, -32602, $"Confirmation required for high-risk method: {method}", SafetyPolicy.ConfirmationRequired(risk)));
 
                 // ── 트랜잭션 시작 ──
                 Undo.IncrementCurrentGroup();
@@ -194,12 +202,12 @@ namespace KarnelLabs.MCP
             catch (McpException ex)
             {
                 Debug.LogWarning($"[MCP] McpException ({ex.Code}): {ex.Message}");
-                return (id, JsonRpc.Error(id, ex.Code, ex.Message));
+                return (id, JsonRpc.Error(id, ex.Code, ex.Message, SafetyPolicy.ErrorData(ex.Code, method)));
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[MCP] Error handling '{method}': {ex}");
-                return (id, JsonRpc.Error(id, -32000, ex.Message));
+                return (id, JsonRpc.Error(id, -32000, ex.Message, SafetyPolicy.ErrorData(-32000, method)));
             }
         }
 

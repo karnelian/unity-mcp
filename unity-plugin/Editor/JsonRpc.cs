@@ -22,9 +22,9 @@ namespace KarnelLabs.MCP
             return $"{{\"jsonrpc\":\"2.0\",\"id\":{rawId},\"result\":{resultJson}}}";
         }
 
-        public static string Error(string rawId, int code, string message)
+        public static string Error(string rawId, int code, string message, object data = null)
         {
-            var errorJson = JsonConvert.SerializeObject(new { code, message }, Settings);
+            var errorJson = JsonConvert.SerializeObject(new { code, message, data }, Settings);
             return $"{{\"jsonrpc\":\"2.0\",\"id\":{rawId},\"error\":{errorJson}}}";
         }
 

@@ -12,7 +12,8 @@ import WebSocket from "ws";
 export class McpError extends Error {
   constructor(
     public readonly code: number,
-    message: string
+    message: string,
+    public readonly data?: unknown
   ) {
     super(message);
     this.name = "McpError";
@@ -67,7 +68,12 @@ export class UnityBridge {
     if (!this._connected || !this.ws) {
       throw new McpError(
         -32001,
-        "Unity Editor not connected. Checklist: (1) Open Unity project, (2) Tools > KarnelLabs MCP > Server Window — ensure it shows 'Listening', (3) Check port " + this.config.port + " matches."
+        "Unity Editor not connected. Checklist: (1) Open Unity project, (2) Tools > KarnelLabs MCP > Server Window — ensure it shows 'Listening', (3) Check port " + this.config.port + " matches.",
+        {
+          codeName: "UNITY_NOT_CONNECTED",
+          retryable: true,
+          suggestedNextTool: "Open Tools > KarnelLabs MCP > Server Window, confirm it is Listening, then call unity_editor_diagnostics or unity_project_health.",
+        }
       );
     }
 
@@ -80,7 +86,12 @@ export class UnityBridge {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(new McpError(-32002, `Timeout: ${method} after ${timeout / 1000}s. Unity may be busy (compiling, importing, or in a modal dialog). Try again after Unity is idle.`));
+        reject(new McpError(-32002, `Timeout: ${method} after ${timeout / 1000}s. Unity may be busy (compiling, importing, or in a modal dialog). Try again after Unity is idle.`, {
+          codeName: "UNITY_REQUEST_TIMEOUT",
+          retryable: true,
+          method,
+          suggestedNextTool: "Wait for Unity to finish compiling/importing, then call unity_editor_diagnostics or retry with a narrower request.",
+        }));
       }, timeout);
 
       this.pending.set(id, { resolve, reject, timer });
@@ -160,7 +171,8 @@ export class UnityBridge {
           pending.reject(
             new McpError(
               msg.error.code ?? -32000,
-              msg.error.message || "Unity error"
+              msg.error.message || "Unity error",
+              msg.error.data
             )
           );
         } else {
