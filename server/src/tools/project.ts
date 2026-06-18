@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
 import { textResult } from "../utils/format.js";
+import { withSafety } from "./safety.js";
 
 export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
 
@@ -25,10 +26,10 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     return textResult(r);
   });
 
-  server.tool("unity_project_set_quality_level", "Set quality level", {
+  server.tool("unity_project_set_quality_level", "Set quality level", withSafety({
     level: z.number(),
     applyExpensiveChanges: z.boolean().optional(),
-  }, async (p) => {
+  }), async (p) => {
     const r = await bridge.request("project.setQualityLevel", p);
     return textResult(r);
   });
@@ -38,12 +39,12 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     return textResult(r);
   });
 
-  server.tool("unity_project_set_player_settings", "Set PlayerSettings", {
+  server.tool("unity_project_set_player_settings", "Set PlayerSettings", withSafety({
     productName: z.string().optional(), companyName: z.string().optional(),
     bundleVersion: z.string().optional(),
     defaultScreenWidth: z.number().optional(), defaultScreenHeight: z.number().optional(),
     runInBackground: z.boolean().optional(),
-  }, async (p) => {
+  }), async (p) => {
     const r = await bridge.request("project.setPlayerSettings", p);
     return textResult(r);
   });
@@ -58,16 +59,16 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     return textResult(r);
   });
 
-  server.tool("unity_project_add_tag", "Add tag", {
+  server.tool("unity_project_add_tag", "Add tag", withSafety({
     tag: z.string(),
-  }, async (p) => {
+  }), async (p) => {
     const r = await bridge.request("project.addTag", p);
     return textResult(r);
   });
 
-  server.tool("unity_project_add_layer", "Add layer", {
+  server.tool("unity_project_add_layer", "Add layer", withSafety({
     layer: z.string(),
-  }, async (p) => {
+  }), async (p) => {
     const r = await bridge.request("project.addLayer", p);
     return textResult(r);
   });
@@ -77,10 +78,10 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     return textResult(r);
   });
 
-  server.tool("unity_project_set_time", "Set TimeSettings", {
+  server.tool("unity_project_set_time", "Set TimeSettings", withSafety({
     fixedDeltaTime: z.number().optional(), maximumDeltaTime: z.number().optional(),
     timeScale: z.number().optional(),
-  }, async (p) => {
+  }), async (p) => {
     const r = await bridge.request("project.setTimeSettings", p);
     return textResult(r);
   });
@@ -90,9 +91,9 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     return textResult(r);
   });
 
-  server.tool("unity_project_setBuildTarget", "Set build target", {
+  server.tool("unity_project_setBuildTarget", "Set build target", withSafety({
     target: z.string(),
-  }, async (p) => {
+  }), async (p) => {
     const r = await bridge.request("project.setBuildTarget", p);
     return textResult(r);
   });
@@ -102,13 +103,13 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     return textResult(r);
   });
 
-  server.tool("unity_project_setAndroidSettings", "Set Android settings", {
+  server.tool("unity_project_setAndroidSettings", "Set Android settings", withSafety({
     packageName: z.string().optional(),
     minSdkVersion: z.string().optional(),
     targetSdkVersion: z.string().optional(),
     targetArchitectures: z.string().optional(),
     scriptingBackend: z.string().optional(),
-  }, async (p) => {
+  }), async (p) => {
     const r = await bridge.request("project.setAndroidSettings", p);
     return textResult(r);
   });
@@ -118,7 +119,7 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     return textResult(r);
   });
 
-  server.tool("unity_project_setIOSSettings", "Set iOS settings", {
+  server.tool("unity_project_setIOSSettings", "Set iOS settings", withSafety({
     bundleIdentifier: z.string().optional(),
     targetOSVersionString: z.string().optional(),
     sdkVersion: z.string().optional(),
@@ -127,7 +128,7 @@ export function registerProjectTools(server: McpServer, bridge: UnityBridge) {
     automaticallySign: z.boolean().optional(),
     teamId: z.string().optional(),
     cameraUsageDescription: z.string().optional(),
-  }, async (p) => {
+  }), async (p) => {
     const r = await bridge.request("project.setIOSSettings", p);
     return textResult(r);
   });

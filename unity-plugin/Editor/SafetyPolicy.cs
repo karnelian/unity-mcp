@@ -48,7 +48,7 @@ namespace KarnelLabs.MCP
 
             string level;
             string reason;
-            if (destructive || lower.Contains("build") || lower.Contains("player_settings") || lower.Contains("setbuildtarget"))
+            if (destructive || lower.Contains("build") || lower.Contains("playersettings") || lower.Contains("androidsettings") || lower.Contains("iossettings") || lower.Contains("setbuildtarget"))
             {
                 level = "high";
                 reason = "May delete, reset, undo, build, or change project/platform settings.";
