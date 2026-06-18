@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 
@@ -23,7 +24,7 @@ export function registerBatchTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.createBatch", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -43,7 +44,7 @@ export function registerBatchTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.setTransformBatch", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -59,7 +60,7 @@ export function registerBatchTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("scene.deleteBatch", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -75,7 +76,7 @@ export function registerBatchTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("asset.importSettingsBatch", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

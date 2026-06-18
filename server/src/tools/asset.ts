@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
 
@@ -11,10 +12,14 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
       query: z.string().optional(),
       type: z.string().optional(),
       folder: z.string().optional(),
+      maxResults: z.number().optional().default(50),
+      offset: z.number().optional(),
+      summaryOnly: z.boolean().optional(),
+      includeDetails: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("asset.search", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result, params);
     }
   );
 
@@ -26,7 +31,7 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("asset.info", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -41,7 +46,7 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("asset.createMaterial", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -54,7 +59,7 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("asset.createPrefab", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -68,7 +73,7 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("asset.importSettings", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -80,7 +85,7 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("asset.createFolder", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -89,7 +94,7 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     useTrash: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("asset.delete", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asset_move", "Move/rename asset", {
@@ -97,7 +102,7 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     newPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("asset.move", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asset_copy", "Copy asset", {
@@ -105,26 +110,26 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     destPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("asset.copy", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asset_refresh", "Refresh AssetDatabase", {}, async () => {
     const r = await bridge.request("asset.refresh", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asset_reimport", "Reimport asset", {
     path: z.string(),
   }, async (p) => {
     const r = await bridge.request("asset.reimport", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asset_getLabels", "Get asset labels", {
     path: z.string(),
   }, async (p) => {
     const r = await bridge.request("asset.getLabels", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asset_setLabels", "Set asset labels", {
@@ -132,13 +137,13 @@ export function registerAssetTools(server: McpServer, bridge: UnityBridge) {
     labels: z.array(z.string()),
   }, async (p) => {
     const r = await bridge.request("asset.setLabels", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_asset_importPackage", "Import .unitypackage file (non-interactive)", {
     path: z.string().describe("Path to .unitypackage file (e.g. Packages/com.unity.textmeshpro/Package Resources/TMP Essential Resources.unitypackage)"),
   }, async (p) => {
     const r = await bridge.request("asset.importPackage", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

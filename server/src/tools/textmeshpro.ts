@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -20,7 +21,7 @@ export function registerTextMeshProTools(server: McpServer, bridge: UnityBridge)
     fontStyle: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("tmp.createUI", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tmp_create3D", "Create TMP 3D text", {
@@ -31,7 +32,7 @@ export function registerTextMeshProTools(server: McpServer, bridge: UnityBridge)
     color: z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() }).optional(),
   }, async (p) => {
     const r = await bridge.request("tmp.create3D", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tmp_setText", "Set TMP text", {
@@ -39,7 +40,7 @@ export function registerTextMeshProTools(server: McpServer, bridge: UnityBridge)
     text: z.string(),
   }, async (p) => {
     const r = await bridge.request("tmp.setText", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tmp_setStyle", "Set TMP style", {
@@ -55,7 +56,7 @@ export function registerTextMeshProTools(server: McpServer, bridge: UnityBridge)
     paragraphSpacing: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("tmp.setStyle", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tmp_setFont", "Set TMP font", {
@@ -64,27 +65,27 @@ export function registerTextMeshProTools(server: McpServer, bridge: UnityBridge)
     materialPresetPath: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("tmp.setFont", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tmp_getInfo", "Get TMP info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("tmp.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tmp_find", "Find TMP objects", {
     textFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("tmp.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tmp_findFontAssets", "Find TMP fonts", {
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("tmp.findFontAssets", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

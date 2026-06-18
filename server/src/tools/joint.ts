@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -23,7 +24,7 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     spring: z.object({ spring: z.number(), damper: z.number(), targetPosition: z.number() }).optional(),
   }, async (p) => {
     const r = await bridge.request("joint.addHinge", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_joint_addSpring", "Add SpringJoint", {
@@ -36,7 +37,7 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     tolerance: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("joint.addSpring", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_joint_addFixed", "Add FixedJoint", {
@@ -46,7 +47,7 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     breakTorque: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("joint.addFixed", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_joint_addCharacter", "Add CharacterJoint", {
@@ -57,7 +58,7 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     swingAxis: z.object({ x: z.number(), y: z.number(), z: z.number() }).optional(),
   }, async (p) => {
     const r = await bridge.request("joint.addCharacter", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_joint_addConfigurable", "Add ConfigurableJoint", {
@@ -71,14 +72,14 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     angularZMotion: z.enum(["Free", "Limited", "Locked"]).optional(),
   }, async (p) => {
     const r = await bridge.request("joint.addConfigurable", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_joint_getInfo", "Get joint info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("joint.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_joint_setProperties", "Set joint", {
@@ -90,7 +91,7 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     enablePreprocessing: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("joint.setProperties", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_joint_remove", "Remove joint", {
@@ -98,13 +99,13 @@ export function registerJointTools(server: McpServer, bridge: UnityBridge) {
     jointType: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("joint.remove", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_joint_find", "Find joints", {
     jointType: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("joint.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

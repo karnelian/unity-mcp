@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerModelTools(server: McpServer, bridge: UnityBridge) {
 
@@ -12,7 +13,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.getSettings", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -31,7 +32,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.setSettings", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -43,7 +44,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.getInfo", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -56,7 +57,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.find", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -68,7 +69,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.getMeshInfo", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -81,7 +82,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.setRigType", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -93,7 +94,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.getAnimations", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -108,7 +109,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.setAnimationSettings", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -121,7 +122,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.setScale", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -134,7 +135,7 @@ export function registerModelTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("model.setMaterialImport", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

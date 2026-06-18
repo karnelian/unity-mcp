@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerValidationTools(server: McpServer, bridge: UnityBridge) {
 
@@ -10,7 +11,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("validate.missingScripts", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -22,7 +23,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     },
     async (params) => {
       const result = await bridge.request("validate.missingReferences", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -32,7 +33,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("validate.shaderErrors", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -42,7 +43,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("validate.emptyGameObjects", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -52,7 +53,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("validate.duplicateNames", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -62,7 +63,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("validate.disabledRenderers", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -72,7 +73,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("validate.sceneStats", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -82,7 +83,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("validate.prefabOverrides", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -94,7 +95,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     },
     async (params) => {
       const result = await bridge.request("validate.largeMeshes", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -104,7 +105,7 @@ export function registerValidationTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("validate.untaggedObjects", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

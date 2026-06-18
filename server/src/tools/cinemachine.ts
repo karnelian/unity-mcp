@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 
@@ -19,7 +20,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.createVirtualCamera", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -33,7 +34,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.createFreeLook", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -49,7 +50,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setBrain", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -59,7 +60,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     {},
     async (params) => {
       const result = await bridge.request("cinemachine.getBrain", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -74,7 +75,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setFollow", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -89,7 +90,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setLookAt", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -109,7 +110,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setBody", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -126,7 +127,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setAim", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -143,7 +144,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setNoise", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -158,7 +159,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setPriority", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -172,7 +173,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.getInfo", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -182,7 +183,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     {},
     async (params) => {
       const result = await bridge.request("cinemachine.findCameras", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -192,7 +193,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     { name: z.string().optional() },
     async (params) => {
       const result = await bridge.request("cinemachine.createBlendList", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -211,7 +212,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setLens", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -224,7 +225,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.createDollyTrack", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -239,7 +240,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.addDollyPoint", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -254,7 +255,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setConfiner", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -264,7 +265,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     { name: z.string().optional() },
     async (params) => {
       const result = await bridge.request("cinemachine.createMixingCamera", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -274,7 +275,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     { name: z.string().optional() },
     async (params) => {
       const result = await bridge.request("cinemachine.createClearShot", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -292,7 +293,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setDeadZone", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -302,7 +303,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     { name: z.string().optional() },
     async (params) => {
       const result = await bridge.request("cinemachine.createGroup", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -319,7 +320,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.addGroupTarget", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -335,7 +336,7 @@ export function registerCinemachineTools(server: McpServer, bridge: UnityBridge)
     },
     async (params) => {
       const result = await bridge.request("cinemachine.setGroupFraming", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -18,7 +19,7 @@ export function registerGridLayoutTools(server: McpServer, bridge: UnityBridge) 
     cellSwizzle: z.enum(["XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX"]).optional(),
   }, async (p) => {
     const r = await bridge.request("gridLayout.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_gridLayout_set", "Set GridLayout", {
@@ -29,18 +30,18 @@ export function registerGridLayoutTools(server: McpServer, bridge: UnityBridge) 
     cellSwizzle: z.enum(["XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX"]).optional(),
   }, async (p) => {
     const r = await bridge.request("gridLayout.set", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_gridLayout_getInfo", "Get GridLayout info", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("gridLayout.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_gridLayout_find", "Find GridLayoutGroups", {}, async (p) => {
     const r = await bridge.request("gridLayout.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

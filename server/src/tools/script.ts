@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
 
@@ -14,7 +15,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("script.create", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -26,7 +27,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("script.read", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -44,7 +45,20 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("script.edit", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
+    }
+  );
+
+  server.tool(
+    "unity_script_writeAndCompile",
+    "Write a C# script, refresh Unity synchronously, and return immediate compile status. If Unity is still compiling, call unity_script_compileCheck or unity_project_health next.",
+    {
+      path: z.string(),
+      content: z.string(),
+    },
+    async (params) => {
+      const result = await bridge.request("script.writeAndCompile", params);
+      return textResult(result);
     }
   );
 
@@ -54,7 +68,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     {},
     async () => {
       const result = await bridge.request("script.compileCheck");
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -68,7 +82,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("script.list", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -80,7 +94,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("script.delete", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -93,7 +107,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("script.rename", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -108,7 +122,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("script.search", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -120,7 +134,7 @@ export function registerScriptTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("script.getInfo", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

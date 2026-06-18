@@ -256,9 +256,18 @@ namespace KarnelLabs.MCP
 
                 try
                 {
+                    var sw = System.Diagnostics.Stopwatch.StartNew();
                     var (id, response) = CommandRouter.Dispatch(queued.Message);
+                    sw.Stop();
                     bool isError = response.Contains("\"error\"");
-                    RequestLog.Add(logMethod, !isError);
+                    RequestLog.Add(
+                        logMethod,
+                        !isError,
+                        null,
+                        sw.ElapsedMilliseconds,
+                        Encoding.UTF8.GetByteCount(queued.Message),
+                        Encoding.UTF8.GetByteCount(response)
+                    );
 
                     if (isError) Interlocked.Increment(ref _totalErrors);
                     Interlocked.Increment(ref _totalProcessed);
@@ -667,6 +676,7 @@ namespace KarnelLabs.MCP
                 totalProcessed = _totalProcessed,
                 totalErrors = _totalErrors,
                 totalRejected = _totalRejected,
+                recentRequests = RequestLog.GetAll(),
                 hasActiveWorkflow = WorkflowManager.HasActiveSession,
                 workflowSnapshots = WorkflowManager.SnapshotCount,
             };

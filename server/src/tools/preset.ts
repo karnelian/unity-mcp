@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerPresetTools(server: McpServer, bridge: UnityBridge) {
 
@@ -11,7 +12,7 @@ export function registerPresetTools(server: McpServer, bridge: UnityBridge) {
     savePath: z.string(),
   }, async (p) => {
     const r = await bridge.request("preset.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_preset_apply", "Apply Preset", {
@@ -21,14 +22,14 @@ export function registerPresetTools(server: McpServer, bridge: UnityBridge) {
     componentType: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("preset.apply", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_preset_getInfo", "Get Preset info", {
     path: z.string(),
   }, async (p) => {
     const r = await bridge.request("preset.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_preset_find", "Find Presets", {
@@ -37,7 +38,7 @@ export function registerPresetTools(server: McpServer, bridge: UnityBridge) {
     folder: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("preset.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_preset_setAsDefault", "Set default Preset", {
@@ -46,6 +47,6 @@ export function registerPresetTools(server: McpServer, bridge: UnityBridge) {
     filter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("preset.setAsDefault", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

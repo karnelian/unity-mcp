@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerOptimizationTools(server: McpServer, bridge: UnityBridge) {
 
@@ -12,7 +13,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     },
     async (params) => {
       const result = await bridge.request("optimize.textureOverview", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -26,7 +27,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     },
     async (params) => {
       const result = await bridge.request("optimize.compressTextures", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -36,7 +37,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     {},
     async (params) => {
       const result = await bridge.request("optimize.meshOverview", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -49,7 +50,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     },
     async (params) => {
       const result = await bridge.request("optimize.enableMeshCompression", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -59,7 +60,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     {},
     async (params) => {
       const result = await bridge.request("optimize.audioOverview", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -73,7 +74,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     },
     async (params) => {
       const result = await bridge.request("optimize.compressAudio", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -86,7 +87,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     },
     async (params) => {
       const result = await bridge.request("optimize.findLargeAssets", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -102,7 +103,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     },
     async (params) => {
       const result = await bridge.request("optimize.setStaticFlags", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -115,7 +116,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     },
     async (params) => {
       const result = await bridge.request("optimize.disableMipmaps", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -127,7 +128,7 @@ export function registerOptimizationTools(server: McpServer, bridge: UnityBridge
     },
     async (params) => {
       const result = await bridge.request("optimize.enableGPUInstancing", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

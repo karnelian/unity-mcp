@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 
@@ -16,7 +17,7 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     name: z.string().optional(), size: vec3.optional(), position: vec3.optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.createCube", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_createCylinder", "Create ProBuilder cylinder", {
@@ -24,14 +25,14 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     axisDivisions: z.number().optional(), heightCuts: z.number().optional(), position: vec3.optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.createCylinder", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_createSphere", "Create ProBuilder sphere", {
     name: z.string().optional(), radius: z.number().optional(), subdivisions: z.number().optional(), position: vec3.optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.createSphere", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_createPlane", "Create ProBuilder plane", {
@@ -39,7 +40,7 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     widthCuts: z.number().optional(), heightCuts: z.number().optional(), position: vec3.optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.createPlane", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_createStair", "Create ProBuilder stair", {
@@ -47,7 +48,7 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     depth: z.number().optional(), steps: z.number().optional(), position: vec3.optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.createStair", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_createArch", "Create ProBuilder arch", {
@@ -55,7 +56,7 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     width: z.number().optional(), depth: z.number().optional(), radialCuts: z.number().optional(), position: vec3.optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.createArch", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_createDoor", "Create ProBuilder door", {
@@ -63,7 +64,7 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     depth: z.number().optional(), doorWidth: z.number().optional(), doorHeight: z.number().optional(), position: vec3.optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.createDoor", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_createPipe", "Create ProBuilder pipe", {
@@ -71,12 +72,12 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     thickness: z.number().optional(), subdivisions: z.number().optional(), position: vec3.optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.createPipe", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_getInfo", "Get ProBuilder info", goId, async (params) => {
     const result = await bridge.request("probuilder.getInfo", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_extrude", "Extrude faces", {
@@ -84,31 +85,31 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     faceIndices: z.array(z.number()).optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.extrude", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_bevel", "Bevel edges", {
     ...goId, amount: z.number().optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.bevel", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_subdivide", "Subdivide mesh", goId, async (params) => {
     const result = await bridge.request("probuilder.subdivide", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_merge", "Merge meshes", {
     names: z.array(z.string()).optional(), paths: z.array(z.string()).optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.merge", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_flip", "Flip normals", goId, async (params) => {
     const result = await bridge.request("probuilder.flip", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_setMaterial", "Set face material", {
@@ -116,27 +117,27 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     faceIndices: z.array(z.number()).optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.setMaterial", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_findProBuilderObjects", "Find ProBuilder objects", {}, async (params) => {
     const result = await bridge.request("probuilder.findProBuilderObjects", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_centerPivot", "Center pivot", goId, async (params) => {
     const result = await bridge.request("probuilder.centerPivot", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_freezeTransform", "Freeze transform", goId, async (params) => {
     const result = await bridge.request("probuilder.freezeTransform", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_triangulate", "Triangulate faces", goId, async (params) => {
     const result = await bridge.request("probuilder.triangulate", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_export", "Export mesh", {
@@ -144,20 +145,20 @@ export function registerProBuilderTools(server: McpServer, bridge: UnityBridge) 
     savePath: z.string().optional(),
   }, async (params) => {
     const result = await bridge.request("probuilder.export", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_selectFaces", "Select faces", {
     ...goId, faceIndices: z.array(z.number()),
   }, async (params) => {
     const result = await bridge.request("probuilder.selectFaces", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_probuilder_deleteFaces", "Delete faces", {
     ...goId, faceIndices: z.array(z.number()),
   }, async (params) => {
     const result = await bridge.request("probuilder.deleteFaces", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 }

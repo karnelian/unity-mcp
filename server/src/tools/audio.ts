@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
 
@@ -10,7 +11,7 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
     loop: z.boolean().optional(), playOnAwake: z.boolean().optional(), spatialBlend: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.addSource", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_set_source", "Set AudioSource properties", {
@@ -20,35 +21,35 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
     mute: z.boolean().optional(), minDistance: z.number().optional(), maxDistance: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.setSource", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_get_source", "Get AudioSource properties", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.getSource", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_play", "Play AudioSource", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.play", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_stop", "Stop AudioSource", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.stop", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_add_listener", "Add AudioListener", {
     path: z.string().optional(), name: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.addListener", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_set_clip", "Set AudioSource clip", {
@@ -56,40 +57,40 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
     clipPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("audio.setClip", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_find_sources", "Find AudioSources", {}, async () => {
     const r = await bridge.request("audio.findSources", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_get_clip_info", "Get AudioClip info", {
     clipPath: z.string(),
   }, async (p) => {
     const r = await bridge.request("audio.getClipInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_set_global_volume", "Set global volume", {
     volume: z.number(),
   }, async (p) => {
     const r = await bridge.request("audio.setGlobalVolume", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_pause", "Pause AudioSource", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.pause", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_unpause", "Unpause AudioSource", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.unpause", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_play_one_shot", "Play one shot", {
@@ -98,7 +99,7 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
     volume: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.playOneShot", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_set_mixer_group", "Set mixer group", {
@@ -107,7 +108,7 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
     groupName: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("audio.setMixerGroup", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_get_mixer_float", "Get mixer float", {
@@ -115,7 +116,7 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
     parameterName: z.string(),
   }, async (p) => {
     const r = await bridge.request("audio.getMixerFloat", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_audio_set_mixer_float", "Set mixer float", {
@@ -124,6 +125,6 @@ export function registerAudioTools(server: McpServer, bridge: UnityBridge) {
     value: z.number(),
   }, async (p) => {
     const r = await bridge.request("audio.setMixerFloat", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 const color = z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() });
@@ -15,7 +16,7 @@ export function registerTilemap2DTools(server: McpServer, bridge: UnityBridge) {
     sortingOrder: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("tilemap.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tilemap_setTile", "Set tile", {
@@ -24,7 +25,7 @@ export function registerTilemap2DTools(server: McpServer, bridge: UnityBridge) {
     tilePath: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("tilemap.setTile", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tilemap_setTilesBatch", "Batch set tiles", {
@@ -34,7 +35,7 @@ export function registerTilemap2DTools(server: McpServer, bridge: UnityBridge) {
     })),
   }, async (p) => {
     const r = await bridge.request("tilemap.setTilesBatch", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tilemap_clearTiles", "Clear tiles", {
@@ -44,7 +45,7 @@ export function registerTilemap2DTools(server: McpServer, bridge: UnityBridge) {
     }).optional(),
   }, async (p) => {
     const r = await bridge.request("tilemap.clearTiles", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tilemap_getTile", "Get tile info", {
@@ -52,14 +53,14 @@ export function registerTilemap2DTools(server: McpServer, bridge: UnityBridge) {
     x: z.number(), y: z.number(),
   }, async (p) => {
     const r = await bridge.request("tilemap.getTile", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tilemap_getInfo", "Get Tilemap info", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("tilemap.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tilemap_setRenderer", "Set Tilemap renderer", {
@@ -69,14 +70,14 @@ export function registerTilemap2DTools(server: McpServer, bridge: UnityBridge) {
     mode: z.enum(["Chunk", "Individual"]).optional(),
   }, async (p) => {
     const r = await bridge.request("tilemap.setRenderer", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_tilemap_find", "Find Tilemaps", {
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("tilemap.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
 }

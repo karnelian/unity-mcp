@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 
@@ -11,7 +12,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     maxDistance: z.number().optional(), layerMask: z.number().optional(),
   }, async (params) => {
     const result = await bridge.request("physics.raycast", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_overlap_sphere", "Overlap sphere", {
@@ -19,7 +20,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     layerMask: z.number().optional(),
   }, async (params) => {
     const result = await bridge.request("physics.overlapSphere", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_overlap_box", "Overlap box", {
@@ -27,19 +28,19 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     layerMask: z.number().optional(),
   }, async (params) => {
     const result = await bridge.request("physics.overlapBox", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_set_gravity", "Set gravity", {
     gravity: vec3,
   }, async (params) => {
     const result = await bridge.request("physics.setGravity", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_get_gravity", "Get gravity", {}, async () => {
     const result = await bridge.request("physics.getGravity", {});
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_add_rigidbody", "Add Rigidbody", {
@@ -48,7 +49,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     useGravity: z.boolean().optional(), isKinematic: z.boolean().optional(),
   }, async (params) => {
     const result = await bridge.request("physics.addRigidbody", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_set_rigidbody", "Set Rigidbody", {
@@ -58,7 +59,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     constraints: z.number().optional(),
   }, async (params) => {
     const result = await bridge.request("physics.setRigidbody", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_add_collider", "Add Collider", {
@@ -67,7 +68,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     isTrigger: z.boolean().optional(), convex: z.boolean().optional(),
   }, async (params) => {
     const result = await bridge.request("physics.addCollider", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_set_collider", "Set Collider", {
@@ -76,7 +77,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     center: vec3.optional(), size: vec3.optional(), radius: z.number().optional(), height: z.number().optional(),
   }, async (params) => {
     const result = await bridge.request("physics.setCollider", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_create_material", "Create PhysicMaterial", {
@@ -87,7 +88,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     bounceCombine: z.enum(["Average", "Minimum", "Maximum", "Multiply"]).optional(),
   }, async (params) => {
     const result = await bridge.request("physics.createPhysicsMaterial", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_set_layer_collision", "Set layer collision", {
@@ -95,12 +96,12 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     ignore: z.boolean().optional(),
   }, async (params) => {
     const result = await bridge.request("physics.setLayerCollision", params);
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_get_collision_matrix", "Get collision matrix", {}, async () => {
     const result = await bridge.request("physics.getLayerCollisionMatrix", {});
-    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    return textResult(result);
   });
 
   server.tool("unity_physics_sphere_cast", "SphereCast", {
@@ -109,7 +110,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     maxDistance: z.number().optional(), layerMask: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics.sphereCast", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics_box_cast", "BoxCast", {
@@ -118,7 +119,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     maxDistance: z.number().optional(), layerMask: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics.boxCast", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics_capsule_cast", "CapsuleCast", {
@@ -127,7 +128,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     maxDistance: z.number().optional(), layerMask: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics.capsuleCast", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics_linecast", "Linecast", {
@@ -135,7 +136,7 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     layerMask: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics.linecast", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_physics_closest_point", "Closest point", {
@@ -143,6 +144,6 @@ export function registerPhysicsTools(server: McpServer, bridge: UnityBridge) {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("physics.closestPoint", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

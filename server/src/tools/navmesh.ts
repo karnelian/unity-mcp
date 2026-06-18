@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 
@@ -11,12 +12,12 @@ export function registerNavMeshTools(server: McpServer, bridge: UnityBridge) {
     agentSlope: z.number().optional(), agentClimb: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("navmesh.bake", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_clear", "Clear NavMesh", {}, async () => {
     const r = await bridge.request("navmesh.clear", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_add_agent", "Add NavMeshAgent", {
@@ -26,7 +27,7 @@ export function registerNavMeshTools(server: McpServer, bridge: UnityBridge) {
     radius: z.number().optional(), height: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("navmesh.addAgent", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_set_agent", "Set NavMeshAgent", {
@@ -36,7 +37,7 @@ export function registerNavMeshTools(server: McpServer, bridge: UnityBridge) {
     enabled: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("navmesh.setAgent", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_add_obstacle", "Add NavMeshObstacle", {
@@ -45,7 +46,7 @@ export function registerNavMeshTools(server: McpServer, bridge: UnityBridge) {
     size: vec3.optional(),
   }, async (p) => {
     const r = await bridge.request("navmesh.addObstacle", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_set_obstacle", "Set NavMeshObstacle", {
@@ -53,14 +54,14 @@ export function registerNavMeshTools(server: McpServer, bridge: UnityBridge) {
     carving: z.boolean().optional(), enabled: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("navmesh.setObstacle", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_find_path", "Find NavMesh path", {
     from: vec3, to: vec3,
   }, async (p) => {
     const r = await bridge.request("navmesh.findPath", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_set_destination", "Set agent destination", {
@@ -68,12 +69,12 @@ export function registerNavMeshTools(server: McpServer, bridge: UnityBridge) {
     destination: vec3,
   }, async (p) => {
     const r = await bridge.request("navmesh.setDestination", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_get_info", "Get NavMesh info", {}, async () => {
     const r = await bridge.request("navmesh.getInfo", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_navmesh_add_link", "Add NavMeshLink", {
@@ -82,6 +83,6 @@ export function registerNavMeshTools(server: McpServer, bridge: UnityBridge) {
     width: z.number().optional(), bidirectional: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("navmesh.addLink", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

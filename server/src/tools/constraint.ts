@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -27,7 +28,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     locked: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.addAim", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_constraint_addParent", "Add ParentConstraint", {
@@ -39,7 +40,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     rotationAtRest: vec3.optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.addParent", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_constraint_addPosition", "Add PositionConstraint", {
@@ -51,7 +52,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     translationOffset: vec3.optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.addPosition", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_constraint_addRotation", "Add RotationConstraint", {
@@ -63,7 +64,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     rotationOffset: vec3.optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.addRotation", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_constraint_addScale", "Add ScaleConstraint", {
@@ -75,7 +76,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     scaleOffset: vec3.optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.addScale", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_constraint_addLookAt", "Add LookAtConstraint", {
@@ -88,7 +89,7 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     worldUpObject: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.addLookAt", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_constraint_getInfo", "Get constraint info", {
@@ -96,13 +97,13 @@ export function registerConstraintTools(server: McpServer, bridge: UnityBridge) 
     constraintType: z.enum(["Aim", "Parent", "Position", "Rotation", "Scale", "LookAt"]).optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_constraint_find", "Find constraints", {
     constraintType: z.enum(["Aim", "Parent", "Position", "Rotation", "Scale", "LookAt", "All"]).optional(),
   }, async (p) => {
     const r = await bridge.request("constraint.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

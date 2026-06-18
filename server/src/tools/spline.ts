@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 const quat = z.object({ x: z.number(), y: z.number(), z: z.number(), w: z.number() });
@@ -14,14 +15,14 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
     knots: z.array(vec3).optional(),
   }, async (p) => {
     const r = await bridge.request("spline.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_getInfo", "Get Spline info", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("spline.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_addKnot", "Add spline knot", {
@@ -31,7 +32,7 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
     tangentIn: vec3.optional(), tangentOut: vec3.optional(),
   }, async (p) => {
     const r = await bridge.request("spline.addKnot", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_removeKnot", "Remove spline knot", {
@@ -39,7 +40,7 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
     index: z.number(),
   }, async (p) => {
     const r = await bridge.request("spline.removeKnot", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_setKnot", "Set spline knot", {
@@ -49,14 +50,14 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
     rotation: quat.optional(),
   }, async (p) => {
     const r = await bridge.request("spline.setKnot", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_getKnots", "Get spline knots", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("spline.getKnots", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_setTangentMode", "Set tangent mode", {
@@ -65,14 +66,14 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
     mode: z.enum(["AutoSmooth", "Linear", "Broken"]),
   }, async (p) => {
     const r = await bridge.request("spline.setTangentMode", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_find", "Find Splines", {
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("spline.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_addExtrude", "Add Spline Extrude", {
@@ -81,7 +82,7 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
     sides: z.number().optional(), capped: z.boolean().optional(),
   }, async (p) => {
     const r = await bridge.request("spline.addExtrude", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_addAnimate", "Add Spline Animate", {
@@ -91,7 +92,7 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
     easingMode: z.enum(["None", "EaseIn", "EaseOut", "EaseInOut"]).optional(),
   }, async (p) => {
     const r = await bridge.request("spline.addAnimate", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_spline_addInstantiate", "Add Spline Instantiate", {
@@ -100,6 +101,6 @@ export function registerSplineTools(server: McpServer, bridge: UnityBridge) {
     spacing: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("spline.addInstantiate", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

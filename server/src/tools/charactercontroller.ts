@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const goRef = {
   name: z.string().optional(),
@@ -21,14 +22,14 @@ export function registerCharacterControllerTools(server: McpServer, bridge: Unit
     minMoveDistance: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("characterController.add", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_characterController_get", "Get CharacterController", {
     ...goRef,
   }, async (p) => {
     const r = await bridge.request("characterController.get", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_characterController_set", "Set CharacterController", {
@@ -42,11 +43,11 @@ export function registerCharacterControllerTools(server: McpServer, bridge: Unit
     minMoveDistance: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("characterController.set", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_characterController_find", "Find CharacterControllers", {}, async (p) => {
     const r = await bridge.request("characterController.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

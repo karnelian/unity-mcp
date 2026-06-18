@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerLocalizationTools(server: McpServer, bridge: UnityBridge) {
 
@@ -10,7 +11,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     {},
     async (p) => {
       const r = await bridge.request("localization.getLocales", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -22,7 +23,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     },
     async (p) => {
       const r = await bridge.request("localization.addLocale", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -35,7 +36,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     },
     async (p) => {
       const r = await bridge.request("localization.createStringTable", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -48,7 +49,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     },
     async (p) => {
       const r = await bridge.request("localization.getStringTable", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -63,7 +64,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     },
     async (p) => {
       const r = await bridge.request("localization.setEntry", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -76,7 +77,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     },
     async (p) => {
       const r = await bridge.request("localization.removeEntry", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -88,7 +89,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     },
     async (p) => {
       const r = await bridge.request("localization.findTables", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -98,7 +99,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     {},
     async (p) => {
       const r = await bridge.request("localization.getProjectLocale", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -110,7 +111,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     },
     async (p) => {
       const r = await bridge.request("localization.setProjectLocale", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 
@@ -123,7 +124,7 @@ export function registerLocalizationTools(server: McpServer, bridge: UnityBridge
     },
     async (p) => {
       const r = await bridge.request("localization.exportCsv", p);
-      return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+      return textResult(r);
     }
   );
 }

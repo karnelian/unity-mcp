@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 const color = z.object({ r: z.number(), g: z.number(), b: z.number(), a: z.number().optional() });
@@ -16,7 +17,7 @@ export function registerSpriteTools(server: McpServer, bridge: UnityBridge) {
     sortingLayerName: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("sprite.create", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_sprite_setProperties", "Set SpriteRenderer properties", {
@@ -30,14 +31,14 @@ export function registerSpriteTools(server: McpServer, bridge: UnityBridge) {
     materialPath: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("sprite.setProperties", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_sprite_find", "Find SpriteRenderers", {
     nameFilter: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("sprite.find", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_sprite_setSortingOrder", "Set sorting order", {
@@ -46,6 +47,6 @@ export function registerSpriteTools(server: McpServer, bridge: UnityBridge) {
     sortingLayerName: z.string().optional(),
   }, async (p) => {
     const r = await bridge.request("sprite.setSortingOrder", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

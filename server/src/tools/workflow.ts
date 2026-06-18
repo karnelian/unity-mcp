@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
 
@@ -12,7 +13,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("workflow.beginSession", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -22,7 +23,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
     {},
     async () => {
       const result = await bridge.request("workflow.endSession", {});
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -32,7 +33,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
     {},
     async () => {
       const result = await bridge.request("workflow.undoSession", {});
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -42,7 +43,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
     {},
     async () => {
       const result = await bridge.request("workflow.undoLast", {});
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -52,7 +53,7 @@ export function registerWorkflowTools(server: McpServer, bridge: UnityBridge) {
     {},
     async () => {
       const result = await bridge.request("workflow.status", {});
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 

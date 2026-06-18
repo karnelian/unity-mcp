@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
 
@@ -10,7 +11,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("profiler.memoryOverview", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -22,7 +23,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("profiler.objectCount", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -32,7 +33,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("profiler.renderingStats", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -44,7 +45,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("profiler.textureMemory", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -56,7 +57,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("profiler.meshMemory", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -66,7 +67,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("profiler.materialCount", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -76,7 +77,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("profiler.componentStats", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -86,7 +87,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("profiler.shaderVariants", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -96,7 +97,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("profiler.assetCount", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -106,7 +107,7 @@ export function registerProfilerTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("profiler.sceneComplexity", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

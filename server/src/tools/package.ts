@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
 
@@ -9,10 +10,14 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     "List packages",
     {
       includeIndirect: z.boolean().optional(),
+      maxResults: z.number().optional().default(50),
+      offset: z.number().optional(),
+      summaryOnly: z.boolean().optional(),
+      includeDetails: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("package.list", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result, params);
     }
   );
 
@@ -24,7 +29,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("package.info", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -36,7 +41,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("package.add", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -48,7 +53,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("package.remove", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -60,7 +65,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("package.search", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -72,7 +77,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("package.getVersion", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -82,7 +87,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("package.listBuiltIn", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -92,7 +97,7 @@ export function registerPackageTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("package.resolve", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

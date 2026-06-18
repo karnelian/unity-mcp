@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerUIToolkitTools(server: McpServer, bridge: UnityBridge) {
 
@@ -11,19 +12,19 @@ export function registerUIToolkitTools(server: McpServer, bridge: UnityBridge) {
     sortingOrder: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("uitoolkit.createUIDocument", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_uitoolkit_getInfo", "Get UIDocument info", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("uitoolkit.getInfo", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_uitoolkit_findUIDocuments", "Find UIDocuments", {}, async () => {
     const r = await bridge.request("uitoolkit.findUIDocuments", {});
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_uitoolkit_createUXML", "Create UXML", {
@@ -37,7 +38,7 @@ export function registerUIToolkitTools(server: McpServer, bridge: UnityBridge) {
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("uitoolkit.createUXML", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_uitoolkit_createUSS", "Create USS", {
@@ -49,7 +50,7 @@ export function registerUIToolkitTools(server: McpServer, bridge: UnityBridge) {
     })).optional(),
   }, async (p) => {
     const r = await bridge.request("uitoolkit.createUSS", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_uitoolkit_setPanelSettings", "Set panel settings", {
@@ -59,7 +60,7 @@ export function registerUIToolkitTools(server: McpServer, bridge: UnityBridge) {
     sortingOrder: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("uitoolkit.setPanelSettings", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_uitoolkit_createPanelSettings", "Create PanelSettings", {
@@ -70,13 +71,13 @@ export function registerUIToolkitTools(server: McpServer, bridge: UnityBridge) {
     referenceResolutionY: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("uitoolkit.createPanelSettings", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 
   server.tool("unity_uitoolkit_getHierarchy", "Get UI hierarchy", {
     name: z.string().optional(), path: z.string().optional(), instanceId: z.number().optional(),
   }, async (p) => {
     const r = await bridge.request("uitoolkit.getHierarchy", p);
-    return { content: [{ type: "text", text: JSON.stringify(r, null, 2) }] };
+    return textResult(r);
   });
 }

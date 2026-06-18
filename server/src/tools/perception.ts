@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 export function registerPerceptionTools(server: McpServer, bridge: UnityBridge) {
 
@@ -10,7 +11,7 @@ export function registerPerceptionTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("perception.sceneSummary", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -24,7 +25,7 @@ export function registerPerceptionTools(server: McpServer, bridge: UnityBridge) 
     },
     async (params) => {
       const result = await bridge.request("perception.hierarchyDescribe", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -36,7 +37,7 @@ export function registerPerceptionTools(server: McpServer, bridge: UnityBridge) 
     },
     async (params) => {
       const result = await bridge.request("perception.scriptAnalyze", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -46,7 +47,7 @@ export function registerPerceptionTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("perception.sceneMaterials", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -56,7 +57,7 @@ export function registerPerceptionTools(server: McpServer, bridge: UnityBridge) 
     {},
     async (params) => {
       const result = await bridge.request("perception.sceneContext", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

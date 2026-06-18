@@ -1,10 +1,48 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { UnityBridge } from "../bridge/unity-bridge.js";
+import { textResult } from "../utils/format.js";
 
 const vec3 = z.object({ x: z.number(), y: z.number(), z: z.number() });
 
 export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
+
+  server.tool(
+    "unity_debug_visualQaBundle",
+    "Capture a compact visual QA bundle: Console, Hierarchy, Inspector, and Game/Scene views. Use when diagnosing visual/editor state.",
+    {
+      windows: z.array(z.enum(["console", "hierarchy", "inspector", "project", "game", "scene"])).optional(),
+      width: z.number().optional(),
+      height: z.number().optional(),
+      savePathPrefix: z.string().optional(),
+    },
+    async (params) => {
+      const windows = params.windows ?? ["console", "hierarchy", "inspector", "game", "scene"];
+      const content: Array<any> = [];
+      const summary: Array<any> = [];
+
+      for (const window of windows) {
+        try {
+          const result = window === "game" || window === "scene"
+            ? await bridge.request("debug.screenshot", { view: window, width: params.width, height: params.height })
+            : await bridge.request("debug.captureEditorWindow", {
+                window,
+                savePath: params.savePathPrefix ? `${params.savePathPrefix}-${window}.png` : undefined,
+              });
+
+          summary.push({ window, ok: true, width: result?.width, height: result?.height, savedTo: result?.savedTo });
+          if (result?.data) {
+            content.push({ type: "image", data: result.data, mimeType: "image/png" });
+          }
+        } catch (error) {
+          summary.push({ window, ok: false, error: error instanceof Error ? error.message : String(error) });
+        }
+      }
+
+      content.unshift({ type: "text", text: JSON.stringify({ captured: summary.length, summary }) });
+      return { content };
+    }
+  );
 
   server.tool(
     "unity_debug_screenshot",
@@ -24,7 +62,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
           ],
         };
       }
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -51,7 +89,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
           content: [{ type: "text", text: `Captured ${label} → ${result.savedTo}` }],
         };
       }
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -64,7 +102,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.log", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -74,7 +112,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("debug.clearConsole", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -87,7 +125,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.getPrefs", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -101,7 +139,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.setPrefs", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -113,7 +151,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.deletePrefs", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -126,7 +164,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.getEditorPrefs", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -140,7 +178,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.setEditorPrefs", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -155,7 +193,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.drawGizmo", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -165,7 +203,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("debug.getSystemInfo", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -175,7 +213,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("debug.startCapture", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -185,7 +223,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("debug.stopCapture", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -197,10 +235,14 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
       count: z.number().optional(),
       clear: z.boolean().optional(),
       includeStackTrace: z.boolean().optional(),
+      maxResults: z.number().optional(),
+      offset: z.number().optional(),
+      summaryOnly: z.boolean().optional(),
+      includeDetails: z.boolean().optional(),
     },
     async (params) => {
       const result = await bridge.request("debug.getCapturedLogs", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result, params);
     }
   );
 
@@ -210,7 +252,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("debug.getDefines", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -223,7 +265,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     },
     async (params) => {
       const result = await bridge.request("debug.setDefines", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 
@@ -233,7 +275,7 @@ export function registerDebugTools(server: McpServer, bridge: UnityBridge) {
     {},
     async (params) => {
       const result = await bridge.request("debug.forceRecompile", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return textResult(result);
     }
   );
 }

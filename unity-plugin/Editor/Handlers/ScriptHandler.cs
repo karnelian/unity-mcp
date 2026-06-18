@@ -28,6 +28,7 @@ namespace KarnelLabs.MCP
             CommandRouter.Register("script.create", CreateScript);
             CommandRouter.Register("script.read", ReadScript);
             CommandRouter.Register("script.edit", EditScript);
+            CommandRouter.Register("script.writeAndCompile", WriteAndCompile);
             CommandRouter.Register("script.compileCheck", CompileCheck);
             CommandRouter.Register("script.list", ListScripts);
             CommandRouter.Register("script.delete", DeleteScript);
@@ -139,6 +140,39 @@ namespace KarnelLabs.MCP
                     isScriptMutation: true);
             }
             throw new McpException(-32602, "Either 'content' or 'lineEdits' must be provided");
+        }
+
+        private static object WriteAndCompile(JToken p)
+        {
+            string path = Validate.Required((string)p?["path"], "path");
+            string content = Validate.Required((string)p?["content"], "content");
+            string fullPath = ResolvePath(path);
+            string dir = Path.GetDirectoryName(fullPath);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+            bool existed = File.Exists(fullPath);
+            WorkflowManager.SnapshotAsset(path, $"script.writeAndCompile({path})");
+            File.WriteAllText(fullPath, content);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+
+            bool isCompiling = EditorApplication.isCompiling;
+            bool hasErrors = EditorUtility.scriptCompilationFailed;
+            return new
+            {
+                success = true,
+                path,
+                existed,
+                bytes = System.Text.Encoding.UTF8.GetByteCount(content),
+                compile = new
+                {
+                    status = hasErrors ? "error" : (isCompiling ? "compiling" : "ok"),
+                    isCompiling,
+                    hasErrors,
+                    note = isCompiling
+                        ? "Unity is compiling after the write. Call script.compileCheck or unity_project_health shortly for final errors."
+                        : hasErrors ? "Compilation errors are present. Check console/errors next." : "Compilation is currently clean."
+                }
+            };
         }
 
         private static object CompileCheck(JToken p)
