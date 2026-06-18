@@ -46,6 +46,7 @@ namespace KarnelLabs.MCP
         // ── 메시지 큐 ──────────────────────────────────────────────
         private static readonly ConcurrentQueue<QueuedRequest> IncomingQueue = new();
         private static readonly ConcurrentQueue<string> OutgoingQueue = new();
+        private static readonly ConcurrentQueue<Action> MainThreadActions = new();
 
         // ── Rate limiting ──────────────────────────────────────────
         private static int _pendingRequests;
@@ -155,6 +156,12 @@ namespace KarnelLabs.MCP
             Interlocked.Exchange(ref _lastClientActivityTicks, DateTime.UtcNow.Ticks);
         }
 
+        private static void EnqueueMainThread(Action action)
+        {
+            if (action == null) return;
+            MainThreadActions.Enqueue(action);
+        }
+
         public static void SetPort(int port)
         {
             Validate.InRange(port, 1, 65535, "port");
@@ -176,10 +183,8 @@ namespace KarnelLabs.MCP
                 {
                     try
                     {
-                        if (!IncomingQueue.IsEmpty || !OutgoingQueue.IsEmpty)
-                        {
-                            EditorApplication.QueuePlayerLoopUpdate();
-                        }
+                        // Do not call UnityEditor APIs from this worker thread.
+                        // Queued work is drained by EditorApplication.update on the main thread.
                         Thread.Sleep(KeepAliveIntervalMs);
                     }
                     catch (ThreadInterruptedException) { break; }
@@ -243,6 +248,12 @@ namespace KarnelLabs.MCP
 
         private static void ProcessMessageQueue()
         {
+            while (MainThreadActions.TryDequeue(out var action))
+            {
+                try { action(); }
+                catch (Exception ex) { Debug.LogWarning($"[MCP] Main-thread action failed: {ex.Message}"); }
+            }
+
             int processed = 0;
             while (IncomingQueue.TryDequeue(out var queued) && processed < ProcessPerFrame)
             {
@@ -352,9 +363,13 @@ namespace KarnelLabs.MCP
             try
             {
                 _tcpListener = StartListenerWithAutoPort(_port);
-                SessionState.SetInt("KarnelLabs_MCP_Port", _port);
-                RegistryService.RegisterInstance();
-                Debug.Log($"[KarnelLabs MCP] Server listening on ws://127.0.0.1:{_port}");
+                var boundPort = _port;
+                EnqueueMainThread(() =>
+                {
+                    SessionState.SetInt("KarnelLabs_MCP_Port", boundPort);
+                    RegistryService.RegisterInstance();
+                    Debug.Log($"[KarnelLabs MCP] Server listening on ws://127.0.0.1:{boundPort}");
+                });
 
                 while (!ct.IsCancellationRequested)
                 {
@@ -389,8 +404,9 @@ namespace KarnelLabs.MCP
                     listener.Start();
                     if (port != _port)
                     {
-                        Debug.LogWarning($"[KarnelLabs MCP] Port {_port} unavailable; auto-selected {port}");
+                        var previousPort = _port;
                         _port = port;
+                        EnqueueMainThread(() => Debug.LogWarning($"[KarnelLabs MCP] Port {previousPort} unavailable; auto-selected {port}"));
                     }
                     return listener;
                 }

@@ -225,7 +225,7 @@ function resolveEnabledToolGroups(): string[] {
 
 const server = new McpServer({
   name: "karnellabs-unity-mcp",
-  version: "0.3.9",
+  version: "0.3.10",
 });
 
 const explicitPort = readOption("port", "UNITY_WS_PORT");
