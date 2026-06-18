@@ -4,14 +4,14 @@
     "name": "karnelian"
   },
   "description": "Claude Code marketplace for Karnelian Unity MCP tools.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "plugins": [
     {
       "name": "unity-mcp",
       "displayName": "Unity MCP",
       "source": "./plugins/unity-mcp",
       "description": "Connect Claude Code to the Unity Editor through the optimized Karnelian Unity MCP server.",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "author": {
         "name": "karnelian"
       },
