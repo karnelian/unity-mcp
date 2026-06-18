@@ -1,5 +1,5 @@
 ---
-name: unity-script-design
+name: unity-script-design-guide
 description: "Unity script architecture guardrails: MonoBehaviour roles, ScriptableObjects, services, testability, inspector UX, and serialized API safety."
 ---
 

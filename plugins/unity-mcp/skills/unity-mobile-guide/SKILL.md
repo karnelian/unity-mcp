@@ -1,5 +1,5 @@
 ---
-name: unity-mobile
+name: unity-mobile-guide
 description: "Android, iOS, and Quest readiness checks for Unity projects."
 ---
 

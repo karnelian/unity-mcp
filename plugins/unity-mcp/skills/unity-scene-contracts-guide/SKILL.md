@@ -1,5 +1,5 @@
 ---
-name: unity-scene-contracts
+name: unity-scene-contracts-guide
 description: "Validate Unity scenes against playable-scene contracts: camera, EventSystem, UI roots, managers, spawn points, missing references."
 ---
 

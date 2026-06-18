@@ -1,5 +1,5 @@
 ---
-name: unity-performance
+name: unity-performance-guide
 description: "Unity performance review guardrails for rendering, assets, UI, physics, scripts, and target-platform readiness."
 ---
 

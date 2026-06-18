@@ -84,12 +84,12 @@ Default sequence for feature work:
 
 Load these on demand before non-trivial decisions:
 
-- `unity-project-scout` — project conventions and stack discovery.
-- `unity-scene-contracts` — scene wiring and playable-scene requirements.
-- `unity-performance` — performance review and measurement-first guidance.
-- `unity-mobile` — Android/iOS/Quest constraints.
-- `unity-script-design` — class roles, testability, serialized API safety.
-- `unity-safety-risk` — dry-run, confirmation, rollback, and validation rules.
+- `unity-project-scout-guide` — project conventions and stack discovery.
+- `unity-scene-contracts-guide` — scene wiring and playable-scene requirements.
+- `unity-performance-guide` — performance review and measurement-first guidance.
+- `unity-mobile-guide` — Android/iOS/Quest constraints.
+- `unity-script-design-guide` — class roles, testability, serialized API safety.
+- `unity-safety-risk-guide` — dry-run, confirmation, rollback, and validation rules.
 
 ## Install from marketplace
 

@@ -1,5 +1,5 @@
 ---
-name: unity-project-scout
+name: unity-project-scout-guide
 description: "Inspect an existing Unity project before implementation: stack, folders, packages, asmdefs, scenes, and conventions."
 ---
 

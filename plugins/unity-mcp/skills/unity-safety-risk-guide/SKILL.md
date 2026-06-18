@@ -1,5 +1,5 @@
 ---
-name: unity-safety-risk
+name: unity-safety-risk-guide
 description: "Safety model for AI-driven Unity changes: read-only first, batch-first, dry-run, confirmation, rollback, and audit-friendly reporting."
 ---
 
