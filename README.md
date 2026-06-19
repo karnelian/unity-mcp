@@ -51,6 +51,7 @@ The window shows:
 - **Connection Status** — `Connected` (active socket), `Recently Active` (Claude made a recent MCP call), `Listening`, or `Stopped`
 - **Handlers** — number of registered C# command handlers (686+)
 - **Server Settings** — WebSocket port (default 8099), Start/Stop/Restart
+- **HTTP MCP Server** — start/stop a URL-based MCP server from Unity, configure the HTTP port, and optionally auto-start it when the Unity Editor opens
 - **Claude Code Configuration** — copy-paste JSON for `.mcp.json` / `claude_desktop_config.json`
 - **Recent Requests** — last 20 MCP calls for debugging
 - **Info** — Unity version, project name, WebSocket URL
@@ -119,6 +120,8 @@ You can add individual groups with `--tools=cinemachine,addressables` without sw
 ### MCP Client Transports
 
 The Node MCP server supports stdio by default, plus Streamable HTTP and legacy SSE for MCP clients that connect over the network. You normally should not hand-write long `--transport=...` commands: use `setup --mcp-transport=http|sse` to generate URL-based client config.
+
+For AgentManager or any URL-based MCP client, you can also let Unity launch the HTTP server for you: open **Tools > KarnelLabs MCP > Server Window**, set the HTTP port, click **Start HTTP MCP**, and optionally enable **Auto-start HTTP MCP server when Unity Editor opens**. That avoids manually running `npx ... --transport=http` after reboot.
 
 ```bash
 # Default stdio transport, used by Claude Code plugin/.mcp.json

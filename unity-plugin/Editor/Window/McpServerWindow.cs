@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,7 +9,12 @@ namespace KarnelLabs.MCP
 {
     public class McpServerWindow : EditorWindow
     {
+        private const string HttpPortPrefsKey = "KarnelLabs.MCP.HttpPort";
+        private const string HttpAutoStartPrefsKey = "KarnelLabs.MCP.HttpAutoStart";
+
         private int _port;
+        private int _httpPort;
+        private bool _httpAutoStart;
         private Vector2 _windowScrollPos;
         private Vector2 _configScrollPos;
         private Vector2 _logScrollPos;
@@ -22,6 +29,9 @@ namespace KarnelLabs.MCP
         private void OnEnable()
         {
             _port = McpBridge.Port;
+            _httpPort = EditorPrefs.GetInt(HttpPortPrefsKey, 8765);
+            _httpAutoStart = EditorPrefs.GetBool(HttpAutoStartPrefsKey, false);
+            HttpMcpServerLauncher.Configure(_httpPort, _httpAutoStart);
             UpdateMcpJsonConfig();
             EditorApplication.update += OnEditorUpdate;
         }
@@ -52,7 +62,7 @@ HTTP client config:
 {{
   ""mcpServers"": {{
     ""karnellabs-unity-mcp"": {{
-      ""url"": ""http://127.0.0.1:3001/mcp"",
+      ""url"": ""http://127.0.0.1:{_httpPort}/mcp"",
       ""transport"": ""http""
     }}
   }}
@@ -62,7 +72,7 @@ SSE client config:
 {{
   ""mcpServers"": {{
     ""karnellabs-unity-mcp"": {{
-      ""url"": ""http://127.0.0.1:3001/sse"",
+      ""url"": ""http://127.0.0.1:{_httpPort}/sse"",
       ""transport"": ""sse""
     }}
   }}
@@ -127,6 +137,11 @@ SSE client config:
             GUILayout.Space(10);
             DrawSeparator();
 
+            DrawHttpMcpServerControls();
+
+            GUILayout.Space(10);
+            DrawSeparator();
+
             // === Claude Code 설정 ===
             EditorGUILayout.LabelField("Claude Code Configuration", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(
@@ -141,7 +156,7 @@ SSE client config:
             if (GUILayout.Button("Copy to Clipboard"))
             {
                 GUIUtility.systemCopyBuffer = _mcpJsonConfig;
-                Debug.Log("[KarnelLabs MCP] Configuration copied to clipboard!");
+                UnityEngine.Debug.Log("[KarnelLabs MCP] Configuration copied to clipboard!");
             }
 
             GUILayout.Space(10);
@@ -164,6 +179,57 @@ SSE client config:
             EditorGUILayout.LabelField($"Unity Version: {Application.unityVersion}");
             EditorGUILayout.LabelField($"Project: {Application.productName}");
             EditorGUILayout.EndScrollView();
+        }
+
+        private void DrawHttpMcpServerControls()
+        {
+            EditorGUILayout.LabelField("HTTP MCP Server", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "For AgentManager or URL-based MCP clients. Unity can launch the Node HTTP MCP server for you, so you do not have to run npx manually after reboot.",
+                MessageType.Info
+            );
+
+            EditorGUILayout.BeginHorizontal();
+            {
+                var newPort = EditorGUILayout.IntField("HTTP Port", _httpPort);
+                if (newPort != _httpPort && newPort > 0)
+                {
+                    _httpPort = newPort;
+                    EditorPrefs.SetInt(HttpPortPrefsKey, _httpPort);
+                    HttpMcpServerLauncher.Configure(_httpPort, _httpAutoStart);
+                    UpdateMcpJsonConfig();
+                }
+
+                var statusStyle = new GUIStyle(EditorStyles.label);
+                statusStyle.normal.textColor = HttpMcpServerLauncher.IsRunning ? Color.green : new Color(0.9f, 0.5f, 0.2f);
+                EditorGUILayout.LabelField(HttpMcpServerLauncher.IsRunning ? "Running" : "Stopped", statusStyle, GUILayout.Width(80));
+            }
+            EditorGUILayout.EndHorizontal();
+
+            var nextAutoStart = EditorGUILayout.ToggleLeft("Auto-start HTTP MCP server when Unity Editor opens", _httpAutoStart);
+            if (nextAutoStart != _httpAutoStart)
+            {
+                _httpAutoStart = nextAutoStart;
+                EditorPrefs.SetBool(HttpAutoStartPrefsKey, _httpAutoStart);
+                HttpMcpServerLauncher.Configure(_httpPort, _httpAutoStart);
+                if (_httpAutoStart) HttpMcpServerLauncher.Start();
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("Start HTTP MCP"))
+                    HttpMcpServerLauncher.Start();
+                if (GUILayout.Button("Stop HTTP MCP"))
+                    HttpMcpServerLauncher.Stop();
+                if (GUILayout.Button("Copy HTTP URL"))
+                {
+                    GUIUtility.systemCopyBuffer = $"http://127.0.0.1:{_httpPort}/mcp";
+                    UnityEngine.Debug.Log("[KarnelLabs MCP] HTTP MCP URL copied to clipboard.");
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.LabelField($"MCP URL: http://127.0.0.1:{_httpPort}/mcp");
         }
 
         private void DrawRequestLog()
@@ -254,6 +320,103 @@ SSE client config:
             Repaint();
         }
     }
+
+    [InitializeOnLoad]
+    public static class HttpMcpServerLauncher
+    {
+        private const string HttpPortPrefsKey = "KarnelLabs.MCP.HttpPort";
+        private const string HttpAutoStartPrefsKey = "KarnelLabs.MCP.HttpAutoStart";
+        private static Process _process;
+        private static int _port;
+        private static bool _autoStart;
+
+        public static bool IsRunning => _process != null && !_process.HasExited;
+
+        static HttpMcpServerLauncher()
+        {
+            _port = EditorPrefs.GetInt(HttpPortPrefsKey, 8765);
+            _autoStart = EditorPrefs.GetBool(HttpAutoStartPrefsKey, false);
+            EditorApplication.delayCall += () =>
+            {
+                if (_autoStart) Start();
+            };
+            EditorApplication.quitting += Stop;
+        }
+
+        public static void Configure(int port, bool autoStart)
+        {
+            _port = port > 0 ? port : 8765;
+            _autoStart = autoStart;
+        }
+
+        public static void Start()
+        {
+            if (IsRunning)
+            {
+                UnityEngine.Debug.Log($"[KarnelLabs MCP] HTTP MCP server is already running at http://127.0.0.1:{_port}/mcp");
+                return;
+            }
+
+            var executable = Application.platform == RuntimePlatform.WindowsEditor ? "npx.cmd" : "npx";
+            var args = $"-y github:karnelian/unity-mcp --transport=http --mcp-port={_port} --profile=core";
+
+            try
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = executable,
+                    Arguments = args,
+                    WorkingDirectory = Directory.GetParent(Application.dataPath)?.FullName ?? Application.dataPath,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+
+                _process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+                _process.OutputDataReceived += (_, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data)) UnityEngine.Debug.Log($"[KarnelLabs MCP HTTP] {e.Data}");
+                };
+                _process.ErrorDataReceived += (_, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data)) UnityEngine.Debug.Log($"[KarnelLabs MCP HTTP] {e.Data}");
+                };
+                _process.Exited += (_, _) => UnityEngine.Debug.Log("[KarnelLabs MCP] HTTP MCP server process exited.");
+
+                _process.Start();
+                _process.BeginOutputReadLine();
+                _process.BeginErrorReadLine();
+                UnityEngine.Debug.Log($"[KarnelLabs MCP] Started HTTP MCP server at http://127.0.0.1:{_port}/mcp");
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogError($"[KarnelLabs MCP] Failed to start HTTP MCP server via '{executable} {args}': {ex.Message}");
+                _process = null;
+            }
+        }
+
+        public static void Stop()
+        {
+            if (!IsRunning) return;
+
+            try
+            {
+                _process.Kill();
+                _process.Dispose();
+                UnityEngine.Debug.Log("[KarnelLabs MCP] Stopped HTTP MCP server.");
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogWarning($"[KarnelLabs MCP] Failed to stop HTTP MCP server: {ex.Message}");
+            }
+            finally
+            {
+                _process = null;
+            }
+        }
+    }
+
 }
 
 // ─── Request Log (McpServerWindow 전용 정적 저장소) ─────────────────────────
