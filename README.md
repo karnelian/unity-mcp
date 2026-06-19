@@ -32,7 +32,7 @@ This single command:
 1. Installs the Unity Editor plugin to `Assets/KarnelLabsMCP/Editor/`
 2. Adds Unity's official `com.unity.nuget.newtonsoft-json` package to `Packages/manifest.json` when missing — this uses Unity Package Manager and does **not** require a separate `nuget` CLI install
 3. Installs a Unity 6000.5+ compatibility layer for `GetEntityId`, missing-reference checks, and non-deprecated `FindObjectsByType` overloads
-4. Creates `.mcp.json` for Claude Code auto-connection
+4. Uses the Claude Code plugin for zero-config auto-connection; only writes `.mcp.json` when you explicitly ask for one
 
 Then:
 1. Open the project in Unity
@@ -82,10 +82,14 @@ npx -y github:karnelian/unity-mcp setup --profile=core,ui
 After install/update, restart Claude Code so plugin MCP servers reload.
 
 ```bash
-npx github:karnelian/unity-mcp setup                  # First-time install (plugin + .mcp.json, default profile: core)
-npx github:karnelian/unity-mcp setup --profile=core,ui # Install/update .mcp.json with UI tools enabled
-npx github:karnelian/unity-mcp update                  # Update plugin only (keeps .mcp.json)
-npx github:karnelian/unity-mcp instances               # List running Unity instances
+npx github:karnelian/unity-mcp setup                       # Install/update Unity plugin; no local .mcp.json by default
+npx github:karnelian/unity-mcp setup --profile=core,ui      # Same, but tells the Claude plugin/server to use UI tools when explicit config is written
+npx github:karnelian/unity-mcp setup --mcp-config           # Write explicit stdio .mcp.json when not using the global Claude plugin
+npx github:karnelian/unity-mcp setup --mcp-transport=http   # Write URL-based HTTP .mcp.json for URL-capable MCP clients
+npx github:karnelian/unity-mcp setup --mcp-transport=sse    # Write URL-based SSE .mcp.json for legacy SSE clients
+npx github:karnelian/unity-mcp update                       # Update plugin only, keep existing MCP config
+npx github:karnelian/unity-mcp update --mcp-transport=http  # Update plugin and rewrite HTTP .mcp.json
+npx github:karnelian/unity-mcp instances                    # List running Unity instances
 ```
 
 ### Tool Profiles
@@ -110,7 +114,36 @@ Common profiles:
 - `xr`: XR, Input System, camera/rendering helpers
 - `full`: all tool groups, for debugging or broad exploratory work
 
-You can add individual groups with `--tools=cinemachine,addressables` without switching to `full`. `setup --profile=...` writes the chosen profile into `.mcp.json`, so you normally set it once per project.
+You can add individual groups with `--tools=cinemachine,addressables` without switching to `full`. The Claude Code plugin defaults to `core`; use `setup --mcp-config --profile=...` only when you intentionally want an explicit project-local `.mcp.json`.
+
+### MCP Client Transports
+
+The Node MCP server supports stdio by default, plus Streamable HTTP and legacy SSE for MCP clients that connect over the network. You normally should not hand-write long `--transport=...` commands: use `setup --mcp-transport=http|sse` to generate URL-based client config.
+
+```bash
+# Default stdio transport, used by Claude Code plugin/.mcp.json
+npx github:karnelian/unity-mcp --profile=core
+
+# Generate Streamable HTTP client config in .mcp.json
+npx github:karnelian/unity-mcp setup --mcp-transport=http --mcp-port=3001
+# generated client URL: http://127.0.0.1:3001/mcp
+
+# Existing projects can update the plugin and rewrite the HTTP config in one step
+npx github:karnelian/unity-mcp update --mcp-transport=http --mcp-port=3001
+
+# Start Streamable HTTP MCP endpoint when your client expects an already-running URL server
+npx github:karnelian/unity-mcp --transport=http --mcp-host=127.0.0.1 --mcp-port=3001
+
+# Generate SSE client config in .mcp.json
+npx github:karnelian/unity-mcp setup --mcp-transport=sse --mcp-port=3001
+# generated client URL: http://127.0.0.1:3001/sse
+
+# Start SSE MCP endpoint when your client expects an already-running URL server
+npx github:karnelian/unity-mcp --transport=sse --mcp-host=127.0.0.1 --mcp-port=3001
+# client URL: http://127.0.0.1:3001/sse, message endpoint: /message
+```
+
+Environment equivalents are `UNITY_MCP_TRANSPORT`, `UNITY_MCP_HTTP_HOST`, `UNITY_MCP_HTTP_PORT`, `UNITY_MCP_HTTP_ENDPOINT`, `UNITY_MCP_SSE_ENDPOINT`, and `UNITY_MCP_SSE_MESSAGE_ENDPOINT`. The Unity Editor bridge still uses `UNITY_WS_HOST` / `UNITY_WS_PORT` or registry auto-resolution; the HTTP/SSE port is only for MCP clients.
 
 ### Performance-Oriented Tools
 
@@ -145,7 +178,7 @@ Unity MCP now includes a central non-breaking safety policy:
 ## Architecture
 
 ```
-Claude Code ←→ MCP Server (Node.js, stdio) ←→ WebSocket (port 8099) ←→ Unity Editor Plugin (C#)
+Claude Code ←→ MCP Server (Node.js, stdio / Streamable HTTP / SSE) ←→ WebSocket (port 8099) ←→ Unity Editor Plugin (C#)
 ```
 
 Multi-instance support: each Unity project auto-registers to `~/.karnellabs-mcp/registry.json` with heartbeat. Connect to different instances via `--port=PORT`.

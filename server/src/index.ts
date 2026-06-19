@@ -1,5 +1,9 @@
+import { randomUUID } from "node:crypto";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { UnityBridge } from "./bridge/unity-bridge.js";
 import { describeUnityTarget, resolveUnityTarget } from "./registry.js";
 import { registerSceneTools } from "./tools/scene.js";
@@ -223,10 +227,135 @@ function resolveEnabledToolGroups(): string[] {
   return ALL_TOOL_GROUPS.filter(group => enabled.has(group));
 }
 
-const server = new McpServer({
-  name: "karnellabs-unity-mcp",
-  version: "0.3.10",
-});
+function readNumberOption(name: string, envName: string, fallback: number): number {
+  const raw = readOption(name, envName);
+  if (!raw) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  if (Number.isFinite(parsed) && parsed > 0 && parsed <= 65_535) return parsed;
+  console.error(`[Unity MCP] Invalid --${name} value '${raw}', using ${fallback}`);
+  return fallback;
+}
+
+function readMcpTransport(): "stdio" | "http" | "sse" {
+  const raw = (readOption("transport", "UNITY_MCP_TRANSPORT") || "stdio").toLowerCase();
+  if (raw === "stdio" || raw === "http" || raw === "sse") return raw;
+  console.error(`[Unity MCP] Unknown transport '${raw}', using stdio. Expected: stdio, http, sse`);
+  return "stdio";
+}
+
+function writeJson(res: ServerResponse, status: number, body: unknown): void {
+  res.writeHead(status, { "content-type": "application/json" });
+  res.end(JSON.stringify(body));
+}
+
+function writeNotFound(res: ServerResponse): void {
+  writeJson(res, 404, { error: "not_found" });
+}
+
+function buildServer(bridge: UnityBridge): McpServer {
+  const server = new McpServer({
+    name: "karnellabs-unity-mcp",
+    version: "0.3.10",
+  });
+
+  for (const group of TOOL_GROUPS) {
+    if (enabledToolGroups.has(group.name)) {
+      group.register(server, bridge);
+    }
+  }
+
+  registerResources(server, bridge);
+  return server;
+}
+
+async function startStdioTransport(bridge: UnityBridge): Promise<void> {
+  const server = buildServer(bridge);
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}
+
+async function startHttpTransport(bridge: UnityBridge): Promise<void> {
+  const host = readOption("mcp-host", "UNITY_MCP_HTTP_HOST") || "127.0.0.1";
+  const port = readNumberOption("mcp-port", "UNITY_MCP_HTTP_PORT", 3001);
+  const endpoint = readOption("mcp-endpoint", "UNITY_MCP_HTTP_ENDPOINT") || "/mcp";
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: () => randomUUID(),
+  });
+  const server = buildServer(bridge);
+  await server.connect(transport);
+
+  const httpServer = createServer(async (req: IncomingMessage, res: ServerResponse) => {
+    try {
+      const url = new URL(req.url || "/", `http://${req.headers.host || `${host}:${port}`}`);
+      if (url.pathname === "/health") {
+        writeJson(res, 200, { ok: true, transport: "http", endpoint });
+        return;
+      }
+      if (url.pathname !== endpoint) {
+        writeNotFound(res);
+        return;
+      }
+      await transport.handleRequest(req, res);
+    } catch (error) {
+      console.error("[Unity MCP] HTTP transport error:", error);
+      if (!res.headersSent) {
+        writeJson(res, 500, { error: "internal_error" });
+      } else {
+        res.end();
+      }
+    }
+  });
+
+  await new Promise<void>((resolve) => httpServer.listen(port, host, resolve));
+  console.error(`[Unity MCP] MCP HTTP transport listening at http://${host}:${port}${endpoint}`);
+}
+
+async function startSseTransport(bridge: UnityBridge): Promise<void> {
+  const host = readOption("mcp-host", "UNITY_MCP_HTTP_HOST") || "127.0.0.1";
+  const port = readNumberOption("mcp-port", "UNITY_MCP_HTTP_PORT", 3001);
+  const endpoint = readOption("sse-endpoint", "UNITY_MCP_SSE_ENDPOINT") || "/sse";
+  const messageEndpoint = readOption("message-endpoint", "UNITY_MCP_SSE_MESSAGE_ENDPOINT") || "/message";
+  const transports = new Map<string, SSEServerTransport>();
+
+  const httpServer = createServer(async (req: IncomingMessage, res: ServerResponse) => {
+    try {
+      const url = new URL(req.url || "/", `http://${req.headers.host || `${host}:${port}`}`);
+      if (url.pathname === "/health") {
+        writeJson(res, 200, { ok: true, transport: "sse", endpoint, messageEndpoint });
+        return;
+      }
+      if (req.method === "GET" && url.pathname === endpoint) {
+        const transport = new SSEServerTransport(messageEndpoint, res);
+        transports.set(transport.sessionId, transport);
+        transport.onclose = () => transports.delete(transport.sessionId);
+        const server = buildServer(bridge);
+        await server.connect(transport);
+        return;
+      }
+      if (req.method === "POST" && url.pathname === messageEndpoint) {
+        const sessionId = url.searchParams.get("sessionId") || "";
+        const transport = transports.get(sessionId);
+        if (!transport) {
+          writeJson(res, 404, { error: "unknown_session" });
+          return;
+        }
+        await transport.handlePostMessage(req, res);
+        return;
+      }
+      writeNotFound(res);
+    } catch (error) {
+      console.error("[Unity MCP] SSE transport error:", error);
+      if (!res.headersSent) {
+        writeJson(res, 500, { error: "internal_error" });
+      } else {
+        res.end();
+      }
+    }
+  });
+
+  await new Promise<void>((resolve) => httpServer.listen(port, host, resolve));
+  console.error(`[Unity MCP] MCP SSE transport listening at http://${host}:${port}${endpoint}`);
+}
 
 const explicitPort = readOption("port", "UNITY_WS_PORT");
 const unityTarget = resolveUnityTarget({
@@ -253,19 +382,17 @@ const bridge = new UnityBridge({
 
 const enabledToolGroups = new Set(resolveEnabledToolGroups());
 
-for (const group of TOOL_GROUPS) {
-  if (enabledToolGroups.has(group.name)) {
-    group.register(server, bridge);
-  }
-}
-
 console.error(
   `[Unity MCP] Tool profile '${readOption("profile", "UNITY_MCP_PROFILE") || "core"}' enabled ${enabledToolGroups.size}/${TOOL_GROUPS.length} tool groups: ${Array.from(enabledToolGroups).join(", ")}`
 );
 
-// 리소스 등록
-registerResources(server, bridge);
+const mcpTransport = readMcpTransport();
+console.error(`[Unity MCP] MCP client transport: ${mcpTransport}`);
 
-// stdio transport로 시작
-const transport = new StdioServerTransport();
-await server.connect(transport);
+if (mcpTransport === "http") {
+  await startHttpTransport(bridge);
+} else if (mcpTransport === "sse") {
+  await startSseTransport(bridge);
+} else {
+  await startStdioTransport(bridge);
+}

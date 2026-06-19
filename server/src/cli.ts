@@ -35,6 +35,34 @@ function normalizeTools(tools: string | undefined): string | undefined {
   return normalized || undefined;
 }
 
+type McpTransport = "stdio" | "http" | "sse";
+
+function normalizeMcpTransport(value: string | undefined): McpTransport {
+  const transport = (value || "stdio").trim().toLowerCase();
+  if (transport === "http" || transport === "streamable-http" || transport === "streamable_http") return "http";
+  if (transport === "sse") return "sse";
+  if (transport && transport !== "stdio") {
+    console.warn(`⚠️  Unknown MCP transport '${transport}', using stdio. Expected: stdio, http, sse.`);
+  }
+  return "stdio";
+}
+
+function readIntArg(name: string, args = process.argv.slice(2), fallback: number): number {
+  const raw = readArg(name, args);
+  if (!raw) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    console.warn(`⚠️  Invalid --${name}=${raw}, using ${fallback}.`);
+    return fallback;
+  }
+  return parsed;
+}
+
+function normalizeEndpoint(value: string | undefined, fallback: string): string {
+  const endpoint = (value || fallback).trim() || fallback;
+  return endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+}
+
 if (command === "setup") {
   setup();
 } else if (command === "update") {
@@ -43,7 +71,7 @@ if (command === "setup") {
   listInstances();
 } else {
   // Default: run MCP server
-  // Support --port / --profile / --tools flags for multi-instance and tool-surface control.
+  // Support --port / --profile / --tools plus MCP client transport flags.
   const port = readArg("port");
   if (port) process.env.UNITY_WS_PORT = port;
 
@@ -52,6 +80,24 @@ if (command === "setup") {
 
   const tools = normalizeTools(readArg("tools"));
   if (tools) process.env.UNITY_MCP_TOOLS = tools;
+
+  const transport = readArg("transport");
+  if (transport) process.env.UNITY_MCP_TRANSPORT = transport;
+
+  const mcpHost = readArg("mcp-host");
+  if (mcpHost) process.env.UNITY_MCP_HTTP_HOST = mcpHost;
+
+  const mcpPort = readArg("mcp-port");
+  if (mcpPort) process.env.UNITY_MCP_HTTP_PORT = mcpPort;
+
+  const mcpEndpoint = readArg("mcp-endpoint");
+  if (mcpEndpoint) process.env.UNITY_MCP_HTTP_ENDPOINT = mcpEndpoint;
+
+  const sseEndpoint = readArg("sse-endpoint");
+  if (sseEndpoint) process.env.UNITY_MCP_SSE_ENDPOINT = sseEndpoint;
+
+  const messageEndpoint = readArg("message-endpoint");
+  if (messageEndpoint) process.env.UNITY_MCP_SSE_MESSAGE_ENDPOINT = messageEndpoint;
 
   await import("./index.js");
 }
@@ -77,9 +123,12 @@ function getGitHubUrl(): string {
     try {
       const pkg = JSON.parse(readFileSync(rootPkg, "utf-8"));
       if (pkg.repository?.url) {
-        return pkg.repository.url
+        const url = pkg.repository.url
           .replace("git+", "")
           .replace(".git", "");
+        const githubMatch = url.match(/^https:\/\/github\.com\/([^/]+\/[^/]+)$/);
+        if (githubMatch) return `github:${githubMatch[1]}`;
+        return url;
       }
     } catch {}
   }
@@ -106,6 +155,15 @@ function update() {
   cpSync(unityPluginSrc, pluginDest, { recursive: true, force: true });
   console.log("   ✅ Plugin updated at Assets/KarnelLabsMCP/Editor/");
   ensureNewtonsoftPackage(targetDir);
+
+  const requestedTransport = readArg("mcp-transport", commandArgs) || readArg("transport", commandArgs);
+  const shouldUpdateMcpConfig = flags.has("--mcp-config") || Boolean(requestedTransport);
+  if (shouldUpdateMcpConfig) {
+    writeMcpJsonConfig(targetDir, normalizeMcpTransport(requestedTransport));
+  } else {
+    console.log("   ⏭️  Kept existing MCP client config. Pass --mcp-config or --mcp-transport=http|sse to update .mcp.json too.");
+  }
+
   console.log("");
   console.log("Reopen Unity to recompile the plugin.");
 }
@@ -170,6 +228,74 @@ function listInstances() {
   }
 }
 
+function buildMcpServerConfig(transport: McpTransport) {
+  const ghUrl = getGitHubUrl();
+  const profile = normalizeProfile(readArg("profile", commandArgs));
+  const tools = normalizeTools(readArg("tools", commandArgs));
+  const mcpHost = readArg("mcp-host", commandArgs) || "127.0.0.1";
+  const mcpPort = readIntArg("mcp-port", commandArgs, 3001);
+  const mcpEndpoint = normalizeEndpoint(readArg("mcp-endpoint", commandArgs), "/mcp");
+  const sseEndpoint = normalizeEndpoint(readArg("sse-endpoint", commandArgs), "/sse");
+
+  if (transport === "http") {
+    return {
+      url: `http://${mcpHost}:${mcpPort}${mcpEndpoint}`,
+      transport: "http",
+    };
+  }
+
+  if (transport === "sse") {
+    return {
+      url: `http://${mcpHost}:${mcpPort}${sseEndpoint}`,
+      transport: "sse",
+    };
+  }
+
+  const serverArgs = ["-y", ghUrl, `--profile=${profile}`];
+  if (tools) serverArgs.push(`--tools=${tools}`);
+  return {
+    command: "npx",
+    args: serverArgs,
+  };
+}
+
+function writeMcpJsonConfig(targetDir: string, transport: McpTransport) {
+  const mcpJsonPath = join(targetDir, ".mcp.json");
+  const serverConfig = buildMcpServerConfig(transport);
+  const mcpConfig = {
+    mcpServers: {
+      "karnellabs-unity-mcp": serverConfig,
+    },
+  };
+
+  const profile = normalizeProfile(readArg("profile", commandArgs));
+  const tools = normalizeTools(readArg("tools", commandArgs));
+  const transportLabel = transport === "stdio" ? `stdio (${profile}${tools ? ` + tools:${tools}` : ""})` : transport;
+
+  if (existsSync(mcpJsonPath)) {
+    try {
+      const existing = JSON.parse(readFileSync(mcpJsonPath, "utf-8"));
+      existing.mcpServers = existing.mcpServers || {};
+      existing.mcpServers["karnellabs-unity-mcp"] = serverConfig;
+      writeFileSync(mcpJsonPath, JSON.stringify(existing, null, 2) + "\n");
+      console.log(`   ✅ Updated karnellabs-unity-mcp in .mcp.json (${transportLabel})`);
+    } catch {
+      writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + "\n");
+      console.log(`   ✅ Recreated .mcp.json (${transportLabel})`);
+    }
+  } else {
+    writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + "\n");
+    console.log(`   ✅ Created .mcp.json (${transportLabel})`);
+  }
+
+  if (transport !== "stdio") {
+    const url = (serverConfig as { url: string }).url;
+    console.log(`   ℹ️  ${transport.toUpperCase()} clients should connect to: ${url}`);
+    console.log("   ℹ️  Start the URL transport with the matching built-in command when your client does not launch servers itself:");
+    console.log(`      npx github:karnelian/unity-mcp --transport=${transport} --mcp-port=${readIntArg("mcp-port", commandArgs, 3001)}`);
+  }
+}
+
 function setup() {
   const targetDir = process.cwd();
   const unityPluginSrc = findUnityPlugin();
@@ -197,50 +323,20 @@ function setup() {
   // The editor bridge uses Newtonsoft.Json/JObject for JSON-RPC parsing.
   ensureNewtonsoftPackage(targetDir);
 
-  // 3. Optional legacy .mcp.json creation.
-  // Global Claude plugin installs should not need project-local MCP config; duplicate
-  // definitions can start two Node clients and cause Unity connection flapping.
+  // 3. Optional MCP client config creation.
+  // Default setup keeps the zero-config Claude plugin workflow and does not write
+  // a project-local .mcp.json. Passing --mcp-config writes config explicitly.
+  // Passing --mcp-transport=http|sse (or --transport=http|sse during setup) also
+  // writes URL-based config so users do not have to hand-author long commands.
   if (!flags.has("--update")) {
-    if (flags.has("--mcp-config")) {
-      const mcpJsonPath = join(targetDir, ".mcp.json");
-      const ghUrl = getGitHubUrl();
-      const profile = normalizeProfile(readArg("profile", commandArgs));
-      const tools = normalizeTools(readArg("tools", commandArgs));
-      const serverArgs = ["-y", ghUrl, `--profile=${profile}`];
-      if (tools) serverArgs.push(`--tools=${tools}`);
-      const shouldUpdateExistingConfig = Boolean(readArg("profile", commandArgs) || readArg("tools", commandArgs));
-      const mcpConfig = {
-        mcpServers: {
-          "karnellabs-unity-mcp": {
-            command: "npx",
-            args: serverArgs,
-          },
-        },
-      };
+    const requestedTransport = readArg("mcp-transport", commandArgs) || readArg("transport", commandArgs);
+    const mcpTransport = normalizeMcpTransport(requestedTransport);
+    const shouldWriteMcpConfig = flags.has("--mcp-config") || Boolean(requestedTransport);
 
-      if (existsSync(mcpJsonPath)) {
-        try {
-          const existing = JSON.parse(readFileSync(mcpJsonPath, "utf-8"));
-          if (existing.mcpServers?.["karnellabs-unity-mcp"] && !shouldUpdateExistingConfig) {
-            console.log("   ⏭️  .mcp.json already configured, skipping. Use setup --mcp-config --profile=... to update the tool profile.");
-          } else {
-            existing.mcpServers = existing.mcpServers || {};
-            existing.mcpServers["karnellabs-unity-mcp"] = mcpConfig.mcpServers["karnellabs-unity-mcp"];
-            writeFileSync(mcpJsonPath, JSON.stringify(existing, null, 2) + "\n");
-            console.log(existing.mcpServers?.["karnellabs-unity-mcp"] && shouldUpdateExistingConfig
-              ? `   ✅ Updated karnellabs-unity-mcp profile in .mcp.json (${profile}${tools ? ` + tools:${tools}` : ""})`
-              : "   ✅ Added karnellabs-unity-mcp to existing .mcp.json");
-          }
-        } catch {
-          writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + "\n");
-          console.log("   ✅ Created .mcp.json");
-        }
-      } else {
-        writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + "\n");
-        console.log("   ✅ Created .mcp.json");
-      }
+    if (shouldWriteMcpConfig) {
+      writeMcpJsonConfig(targetDir, mcpTransport);
     } else {
-      console.log("   ⏭️  Skipped project .mcp.json. Use the Claude plugin globally, or pass --mcp-config for legacy local config.");
+      console.log("   ⏭️  Skipped project .mcp.json. Use the Claude plugin globally, or pass --mcp-config / --mcp-transport=http for explicit client config.");
     }
   }
 
@@ -254,9 +350,12 @@ function setup() {
   console.log("  3. Open Claude Code in this folder and start working!");
   console.log("");
   console.log("Commands:");
-  console.log("  npx github:karnelian/unity-mcp setup --profile=core,ui  — Install/update Unity plugin (no local .mcp.json by default)");
-  console.log("  npx github:karnelian/unity-mcp setup --mcp-config    — Also write legacy project .mcp.json");
-  console.log("  npx github:karnelian/unity-mcp update                   — Update plugin only");
-  console.log("  npx github:karnelian/unity-mcp instances                — List running Unity instances");
+  console.log("  npx github:karnelian/unity-mcp setup --profile=core,ui           — Install/update Unity plugin (no local .mcp.json by default)");
+  console.log("  npx github:karnelian/unity-mcp setup --mcp-config                — Also write explicit stdio .mcp.json");
+  console.log("  npx github:karnelian/unity-mcp setup --mcp-transport=http        — Write URL-based HTTP .mcp.json");
+  console.log("  npx github:karnelian/unity-mcp setup --mcp-transport=sse         — Write URL-based SSE .mcp.json");
+  console.log("  npx github:karnelian/unity-mcp update                            — Update plugin only, keep existing MCP config");
+  console.log("  npx github:karnelian/unity-mcp update --mcp-transport=http       — Update plugin and rewrite HTTP .mcp.json");
+  console.log("  npx github:karnelian/unity-mcp instances                         — List running Unity instances");
   console.log("");
 }

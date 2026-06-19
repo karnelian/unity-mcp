@@ -33,23 +33,40 @@ namespace KarnelLabs.MCP
 
         private void UpdateMcpJsonConfig()
         {
-            _mcpJsonConfig = $@"{{
+            _mcpJsonConfig = $@"Claude Code plugin users usually do not need project .mcp.json.
+
+Explicit stdio .mcp.json:
+{{
   ""mcpServers"": {{
-    ""unity"": {{
-      ""command"": ""node"",
-      ""args"": [""{GetServerPath()}/dist/index.js""],
+    ""karnellabs-unity-mcp"": {{
+      ""command"": ""npx"",
+      ""args"": [""-y"", ""github:karnelian/unity-mcp"", ""--profile=core""],
       ""env"": {{
         ""UNITY_WS_PORT"": ""{_port}""
       }}
     }}
   }}
-}}";
-        }
+}}
 
-        private string GetServerPath()
-        {
-            // 프로젝트 상대 경로로 server 폴더 추정
-            return "../server";
+HTTP client config:
+{{
+  ""mcpServers"": {{
+    ""karnellabs-unity-mcp"": {{
+      ""url"": ""http://127.0.0.1:3001/mcp"",
+      ""transport"": ""http""
+    }}
+  }}
+}}
+
+SSE client config:
+{{
+  ""mcpServers"": {{
+    ""karnellabs-unity-mcp"": {{
+      ""url"": ""http://127.0.0.1:3001/sse"",
+      ""transport"": ""sse""
+    }}
+  }}
+}}";
         }
 
         private void OnGUI()
@@ -113,11 +130,11 @@ namespace KarnelLabs.MCP
             // === Claude Code 설정 ===
             EditorGUILayout.LabelField("Claude Code Configuration", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(
-                "Add this to your Claude Code mcp.json or claude_desktop_config.json to connect:",
+                "Claude Code plugin users usually need no local config. Use setup --mcp-config or setup --mcp-transport=http|sse to generate one automatically; this box is for copying/debugging.",
                 MessageType.Info
             );
 
-            _configScrollPos = EditorGUILayout.BeginScrollView(_configScrollPos, GUILayout.Height(120));
+            _configScrollPos = EditorGUILayout.BeginScrollView(_configScrollPos, GUILayout.Height(220));
             EditorGUILayout.TextArea(_mcpJsonConfig, EditorStyles.textArea);
             EditorGUILayout.EndScrollView();
 
