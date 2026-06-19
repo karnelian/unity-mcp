@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using UnityEditor;
 using UnityEngine;
 
@@ -317,6 +319,11 @@ SSE client config:
 
         private void OnEditorUpdate()
         {
+            if (_httpPort != HttpMcpServerLauncher.Port)
+            {
+                _httpPort = HttpMcpServerLauncher.Port;
+                UpdateMcpJsonConfig();
+            }
             Repaint();
         }
     }
@@ -330,6 +337,7 @@ SSE client config:
         private static int _port;
         private static bool _autoStart;
 
+        public static int Port => _port;
         public static bool IsRunning => _process != null && !_process.HasExited;
 
         static HttpMcpServerLauncher()
@@ -358,6 +366,23 @@ SSE client config:
             }
 
             var executable = Application.platform == RuntimePlatform.WindowsEditor ? "npx.cmd" : "npx";
+            var requestedPort = _port;
+            int selectedPort;
+            try
+            {
+                selectedPort = ResolveAvailablePort(requestedPort);
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogError($"[KarnelLabs MCP] Failed to find an available HTTP MCP port: {ex.Message}");
+                return;
+            }
+            if (selectedPort != requestedPort)
+            {
+                UnityEngine.Debug.LogWarning($"[KarnelLabs MCP] HTTP port {requestedPort} is busy; using {selectedPort} instead.");
+                _port = selectedPort;
+                EditorPrefs.SetInt(HttpPortPrefsKey, _port);
+            }
             var args = $"-y github:karnelian/unity-mcp --transport=http --mcp-port={_port} --profile=core";
 
             try
@@ -393,6 +418,40 @@ SSE client config:
             {
                 UnityEngine.Debug.LogError($"[KarnelLabs MCP] Failed to start HTTP MCP server via '{executable} {args}': {ex.Message}");
                 _process = null;
+            }
+        }
+
+        private static int ResolveAvailablePort(int preferredPort)
+        {
+            var startPort = preferredPort > 0 ? preferredPort : 8765;
+            const int maxAttempts = 100;
+
+            for (var offset = 0; offset < maxAttempts; offset++)
+            {
+                var candidate = startPort + offset;
+                if (candidate > 65535) break;
+                if (IsTcpPortAvailable(candidate)) return candidate;
+            }
+
+            throw new InvalidOperationException($"No available HTTP MCP port found in range {startPort}-{Math.Min(65535, startPort + maxAttempts - 1)}.");
+        }
+
+        private static bool IsTcpPortAvailable(int port)
+        {
+            TcpListener listener = null;
+            try
+            {
+                listener = new TcpListener(IPAddress.Loopback, port);
+                listener.Start();
+                return true;
+            }
+            catch (SocketException)
+            {
+                return false;
+            }
+            finally
+            {
+                listener?.Stop();
             }
         }
 
