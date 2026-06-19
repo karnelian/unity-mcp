@@ -383,7 +383,8 @@ SSE client config:
                 _port = selectedPort;
                 EditorPrefs.SetInt(HttpPortPrefsKey, _port);
             }
-            var args = $"-y github:karnelian/unity-mcp --transport=http --mcp-port={_port} --profile=core";
+            var unityBridgePort = McpBridge.Port;
+            var args = $"-y github:karnelian/unity-mcp --transport=http --mcp-port={_port} --port={unityBridgePort} --profile=core";
 
             try
             {
@@ -412,7 +413,7 @@ SSE client config:
                 _process.Start();
                 _process.BeginOutputReadLine();
                 _process.BeginErrorReadLine();
-                UnityEngine.Debug.Log($"[KarnelLabs MCP] Started HTTP MCP server at http://127.0.0.1:{_port}/mcp");
+                UnityEngine.Debug.Log($"[KarnelLabs MCP] Started HTTP MCP server at http://127.0.0.1:{_port}/mcp targeting Unity WebSocket port {unityBridgePort}");
             }
             catch (Exception ex)
             {

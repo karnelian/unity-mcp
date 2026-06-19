@@ -121,7 +121,7 @@ You can add individual groups with `--tools=cinemachine,addressables` without sw
 
 The Node MCP server supports stdio by default, plus Streamable HTTP and legacy SSE for MCP clients that connect over the network. You normally should not hand-write long `--transport=...` commands: use `setup --mcp-transport=http|sse` to generate URL-based client config.
 
-For AgentManager or any URL-based MCP client, you can also let Unity launch the HTTP server for you: open **Tools > KarnelLabs MCP > Server Window**, set the preferred HTTP port, click **Start HTTP MCP**, and optionally enable **Auto-start HTTP MCP server when Unity Editor opens**. If the preferred port is already occupied, the Editor launcher automatically picks the next available localhost port, persists it, and updates the copied HTTP/SSE config shown in the window. That avoids manually running `npx ... --transport=http` after reboot.
+For AgentManager or any URL-based MCP client, you can also let Unity launch the HTTP server for you: open **Tools > KarnelLabs MCP > Server Window**, set the preferred HTTP port, click **Start HTTP MCP**, and optionally enable **Auto-start HTTP MCP server when Unity Editor opens**. The launched HTTP process targets the Unity WebSocket port configured in the same Server Window via `--port=<Unity WebSocket port>` instead of scanning/guessing. If the preferred HTTP port is already occupied, the Editor launcher automatically picks the next available localhost port, persists it, and updates the copied HTTP/SSE config shown in the window. That avoids manually running `npx ... --transport=http` after reboot.
 
 ```bash
 # Default stdio transport, used by Claude Code plugin/.mcp.json
